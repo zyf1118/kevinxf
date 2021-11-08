@@ -147,30 +147,6 @@ if "DD_cookies" in os.environ:
 else:
     print("检查变量DD_cookies是否已填写")
 
-if "seedId" in os.environ:
-    print(len (os.environ["seedId"]))
-    if len (os.environ["seedId"]) > 43:
-        seedId = os.environ["seedId"]
-        # temporary = cookies.split ('&')
-        # cookies = temporary[0]
-        printT ("已获取并使用Env环境seedId")
-    else:
-        seedId = os.environ["seedId"]
-else:
-    print("检查变量seedId未填写")
-
-if "propsId" in os.environ:
-    print(len (os.environ["propsId"]))
-    if len (os.environ["propsId"]) > 43:
-        seedId = os.environ["propsId"]
-        # temporary = cookies.split ('&')
-        # cookies = temporary[0]
-        printT ("已获取并使用Env环境propsId")
-    else:
-        seedId = os.environ["propsId"]
-else:
-    print("检查变量propsId未填写")
-
 
 ## 获取通知服务
 class msg(object):
