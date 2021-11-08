@@ -4,11 +4,11 @@
 
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:xF_DDmc_Sign.py
+项目名称:xF_DDmc_Sign
 Author: 一风一燕
-功能：叮咚买菜果园活动
+功能：叮咚买菜积分签到功能
 Date: 2021-09-16
-cron: 22 7,10,17 * * * xF_DDmc_Sign.py
+cron: 22 7,10,17 * * * xF_DDmc_Sign
 new Env('叮咚买菜积分活动');
 
 ****************叮咚买菜是买菜APP，30分钟内到家，挺快挺专业的。如果没有用过叮咚买菜APP的人，可以TG私聊我，我就叫一风一燕，我发个邀请码给你注册，这样双方都有优惠券，也算是支持一下小风，谢谢各位大佬*******************
@@ -26,7 +26,7 @@ new Env('叮咚买菜积分活动');
 
 
 
-cron时间填写：22 7,10,17 * * *
+
 
 '''
 
@@ -89,37 +89,34 @@ def getEnvs(label):
 
 ##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 
-# with open(path, "r+", encoding="utf-8") as f:
-#     ck = f.read()
-#     tokens = ck
-#     # if "DD_token" in ck:
-#     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
-#     #     tokens = r.findall(ck)
-#     #     tokens = tokens[0].split ('&')
-#     #     if len (tokens) == 1:
-#     #         DD_token = tokens[0]
-#     #         tokens = ''
-#     # #     print(tokens)
-#     # #     tokens = cookies[3]
-#     #     else:
-#     #         DD_token = tokens[0]
-#     # printT ("已获取并使用ck环境 token")
+with open(path, "r+", encoding="utf-8") as f:
+    ck = f.read()
+    tokens = ck
+    if "DD_token" in ck:
+        r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
+        tokens = r.findall(ck)
+        tokens = tokens[0].split ('&')
+        if len (tokens) == 1:
+            DD_token = tokens[0]
+            tokens = ''
+    #     print(tokens)
+    #     tokens = cookies[3]
+
+    printT ("已获取并使用ck环境 token")
 #
-# with open(path, "r+", encoding="utf-8") as f:
-#     ck = f.read()
-#     cookies = ck
-#     # if "DD_cookies" in ck:
-#     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-#     #     cookies = r.findall (ck)
-#     #     cookies = cookies[0].split('&')
-#     # if len(cookies) == 1:
-#     #     DD_cookies = cookies[0]
-#     #     cookies = ''
-#     # #     print(cookies)
-#     # #     cookies = cookies[3]
-#     # else:
-#     #     DD_cookies = cookies[0]
-#     printT ("已获取并使用ck环境 DD_cookies")
+with open(path, "r+", encoding="utf-8") as f:
+    ck = f.read()
+    cookies = ck
+    if "DD_cookies" in ck:
+        r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
+        cookies = r.findall (ck)
+        cookies = cookies[0].split('&')
+    if len(cookies) == 1:
+        DD_cookies = cookies[0]
+        cookies = ''
+    #     print(cookies)
+    #     cookies = cookies[3]
+    printT ("已获取并使用ck环境 DD_cookies")
 
 ########################################################################
 
@@ -214,8 +211,8 @@ if tokens != '':
     # if "DD_token" in tokens:
         # r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
         # tokens = r.findall (ck)
-        tokens = tokens.split ('&')
-        # print(tokens)
+        # print (tokens)
+        # tokens = tokens.split ('&')
         if len (tokens) == 1:
             DD_token = tokens[0]
 
@@ -226,8 +223,8 @@ if cookies != '':
     # if "DD_cookies" in cookies:
     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
     #     cookies = r.findall (ck)
-        cookies = cookies.split ('&')
-        # print(cookies)
+    #     print(cookies)
+    #     cookies = cookies.split ('&')
         if len (cookies) == 1:
             DD_cookies = cookies[0]
 
@@ -336,7 +333,7 @@ if __name__ == '__main__':
             name, uid = get_info (i, j)
             do_sign (name, i, j)
 
-    if "已完成" in msg_info:
+    if "成功签到" in msg_info:
         send("叮咚买菜积分签到", msg_info)
     elif "过期" in msg_info:
         send("叮咚买菜积分签到", msg_info)
