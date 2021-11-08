@@ -4,10 +4,12 @@
 
 感谢CurtinLV提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:didi_Sign.py
+项目名称:xF_didi_Sign.py
 Author: 一风一燕
 功能：滴滴出行积分签到+抽奖
 Date: 2021-11-4
+cron: 22 5,10 * * * xF_didi_Sign.py
+new Env('滴滴app积分签到+抽奖');
 
 
 ****************滴滴出行APP*******************
