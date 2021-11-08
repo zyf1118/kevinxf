@@ -89,34 +89,34 @@ def getEnvs(label):
 
 ##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 
-with open(path, "r+", encoding="utf-8") as f:
-    ck = f.read()
-    tokens = ck
-    if "DD_token" in ck:
-        r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
-        tokens = r.findall(ck)
-        tokens = tokens[0].split ('&')
-        if len (tokens) == 1:
-            DD_token = tokens[0]
-            tokens = ''
-    #     print(tokens)
-    #     tokens = cookies[3]
+# with open(path, "r+", encoding="utf-8") as f:
+#     ck = f.read()
+#     tokens = ck
+#     if "DD_token" in ck:
+#         r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
+#         tokens = r.findall(ck)
+#         tokens = tokens[0].split ('&')
+#         if len (tokens) == 1:
+#             DD_token = tokens[0]
+#             tokens = ''
+#     #     print(tokens)
+#     #     tokens = cookies[3]
 
-    printT ("已获取并使用ck环境 token")
-#
-with open(path, "r+", encoding="utf-8") as f:
-    ck = f.read()
-    cookies = ck
-    if "DD_cookies" in ck:
-        r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-        cookies = r.findall (ck)
-        cookies = cookies[0].split('&')
-    if len(cookies) == 1:
-        DD_cookies = cookies[0]
-        cookies = ''
-    #     print(cookies)
-    #     cookies = cookies[3]
-    printT ("已获取并使用ck环境 DD_cookies")
+#     printT ("已获取并使用ck环境 token")
+# #
+# with open(path, "r+", encoding="utf-8") as f:
+#     ck = f.read()
+#     cookies = ck
+#     if "DD_cookies" in ck:
+#         r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
+#         cookies = r.findall (ck)
+#         cookies = cookies[0].split('&')
+#     if len(cookies) == 1:
+#         DD_cookies = cookies[0]
+#         cookies = ''
+#     #     print(cookies)
+#     #     cookies = cookies[3]
+#     printT ("已获取并使用ck环境 DD_cookies")
 
 ########################################################################
 
