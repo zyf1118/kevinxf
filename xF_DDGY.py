@@ -4,7 +4,7 @@
 
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:DDGY.py
+项目名称:xF_DDGY.py
 Author: 一风一燕
 功能：叮咚买菜果园活动
 Date: 2021-09-16
@@ -93,33 +93,33 @@ def getEnvs(label):
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     tokens = ck
-#     # if "DD_token" in ck:
-#     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
-#     #     tokens = r.findall(ck)
-#     #     tokens = tokens[0].split ('&')
-#     #     if len (tokens) == 1:
-#     #         DD_token = tokens[0]
-#     #         tokens = ''
-#     # #     print(tokens)
-#     # #     tokens = cookies[3]
-#     #     else:
-#     #         DD_token = tokens[0]
-#     # printT ("已获取并使用ck环境 token")
+#     if "DD_token" in ck:
+#         r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
+#         tokens = r.findall(ck)
+#         tokens = tokens[0].split ('&')
+#         if len (tokens) == 1:
+#             DD_token = tokens[0]
+#             tokens = ''
+#     #     print(tokens)
+#     #     tokens = cookies[3]
+#         else:
+#             DD_token = tokens[0]
+#     printT ("已获取并使用ck环境 token")
 #
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     cookies = ck
-#     # if "DD_cookies" in ck:
-#     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-#     #     cookies = r.findall (ck)
-#     #     cookies = cookies[0].split('&')
-#     # if len(cookies) == 1:
-#     #     DD_cookies = cookies[0]
-#     #     cookies = ''
-#     # #     print(cookies)
-#     # #     cookies = cookies[3]
-#     # else:
-#     #     DD_cookies = cookies[0]
+#     if "DD_cookies" in ck:
+#         r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
+#         cookies = r.findall (ck)
+#         cookies = cookies[0].split('&')
+#     if len(cookies) == 1:
+#         DD_cookies = cookies[0]
+#         cookies = ''
+#     #     print(cookies)
+#     #     cookies = cookies[3]
+#     else:
+#         DD_cookies = cookies[0]
 #     printT ("已获取并使用ck环境 DD_cookies")
 
 ########################################################################
@@ -147,6 +147,7 @@ if "DD_cookies" in os.environ:
         DD_cookies = os.environ["DD_cookies"]
 else:
     print("检查变量DD_cookies是否已填写")
+
 
 
 ## 获取通知服务
@@ -215,7 +216,7 @@ if tokens != '':
     # if "DD_token" in tokens:
     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
     #     tokens = r.findall (ck)
-        tokens = tokens.split ('&')
+    #     tokens = tokens.split ('&')
         # print(tokens)
         if len (tokens) == 1:
             DD_token = tokens[0]
@@ -227,7 +228,7 @@ if cookies != '':
     # if "DD_cookies" in cookies:
         # r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
         # cookies = r.findall (ck)
-        cookies = cookies.split ('&')
+        # cookies = cookies.split ('&')
         # print(cookies)
         if len (cookies) == 1:
             DD_cookies = cookies[0]
