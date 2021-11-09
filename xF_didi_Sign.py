@@ -170,7 +170,7 @@ else:
 
 if "do_lottery" in os.environ:
     do_lottery = os.environ["do_lottery"]
-    printT ("已获取并使用Env环境do_lottery")
+    printT ("do_lottery为true，参与积分抽奖活动")
 else:
     print("do_lottery为fasle，不进行积分抽奖")
 
