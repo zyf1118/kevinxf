@@ -366,6 +366,9 @@ def do_Lottery(Didi_jifen_token,accout):
                 break
             elif code == 20008:
                 msg("【账号{}】抽奖lid过期，请重新抓包更新".format(accout))
+            elif code == 20010:
+                msg("【账号{}】积分不足9分，跳出抽奖环节".format(accout))
+                break
             else:
                 draw_times = result['data']['userinfo']['draw_times']
                 flag = 6 - int(draw_times)
