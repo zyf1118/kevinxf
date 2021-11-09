@@ -16,7 +16,7 @@ new Env('叮咚买菜积分活动');
 
 【教程】：需要自行用手机抓取cookies和token。
 在青龙变量中添加变量DD_token，DD_cookies。
-多个账号时，DD_token，DD_cookies用&隔开，例如DD_token=xxxxx&xxxx
+多个账号时，DD_token，DD_cookies用&隔开，例如DD_token='xxxxx&xxxx'
 
 手机抓包后，喂食一次，查看URL
 搜索station_id=，&前面，=后面的东西就是你需要的token。
