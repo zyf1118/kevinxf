@@ -3,11 +3,11 @@
 '''
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导
-项目名称:xF_jd_heath_exchange.py
+项目名称:xF_jd_health_exchange.py
 Author: 一风一燕
 功能：健康社区兑换
 Date: 2021-08-12
-cron: 18 8 * * * xF_jd_heath_exchange.py
+cron: 18 8 * * * xF_jd_health_exchange.py
 new Env('健康社区兑换京豆');
 
 
