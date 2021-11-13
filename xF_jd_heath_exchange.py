@@ -7,7 +7,7 @@
 Author: 一风一燕
 功能：健康社区兑换
 Date: 2021-08-12
-cron: 18 8  * * * xF_jd_heath_exchange.py
+cron: 18 8 * * * xF_jd_heath_exchange.py
 new Env('健康社区兑换京豆');
 
 
