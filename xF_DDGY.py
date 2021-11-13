@@ -286,6 +286,7 @@ def tasklist_info(name,uid,DD_token,DD_cookies):
         print(e)
         msg ("【{0}】获取任务列表失败,可能是cookies过期".format(name))
 
+#喂食
 def do_feed(name,uid,DD_token,DD_cookies):
     try:
         url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
@@ -453,6 +454,7 @@ def do_reward(name,taskid,DD_token,DD_cookies):
         print (e)
         msg ("【{0}】领取浏览任务奖励失败,可能是cookies过期".format(name))
 
+#领取福利待袋
 def fudai_reward(name,uid,DD_token,DD_cookies):
     try:
         fudai_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&taskCode=LOTTERY'
@@ -481,6 +483,50 @@ def fudai_reward(name,uid,DD_token,DD_cookies):
         print (e)
         msg ("【{0}】领取福袋奖励失败,可能是cookies过期".format(name))
 
+#增加肥力
+def add_fl(name,uid,DD_token,DD_cookies):
+    try:
+        url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 5.1.1) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 xzone/9.29.0",
+            "Referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&s=mine_orchard",
+            "DDMC-GAME-TID": "2",
+            "cookie": DD_cookies
+        }
+        r = requests.get (url, headers=headers, verify=False).text
+        seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
+        i = 1
+        while True:
+            add_fl_url = f'https://farm.api.ddxq.mobi/api/v2/props/props-use?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&propsCode=FERTILIZER&propsId=210912164372360018&seedId={seedid}'
+            add_fl_heards = {
+                "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive",
+                "Accept": "*/*",
+                "Referer": "https://orchard-m.ddxq.mobi/",
+                "Host": "farm.api.ddxq.mobi",
+                "Cookie": DD_cookies,
+                "Origin": "https://orchard-m.ddxq.mobi",
+                "accept-language": "zh-cn",
+                "ddmc-game-tid": "2",
+            }
+            response = requests.get (url=add_fl_url, headers=add_fl_heards, verify=False)
+            result = response.json ()
+            # print (result)
+            code = result['code']
+            amount = result['data']['propsUse']['amount']  # 剩余肥料
+            total = i * 10
+            cur_amount = result['data']['propsUseResultVo']['amount']  # 当前肥力值
+            if amount == 0:
+                msg ("【{0}】当前肥力值{1}g，本次增加肥力值{2}g".format (name,cur_amount,total))
+            if code != 0:
+                msg ("【{0}】肥料不足，无法增加".format(name))
+                return 0
+            i += 1
+    except Exception as e:
+        print (e)
+        msg ("【{0}】肥料不足，无法增加".format(name))
+
 if __name__ == '__main__':
     global msg_info
     print("============脚本只支持青龙新版=============\n")
@@ -494,6 +540,7 @@ if __name__ == '__main__':
         view_mission (name,DD_token,DD_cookies)
         view_id = tasklist_info (name,uid,DD_token,DD_cookies)
         do_reward (name,view_id,DD_token,DD_cookies)
+        add_fl(name,uid,DD_token,DD_cookies)
         do_feed (name,uid,DD_token,DD_cookies)
     elif tokens == '' or  cookies == '':
         print("检查变量DD_token，DD_cookies是否已填写")
@@ -506,6 +553,7 @@ if __name__ == '__main__':
             view_mission (name, i, j)
             view_id = tasklist_info (name, uid, i, j)
             do_reward (name, view_id, i, j)
+            add_fl(name, uid, i, j)
             do_feed (name,uid,i, j)
     if "已完成" in msg_info:
         send("叮咚买菜果园活动", msg_info)
