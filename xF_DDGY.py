@@ -215,7 +215,7 @@ if tokens != '':
     # if "DD_token" in tokens:
     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
     #     tokens = r.findall (ck)
-    #     tokens = tokens.split ('&')
+        tokens = tokens.split ('&')
         # print(tokens)
         if len (tokens) == 1:
             DD_token = tokens[0]
@@ -226,7 +226,7 @@ if cookies != '':
     # if "DD_cookies" in cookies:
         # r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
         # cookies = r.findall (ck)
-        # cookies = cookies.split ('&')
+        cookies = cookies.split ('&')
         # print(cookies)
         if len (cookies) == 1:
             DD_cookies = cookies[0]
