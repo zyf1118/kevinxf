@@ -42,8 +42,8 @@ DD_cookies = ''
 
 
 '''
-tokens = []
-cookies = []
+tokens = ''
+cookies = ''
 
 
 try:
@@ -97,15 +97,15 @@ def getEnvs(label):
 #         r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
 #         tokens = r.findall(ck)
 #         tokens = tokens[0].split ('&')
+#         # print(tokens)
 #         if len (tokens) == 1:
 #             DD_token = tokens[0]
 #             tokens = ''
 #     #     print(tokens)
 #     #     tokens = cookies[3]
-#         else:
-#             DD_token = tokens[0]
-#     printT ("已获取并使用ck环境 token")
 #
+#     printT ("已获取并使用ck环境 token")
+# #
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     cookies = ck
@@ -113,13 +113,12 @@ def getEnvs(label):
 #         r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
 #         cookies = r.findall (ck)
 #         cookies = cookies[0].split('&')
+#         # print (cookies)
 #     if len(cookies) == 1:
 #         DD_cookies = cookies[0]
 #         cookies = ''
-#     #     print(cookies)
+#         print(cookies)
 #     #     cookies = cookies[3]
-#     else:
-#         DD_cookies = cookies[0]
 #     printT ("已获取并使用ck环境 DD_cookies")
 
 ########################################################################
@@ -216,11 +215,10 @@ if tokens != '':
     # if "DD_token" in tokens:
     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
     #     tokens = r.findall (ck)
-        tokens = tokens.split ('&')
+    #     tokens = tokens.split ('&')
         # print(tokens)
         if len (tokens) == 1:
             DD_token = tokens[0]
-
         else:
             pass
 
@@ -228,7 +226,7 @@ if cookies != '':
     # if "DD_cookies" in cookies:
         # r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
         # cookies = r.findall (ck)
-        cookies = cookies.split ('&')
+        # cookies = cookies.split ('&')
         # print(cookies)
         if len (cookies) == 1:
             DD_cookies = cookies[0]
@@ -296,7 +294,8 @@ def do_feed(name,uid,DD_token,DD_cookies):
             "DDMC-GAME-TID": "2",
             "cookie": DD_cookies
         }
-        r = requests.get (url, headers=headers, verify=False).text
+        r = requests.get (url=url, headers=headers, verify=False).text
+        print(r)
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
         feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&propsCode=FEED&seedId={seedid}&propsId={seedid}'
         feed_headers = {
@@ -334,7 +333,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
 
     except Exception as e:
         print (e)
-        msg ("【[0}】浇水失败,可能是cookies过期".format(name))
+        msg ("【{0}】浇水失败,可能是果树已成熟，请上线查看，".format(name))
 
 
 #每日签到任务
@@ -512,15 +511,19 @@ def add_fl(name,uid,DD_token,DD_cookies):
             }
             response = requests.get (url=add_fl_url, headers=add_fl_heards, verify=False)
             result = response.json ()
-            # print (result)
+            print (result)
             code = result['code']
-            amount = result['data']['propsUse']['amount']  # 剩余肥料
-            total = i * 10
-            cur_amount = result['data']['propsUseResultVo']['amount']  # 当前肥力值
-            if amount == 0:
-                msg ("【{0}】当前肥力值{1}g，本次增加肥力值{2}g".format (name,cur_amount,total))
-            if code != 0:
-                msg ("【{0}】肥料不足，无法增加".format(name))
+            if code != 1125:
+                amount = result['data']['propsUse']['amount']  # 剩余肥料
+                total = i * 10
+                cur_amount = result['data']['propsUseResultVo']['amount']  # 当前肥力值
+                if amount == 0:
+                    msg ("【{0}】当前肥力值{1}g，本次增加肥力值{2}g".format (name,cur_amount,total))
+                if code != 0:
+                    msg ("【{0}】肥料不足，无法增加".format(name))
+                    return 0
+            else:
+                msg ("【{0}】肥料不足，无法增加".format (name))
                 return 0
             i += 1
     except Exception as e:
@@ -532,7 +535,9 @@ if __name__ == '__main__':
     print("============脚本只支持青龙新版=============\n")
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print("============执行叮咚果园活动脚本==============")
+    print(DD_token,DD_cookies)
     if DD_token != '' and DD_cookies != '':
+        msg("单账号模式")
         name,uid = get_info(DD_token,DD_cookies)
         do_sign (name,uid,DD_token,DD_cookies)
         do_sign2 (name,uid,DD_token,DD_cookies)
@@ -542,9 +547,10 @@ if __name__ == '__main__':
         do_reward (name,view_id,DD_token,DD_cookies)
         add_fl(name,uid,DD_token,DD_cookies)
         do_feed (name,uid,DD_token,DD_cookies)
-    elif tokens == '' or  cookies == '':
+    elif tokens == '' or cookies == '':
         print("检查变量DD_token，DD_cookies是否已填写")
     else:
+        msg ("多账号模式")
         for i,j in zip(tokens,cookies):             #同时遍历两个list，需要用ZIP打包
             name, uid = get_info (i, j)
             do_sign (name, uid, i, j)
