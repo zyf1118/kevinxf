@@ -11,6 +11,9 @@ Date: 2021-11-4
 cron: 22 5,10 * * * xF_didi_Sign.py
 new Env('滴滴app积分签到+抽奖');
 
+updata:11-15
+内容：无需抓取抽奖lid。但是是否抽奖变量保留
+
 
 ****************滴滴出行APP*******************
 
@@ -35,7 +38,6 @@ cron时间填写：22 7,10 * * *
 
 
 Didi_jifen_token = ''
-lid= ''
 do_lottery = 'false'
 
 
@@ -116,37 +118,23 @@ def getEnvs(label):
 
 ##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 
-# with open(path, "r+", encoding="utf-8") as f:
-#    ck = f.read()
-#    tokens = ck
-#    if "Didi_jifen_token" in ck:
-#        r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
-#        tokens = r.findall(ck)
-#        tokens = tokens[0].split ('&')
-#        if len (tokens) == 1:
-#            Didi_jifen_token = tokens[0]
-#            tokens = ''
-#            # print(tokens)
-#            # tokens = cookies[3]
-#        else:
-#            pass
-#    printT ("已获取并使用ck环境 token")
+with open(path, "r+", encoding="utf-8") as f:
+   ck = f.read()
+   tokens = ck
+   if "Didi_jifen_token" in ck:
+       r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
+       tokens = r.findall(ck)
+       tokens = tokens[0].split ('&')
+       if len (tokens) == 1:
+           Didi_jifen_token = tokens[0]
+           tokens = ''
+           # print(tokens)
+           # tokens = cookies[3]
+       else:
+           pass
+   printT ("已获取并使用ck环境 token")
 
-# with open(path, "r+", encoding="utf-8") as f:
-#     ck = f.read()
-#     cookies = ck
-#     # if "DD_cookies" in ck:
-#     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-#     #     cookies = r.findall (ck)
-#     #     cookies = cookies[0].split('&')
-#     # if len(cookies) == 1:
-#     #     DD_cookies = cookies[0]
-#     #     cookies = ''
-#     # #     print(cookies)
-#     # #     cookies = cookies[3]
-#     # else:
-#     #     DD_cookies = cookies[0]
-#     printT ("已获取并使用ck环境 DD_cookies")
+
 
 ########################################################################
 
@@ -162,15 +150,10 @@ if "Didi_jifen_token" in os.environ:
 else:
     print("检查变量Didi_jifen_token是否已填写")
 
-if "lid" in os.environ:
-    lid = os.environ["lid"]
-    printT ("已获取并使用Env环境lid")
-else:
-    print("检查变量lid是否已填写")
 
 if "do_lottery" in os.environ:
     do_lottery = os.environ["do_lottery"]
-    printT ("do_lottery为true，参与积分抽奖活动")
+    printT ("已获取并使用Env环境do_lottery")
 else:
     print("do_lottery为fasle，不进行积分抽奖")
 
@@ -248,17 +231,6 @@ if tokens != '':
         else:
             pass
 
-# if cookies != '':
-#     # if "DD_cookies" in cookies:
-#     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-#     #     cookies = r.findall (ck)
-#         cookies = cookies.split ('&')
-#         # print(cookies)
-#         if len (cookies) == 1:
-#             DD_cookies = cookies[0]
-#
-#         else:
-#             pass
 
 #获取个人信息
 def get_activity_info(Didi_jifen_token,day,accout):
@@ -300,7 +272,7 @@ def get_activity_info(Didi_jifen_token,day,accout):
         print (e)
         msg ("【账号{0}】获取签到信息失败,可能是cookies过期".format (accout))
 
-#积分信息
+#获取积分
 def reward(Didi_jifen_token,day,numb,accout):
     try:
         nowtime = int (round (time.time () * 1000))
@@ -333,15 +305,37 @@ def reward(Didi_jifen_token,day,numb,accout):
             msg("【账号{2}】本次签到获取{0},账号共有{1}积分".format(reward,total_reward,accout))
     except Exception as e:
         print(e)
-        msg ("【账号{0}】获取积分信息失败,可能是cookies过期".format(accout))
+        msg ("【账号{0}】获取获取积分失败,可能是cookies过期".format(accout))
+
+#获取抽奖lid
+def get_lid():
+    try:
+        nowtime = int (round (time.time () * 1000))     #13位
+        info_url = f'https://dpubstatic.udache.com/static/dpubimg/dpub2_project_1261596/index_bbnGG.json?r=0.07526362250404772?ts={nowtime}&app_id=common'
+        info_headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Accept": "application/json, text/plain, */*",
+            "Referer": "https://page.udache.com/",
+            "Host": "dpubstatic.udache.com",
+            "Origin": "https://page.udache.com",
+        }
+        response = requests.get(url=info_url, headers=info_headers, verify=False)
+        result = response.json()
+        # print(result)
+        activity_id = result['activity_id']
+        return activity_id
+    except Exception as e:
+        print(e)
+        msg ("【账号{0}】获取获取抽奖lid失败,可能是cookies过期".format(accout))
+
 
 #抽奖活动
-def do_Lottery(Didi_jifen_token,accout):
+def do_Lottery(Didi_jifen_token,activity_id,accout):
     try:
         flag = 6
         # nowtime = int (round (time.time () * 1000))
         while True:
-            do_Lottery_url = f'https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid={lid}&token={Didi_jifen_token}&env=%7B%22longitude%22%3A113.81251003689236%2C%22latitude%22%3A23.016395128038194%2C%22cityId%22%3A%2221%22%2C%22deviceId%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22ddfp%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22appVersion%22%3A%226.2.4%22%2C%22wifi%22%3A1%2C%22model%22%3A%22iPhone%2011%22%2C%22timeCost%22%3A637425%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2015_0%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Mobile%2F15E148%20didi.passenger%2F6.2.4%20FusionKit%2F1.2.20%20OffMode%2F0%22%2C%22isHitButton%22%3Atrue%7D'
+            do_Lottery_url = f'https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid={activity_id}&token={Didi_jifen_token}&env=%7B%22longitude%22%3A113.81251003689236%2C%22latitude%22%3A23.016395128038194%2C%22cityId%22%3A%2221%22%2C%22deviceId%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22ddfp%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22appVersion%22%3A%226.2.4%22%2C%22wifi%22%3A1%2C%22model%22%3A%22iPhone%2011%22%2C%22timeCost%22%3A637425%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2015_0%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Mobile%2F15E148%20didi.passenger%2F6.2.4%20FusionKit%2F1.2.20%20OffMode%2F0%22%2C%22isHitButton%22%3Atrue%7D'
             do_Lottery_headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Accept-Encoding": "gzip, deflate, br",
@@ -366,8 +360,9 @@ def do_Lottery(Didi_jifen_token,accout):
                 break
             elif code == 20008:
                 msg("【账号{}】抽奖lid过期，请重新抓包更新".format(accout))
+                break
             elif code == 20010:
-                msg("【账号{}】积分不足9分，跳出抽奖环节".format(accout))
+                msg ("【账号{}】积分不足9分，跳出抽奖环节".format (accout))
                 break
             else:
                 draw_times = result['data']['userinfo']['draw_times']
@@ -400,11 +395,12 @@ if __name__ == '__main__':
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
             numb = get_activity_info (i, day,accout)
             reward (i, day,numb,accout)
+            activity_id = get_lid()
             if do_lottery == 'true':
-                do_Lottery (i,accout)
+                do_Lottery (i,activity_id,accout)
             accout += 1
 
-    if "签到" in msg_info:
-        send("滴滴积分签到", msg_info)
-    elif "过期" in msg_info:
-        send("滴滴积分签到", msg_info)
+    # if "签到" in msg_info:
+    #     send("滴滴积分签到", msg_info)
+    # elif "过期" in msg_info:
+    #     send("滴滴积分签到", msg_info)
