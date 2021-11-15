@@ -26,7 +26,7 @@ updata:11-15
 其中URL中的9612，这数字是会变的，以前每期签到都不一样，但是你按照我的路径去找，就能找到token
 搜索signin_user_token=，就是你需要的token。
 
-如果想用积分抽奖，在青龙变量中添加变量do_lottery=true，默认是false。为什么要默认不抽奖呢，因为抽奖周期为7天，每周一抽奖id都会过期，都要重新抓包。方便有些人觉得麻烦，不想参加抽奖的。
+如果想用积分抽奖，在青龙变量中添加变量do_lottery=true，默认是false。
 
 抓包方法，就是抓包后，自行抽奖一次，抓包路径：https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid=f5nb7vaf&xxxxx
 这个lid=f5nb7vaf就是周期抽奖的ID，多账号只需要抓一个号就行了，通用的。
@@ -118,21 +118,21 @@ def getEnvs(label):
 
 ##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 
-with open(path, "r+", encoding="utf-8") as f:
-   ck = f.read()
-   tokens = ck
-   if "Didi_jifen_token" in ck:
-       r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
-       tokens = r.findall(ck)
-       tokens = tokens[0].split ('&')
-       if len (tokens) == 1:
-           Didi_jifen_token = tokens[0]
-           tokens = ''
-           # print(tokens)
-           # tokens = cookies[3]
-       else:
-           pass
-   printT ("已获取并使用ck环境 token")
+# with open(path, "r+", encoding="utf-8") as f:
+#    ck = f.read()
+#    tokens = ck
+#    if "Didi_jifen_token" in ck:
+#        r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
+#        tokens = r.findall(ck)
+#        tokens = tokens[0].split ('&')
+#        if len (tokens) == 1:
+#            Didi_jifen_token = tokens[0]
+#            tokens = ''
+#            # print(tokens)
+#            # tokens = cookies[3]
+#        else:
+#            pass
+#    printT ("已获取并使用ck环境 token")
 
 
 
