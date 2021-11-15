@@ -382,8 +382,9 @@ if __name__ == '__main__':
     if Didi_jifen_token != '':
         numb = get_activity_info(Didi_jifen_token,day,accout)
         reward(Didi_jifen_token,day,numb,accout)
+        activity_id = get_lid()
         if do_lottery == 'true':
-            do_Lottery (Didi_jifen_token,accout)
+            do_Lottery (Didi_jifen_token,activity_id,accout)
 
     elif tokens == '' :
         print("检查变量Didi_jifen_token，DD_cookies是否已填写")
