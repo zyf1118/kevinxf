@@ -46,8 +46,8 @@ do_lottery = 'false'
 
 '''
 tokens = []
-
-
+accout = 1
+id = ''
 try:
     import requests
     import json,sys,os,re
@@ -65,24 +65,8 @@ mor_time ='08:00:00.00000000'
 moringtime = '{} {}'.format (today, mor_time)
 
 
-day = time.localtime()
-
-day = time.strftime("%w",day)         #今天星期几，0代表星期天
 
 
-id = ''
-
-day = int(day)
-if int(day) == 0:
-    day =int(day) + 7
-if day == 1 or day == 2:
-    id = '7elwqp08'
-elif day == 3:
-    id = '40n3es64'
-elif day == 4 or day == 5 or day == 6:
-    id = 'fcn3jv43'
-else:
-    id = '5dlwo7c6'
 
 
 
@@ -228,42 +212,79 @@ if tokens != '':
         else:
             pass
 
+#获取签到ID
+def get_id():
+    try:
+        day = time.localtime ()
+        day = time.strftime ("%w", day)  # 今天星期几，0代表星期天
+        day = int (day)
+        url = f'https://dpubstatic.udache.com/static/dpubimg/9755028658f0cb006cb11685879e01ab/index.html?channel_id=72%2C278%2C80537&dchn=K0gkogR&entrance_channel=7227880537&prod_key=custom&xbiz=&xenv=passenger&xpsid=9ef4ad1c8e3d42fab6d9823bc4f9838b&xpsid_from=&xpsid_root=9ef4ad1c8e3d42fab6d9823bc4f9838b&xsc=&xspm_from='
+        heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Referer": "https://page.udache.com/",
+            "Host": "dpubstatic.udache.com",
+            "Origin": "https://dpubstatic.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+        }
+        response = requests.get (url=url, headers=heards,verify=False)
+        result = response.content.decode('utf-8')
+        # print (result)
+        r = re.compile (r',"activity_id":"(.*?)","dpubConfigId":5702}', re.M | re.S | re.I)
+        numb = r.findall (result)
+        numb = numb[0]
+        # print(numb)
+        if int (day) == 0:
+            day = int (day) + 7
+        if day == 1 or day == 2:
+            r = re.compile (r'{"day":1,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
+            id = r.findall (result)
+            id = id[0]
+        elif day == 3:
+            r = re.compile (r'{"day":3,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
+            id = r.findall (result)
+            id = id[0]
+        elif day == 4 or day == 5 or day == 6:
+            r = re.compile (r'{"day":4,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
+            id = r.findall (result)
+            id = id[0]
+        else:
+            r = re.compile (r'{"day":7,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
+            id = r.findall (result)
+            id = id[0]
+        return numb,id,day
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】获取签到ID失败,可能是表达式错误".format (accout))
 
 #获取个人信息
-def get_activity_info(Didi_jifen_token,day,accout):
-    numb = 9608
+def get_activity_info(Didi_jifen_token,day,numb,accout):
     try:
-        while True:
-            do_sign_url = f'https://gsh5act.xiaojukeji.com/dpub_data_api/activities/{numb}/signin'
-            data = r'{"signin_day":' + f"{day}" + r',"signin_type":0,"signin_user_token":' + '"' + f'{Didi_jifen_token}' + r'"}'
-            # print(data)
-            do_sign_heards = {
-                "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Connection": "keep-alive",
-                "Accept": "*/*",
-                "Referer": "https://dpubstatic.udache.com/",
-                "Host": "gsh5act.xiaojukeji.com",
-                "Origin": "https://dpubstatic.udache.com",
-                "Accept-Language": "zh-cn",
-            }
-            response = requests.post (url=do_sign_url, headers=do_sign_heards, data=data, verify=False)
-            do_sign_ = response.json ()
-            # print (do_sign_)
-            code = do_sign_['errmsg']
-            if "已结束" in code:
-                numb = numb + 2
-                if numb == 10000:
-                    msg("【账号{}】获取签到信息异常，自行抓包查看".format(accout))
-            elif "已经" in code:
-                print (do_sign_)
-                print(numb)
-                msg ("【账号{}】今日已签到，跳过签到环节".format(accout))
-                return numb
-            else:
-                print (do_sign_)
-                print(numb)
-                return numb
+        do_sign_url = f'https://gsh5act.xiaojukeji.com/dpub_data_api/activities/{numb}/signin'
+        data = r'{"signin_day":' + f"{day}" + r',"signin_type":0,"signin_user_token":' + '"' + f'{Didi_jifen_token}' + r'"}'
+        # print(data)
+        do_sign_heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Accept": "*/*",
+            "Referer": "https://dpubstatic.udache.com/",
+            "Host": "gsh5act.xiaojukeji.com",
+            "Origin": "https://dpubstatic.udache.com",
+            "Accept-Language": "zh-cn",
+        }
+        response = requests.post (url=do_sign_url, headers=do_sign_heards, data=data, verify=False)
+        do_sign_ = response.json ()
+        # print (do_sign_)
+        code = do_sign_['errmsg']
+        if "已结束" in code:
+            msg("【账号{}】获取签到ID异常".format(accout))
+        elif "已经" in code:
+            print (do_sign_)
+            msg ("【账号{}】今日已签到，跳过签到环节".format(accout))
+
 
     except Exception as e:
         print (e)
@@ -379,10 +400,11 @@ if __name__ == '__main__':
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print("============执行滴滴积分签到脚本==============")
     print(Didi_jifen_token)
+    numb,id,day = get_id()
     if Didi_jifen_token != '':
-        numb = get_activity_info(Didi_jifen_token,day,accout)
+        get_activity_info(Didi_jifen_token,day,numb,accout)
         reward(Didi_jifen_token,day,numb,accout)
-        activity_id = get_lid()
+        activity_id = get_lid ()
         if do_lottery == 'true':
             do_Lottery (Didi_jifen_token,activity_id,accout)
 
@@ -391,14 +413,14 @@ if __name__ == '__main__':
     elif len(tokens) > 1 :
         accout = 1
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
-            numb = get_activity_info (i, day,accout)
+            get_activity_info (i, day,numb,accout)
             reward (i, day,numb,accout)
             activity_id = get_lid()
             if do_lottery == 'true':
                 do_Lottery (i,activity_id,accout)
             accout += 1
 
-    # if "签到" in msg_info:
-    #     send("滴滴积分签到", msg_info)
-    # elif "过期" in msg_info:
-    #     send("滴滴积分签到", msg_info)
+    if "签到" in msg_info:
+        send("滴滴积分签到", msg_info)
+    elif "过期" in msg_info:
+        send("滴滴积分签到", msg_info)
