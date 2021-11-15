@@ -28,9 +28,6 @@ updata:11-15
 
 如果想用积分抽奖，在青龙变量中添加变量do_lottery=true，默认是false。
 
-抓包方法，就是抓包后，自行抽奖一次，抓包路径：https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid=f5nb7vaf&xxxxx
-这个lid=f5nb7vaf就是周期抽奖的ID，多账号只需要抓一个号就行了，通用的。
-青龙变量中添加lid=f5nb7vaf即可。
 
 cron时间填写：22 7,10 * * *
 
