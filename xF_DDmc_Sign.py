@@ -42,8 +42,8 @@ DD_cookies = ''
 
 
 '''
-tokens = []
-cookies = []
+tokens = ''
+cookies = ''
 
 try:
     import requests
