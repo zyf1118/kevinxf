@@ -246,8 +246,12 @@ def get_id():
             r = re.compile (r'{"day":3,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
             id = r.findall (result)
             id = id[0]
-        elif day == 4 or day == 5 or day == 6:
+        elif day == 4:
             r = re.compile (r'{"day":4,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
+            id = r.findall (result)
+            id = id[0]
+        elif day == 5 or day == 6:
+            r = re.compile (r'{"day":5,"prize_type":2,"prize_id":"(.*?)"', re.M | re.S | re.I)
             id = r.findall (result)
             id = id[0]
         else:
