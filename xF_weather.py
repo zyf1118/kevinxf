@@ -102,7 +102,7 @@ if "city_numb" in os.environ:
     else:
         city_numb = os.environ["city_numb"]
 else:
-    print("检查变量DD_token是否已填写")
+    print("检查变量city_numb是否已填写")
 
 
 
