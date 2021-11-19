@@ -45,7 +45,7 @@ do_lottery = 'false'
 
 
 '''
-tokens = []
+tokens = ''
 accout = 1
 id = ''
 try:
