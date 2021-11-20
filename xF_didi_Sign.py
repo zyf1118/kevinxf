@@ -321,6 +321,8 @@ def reward(Didi_jifen_token,day,numb,accout):
         flag = list['errmsg']
         if "签到当天奖励" in flag:
             pass
+        elif "未完成签到次数" in flag:
+            msg("请从星期一开始运行此脚本，请看脚本最上面的说明")
         else:
             reward = list['lottery']['prize']['name']
             # print(reward)
