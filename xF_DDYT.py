@@ -42,8 +42,8 @@ DD_cookies = ''
 
 
 '''
-tokens = []
-cookies = []
+tokens =''
+cookies = ''
 
 try:
     import requests
@@ -125,7 +125,7 @@ def getEnvs(label):
 
 if "DD_token" in os.environ:
     print(len (os.environ["DD_token"]))
-    if len (os.environ["DD_token"]) > 10:
+    if len (os.environ["DD_token"]) > 24:
         tokens = os.environ["DD_token"]
         # temporary = cookies.split ('&')
         # cookies = temporary[0]
@@ -137,7 +137,7 @@ else:
 
 if "DD_cookies" in os.environ:
     print(len (os.environ["DD_cookies"]))
-    if len (os.environ["DD_cookies"]) > 10:
+    if len (os.environ["DD_cookies"]) > 43:
         cookies = os.environ["DD_cookies"]
         # temporary = cookies.split ('&')
         # cookies = temporary[0]
