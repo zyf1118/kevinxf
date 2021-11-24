@@ -19,6 +19,8 @@ new Env('滴滴出行积分派兑');
 【教程】：需要自行用手机抓取Didi_jifen_token。
 在青龙变量中添加变量Didi_jifen_token
 多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token=xxxxx&xxxx
+Didi_jifen_token如何抓，请看didi_Sign说明
+
 
 手机抓包后，点击一下要兑换的优惠券，查看URL，https://magma.xiaojukeji.com/sessionActivity/info?
 在JSON中就搜索你要抢券的名字，例如9折快车券，发现good_name："9折快车券"，再往下一点，就会有个id="176234",其中这个数字就是你要兑换的优惠券id，填写至青龙变量即可
@@ -30,8 +32,7 @@ new Env('滴滴出行积分派兑');
 
 cron时间填写：59 8,14 * * *
 
-这个goods_id是都会变化的，所以要抢的时候再去抓包。
-
+特别说明：本脚本需要从星期一签到，作为第一天签到，如果今天是星期二，你之前没签到过，那脚本是不能签到的。
 
 '''
 
@@ -81,7 +82,7 @@ if nowtime > moringtime and nowtime < middle_time:
     #结束时间
     endtime='10:00:30.00000000'
 elif nowtime > middle_time and nowtime < afternoon_time:
-    开始抢兑时间
+    #开始抢兑时间
     starttime = '14:59:58.00000000'
     # 结束时间
     endtime = '15:00:30.00000000'
@@ -182,9 +183,11 @@ if "DiDi_accout" in os.environ:
     if tokens != '':
         DiDi_accout = int(DiDi_accout) - 1
         tokens = tokens[DiDi_accout]
-    printT ("已获取并使用Env环境goods_id")
+    printT ("已获取并使用Env环境DiDi_accout")
 else:
     print("DiDi_accout未填写")
+
+
 
 ## 获取通知服务
 class msg(object):
@@ -260,34 +263,6 @@ if tokens != '':
         else:
             pass
 
-#获取兑换商品ID
-def get_id(Didi_jifen_token):
-    try:
-        day = time.localtime ()
-        day = time.strftime ("%w", day)  # 今天星期几，0代表星期天
-        day = int (day)
-        url = f'https://magma.xiaojukeji.com/sessionActivity/info?source_id=z10000&partition_id=1002&pid=10004&token={Didi_jifen_token}&city_id=21&cityId=21&lat=23.016285807291666&lng=113.81245442708334&wsgsig=dd03-%2Fs04MpMbxkNVEprFTB%2Bu9vO0pdosBu9FplJoF3eApdotEyUMxatvaR5ayUNtE%2BT0PeNnbvA9wlDqb3r4ShbQF49gzEGVEuV8Zk8ZcvSbQkKlEp2CSrjycRMEQa9'
-        heards = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Connection": "keep-alive",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Referer": "https://page.udache.com/",
-            "Host": "magma.xiaojukeji.com",
-            "Origin": "https://page.udache.com",
-            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-        }
-        data = f'source_id=z10000&partition_id=1002&pid=10004&token={Didi_jifen_token}&city_id=21&cityId=21&lat=23.01633110894097&lng=113.81249403211805&goods_id=176234&pay_number=1&env=%7B%22latitude%22:%2223.01633110894097%22,%22longitude%22:%22113.81249403211805%22,%22city_id%22:%2221%22,%22ddfp%22:%2299d8f16bacaef4eef6c151bcdfa095f0%22,%22fromPage%22:%22https:%2F%2Fpage.udache.com%2Fut-mall%2Fxmall%2Findex.html%3Fchannel_id%3D72%252C278%252C80505%26entrance_channel%3D7227880505%26xsc%3D%26dchn%3D6xzREaa%26prod_key%3Dcustom%26xbiz%3D%26xpsid%3D5ea8b7c9f92f4ed3bbd374f11673a5f5%26xenv%3Dpassenger%26xspm_from%3D%26xpsid_from%3D%26xpsid_root%3D5ea8b7c9f92f4ed3bbd374f11673a5f5%26appid%3D10000%26lang%3Dzh-CN%26clientType%3D1%26trip_cityid%3D21%26datatype%3D101%26imei%3D99d8f16bacaef4eef6c151bcdfa095f0%26channel%3D102%26appversion%3D6.2.4%26trip_country%3DCN%26TripCountry%3DCN%26lng%3D113.812494%26maptype%3Dsoso%26os%3DiOS%26utc_offset%3D480%26location_cityid%3D21%26access_key_id%3D1%26deviceid%3D99d8f16bacaef4eef6c151bcdfa095f0%26cityid%3D21%26location_country%3DCN%26phone%3DUCvMSok42%2B5%2BtfafkxMn%2BA%253D%253D%26model%3DiPhone11%26lat%3D23.016331%26origin_id%3D1%26client_type%3D1%26terminal_id%3D1%26sig%3D1b0201bd0b2a72e15601472602f5c0048bb4062a%23%2Forder-virtual%3Fid%3D176234%26channel_id%3D72,278,80505%26entrance_channel%3D7227880505%26xsc%3D%26dchn%3D6xzREaa%26prod_key%3Dcustom%26xbiz%3D%26xpsid%3D5ea8b7c9f92f4ed3bbd374f11673a5f5%26xenv%3Dpassenger%26xspm_from%3D%26xpsid_from%3D%26xpsid_root%3D5ea8b7c9f92f4ed3bbd374f11673a5f5%26appid%3D10000%26lang%3Dzh-CN%26clientType%3D1%26trip_cityid%3D21%26datatype%3D101%26imei%3D99d8f16bacaef4eef6c151bcdfa095f0%26channel%3D102%26appversion%3D6.2.4%26trip_country%3DCN%26TripCountry%3DCN%26lng%3D113.812494%26maptype%3Dsoso%26os%3DiOS%26utc_offset%3D480%26location_cityid%3D21%26access_key_id%3D1%26deviceid%3D99d8f16bacaef4eef6c151bcdfa095f0%26cityid%3D21%26location_country%3DCN%26phone%3DUCvMSok42%252B5%252BtfafkxMn%252BA%253D%253D%26model%3DiPhone11%26lat%3D23.016331%26origin_id%3D1%26client_type%3D1%26terminal_id%3D1%26sig%3D1b0201bd0b2a72e15601472602f5c0048bb4062a%22,%22partition_id%22:%221002%22,%22openId%22:%22%22,%22isOpenWeb%22:true,%22isHitButton%22:true,%22appid%22:10000%7D'
-        response = requests.get (url=url, headers=heards,verify=False)
-        result = response.json()
-        # print (result)
-        goods_id = result['data']['list'][0]['goods_ids']
-
-        return numb,id,day
-    except Exception as e:
-        print (e)
-        msg ("【账号{0}】获取签到ID失败,可能是表达式错误".format (DiDi_accout))
-
 
 #兑换
 def do_Lottery(Didi_jifen_token,goods_id,DiDi_accout):
@@ -346,7 +321,7 @@ if __name__ == '__main__':
     elif tokens == '' :
         print("检查变量Didi_jifen_token是否已填写")
     else:
-            msg (f"单账号兑换模式，兑换【账号{DiDi_accout+1}】")
+            msg (f"单账号兑换模式，兑换【账号{DiDi_accout}】")
             if goods_id != '':
                 do_Lottery (tokens, goods_id, DiDi_accout)
             else:
