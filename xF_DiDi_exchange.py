@@ -177,6 +177,7 @@ if "goods_id" in os.environ:
     printT ("已获取并使用Env环境goods_id")
 else:
     print("goods_id未填写，不兑换")
+    exit(0)
 
 if "DiDi_accout" in os.environ:
     DiDi_accout = os.environ["DiDi_accout"]
