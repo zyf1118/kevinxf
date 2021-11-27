@@ -80,7 +80,7 @@ if nowtime > moringtime and nowtime < middle_time:
     #开始抢兑时间
     starttime='08:59:58.00000000'
     #结束时间
-    endtime='10:00:30.00000000'
+    endtime='09:00:30.00000000'
 elif nowtime > middle_time and nowtime < afternoon_time:
     #开始抢兑时间
     starttime = '14:59:58.00000000'
