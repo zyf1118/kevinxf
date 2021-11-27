@@ -28,7 +28,7 @@ Didi_jifen_token如何抓，请看didi_Sign说明
 
 在青龙变量中添加变量goods_id='176234'，其中这个数字就是你刚刚抓包要兑换的优惠券id。
 
-如果是多账号，在青龙变量中添加变量DiDi_accout="1"，就是账号1抢优惠券，填2，就是账号2抢券。目前只支持单个号抢，后续考虑增加并发抢券功能。
+如果是多账号，在青龙变量中添加变量DiDi_accout="1"，就是账号1抢优惠券，填2，就是账号2抢券。目前只支持单个号抢，后续考虑增加并发抢券功能。默认抢【账号1】
 
 cron时间填写：59 8,14 * * *
 
@@ -38,7 +38,7 @@ cron时间填写：59 8,14 * * *
 
 
 Didi_jifen_token = ''
-DiDi_accout = ''
+DiDi_accout = '1'
 
 
 
@@ -174,7 +174,7 @@ else:
 
 if "goods_id" in os.environ:
     goods_id = os.environ["goods_id"]
-    printT ("已获取并使用Env环境goods_id")
+    printT (f"已获取并使用Env环境goods_id={goods_id}")
 else:
     print("goods_id未填写，不兑换")
     exit(0)
@@ -184,9 +184,9 @@ if "DiDi_accout" in os.environ:
     if tokens != '':
         DiDi_accout = int(DiDi_accout) - 1
         tokens = tokens[DiDi_accout]
-    printT ("已获取并使用Env环境DiDi_accout")
+    printT (f"已获取并使用Env环境DiDi_accout，【账号{DiDi_accout}】抢券")
 else:
-    print("DiDi_accout未填写")
+    print("DiDi_accout未填写，默认【账号1】抢券")
 
 
 
@@ -338,7 +338,7 @@ if __name__ == '__main__':
 
     if "兑换成功" in msg_info:
         send("滴滴积分兑换", msg_info)
-    elif "不兑换" in msg_info:
-        send("滴滴积分兑换", msg_info)
-    elif "秒杀商品" in msg_info:
+    if "秒杀商品" in msg_info:
+        send ("滴滴积分兑换", msg_info)
+    if "过期" in msg_info:
         send ("滴滴积分兑换", msg_info)
