@@ -11,8 +11,6 @@ Date: 2021-11-4
 cron: 22 5,10 * * * xF_didi_Sign.py
 new Env('滴滴app积分签到+抽奖');
 
-updata:11-15
-内容：无需抓取抽奖lid。但是是否抽奖变量保留
 
 
 ****************滴滴出行APP*******************
@@ -27,7 +25,13 @@ updata:11-15
 搜索signin_user_token=，就是你需要的token。
 
 如果想用积分抽奖，在青龙变量中添加变量do_lottery=true，默认是false。
+抽奖id如何抓取：
+手机抓包后，点击我的，点击积分商城，再点击抽奖赚积分，进入到抽奖界面后，查看URL，https://dpubstatic.udache.com/static/dpubimg/dpub2_project_xxxxx/index_xxxxx.json?r=0.6781450893324913?ts=1637987237802&app_id=common
+xxxx是会变的，按路径找就行了。然后查看josn里面的activity_id，就是lottery_lid。
 
+青龙添加变量lottery_lid='8fnkiv4b'，8fnkiv4b这个就是上面抓包得到的activity_id。
+
+这个抽奖的lottery_lid，需要每周一自行抓包更新才能抽，所以我设置了是否抽奖的开关。
 
 cron时间填写：22 7,10 * * *
 
@@ -38,7 +42,7 @@ cron时间填写：22 7,10 * * *
 
 Didi_jifen_token = ''
 do_lottery = 'false'
-
+lottery_lid = ''
 
 '''
 
@@ -139,6 +143,11 @@ if "do_lottery" in os.environ:
     printT ("已获取并使用Env环境do_lottery")
 else:
     print("do_lottery为fasle，不进行积分抽奖")
+
+if "lottery_lid" in os.environ:
+    lottery_lid = os.environ["lottery_lid"]
+    printT ("已获取并使用Env环境lottery_lid")
+
 
 ## 获取通知服务
 class msg(object):
@@ -283,6 +292,7 @@ def get_id(url_id):
 #获取个人信息
 def get_activity_info(Didi_jifen_token,day,numb,accout):
     try:
+
         do_sign_url = f'https://gsh5act.xiaojukeji.com/dpub_data_api/activities/{numb}/signin'
         data = r'{"signin_day":' + f"{day}" + r',"signin_type":0,"signin_user_token":' + '"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
@@ -361,7 +371,7 @@ def reward(Didi_jifen_token,day,numb,accout):
 def get_lid():
     try:
         nowtime = int (round (time.time () * 1000))     #13位
-        info_url = f'https://dpubstatic.udache.com/static/dpubimg/dpub2_project_1261596/index_bbnGG.json?r=0.07526362250404772?ts={nowtime}&app_id=common'
+        info_url = f'https://dpubstatic.udache.com/static/dpubimg/dpub2_project_1265696/index_bbnGG.json?r=0.07526362250404772?ts={nowtime}&app_id=common'
         info_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Accept": "application/json, text/plain, */*",
@@ -380,12 +390,12 @@ def get_lid():
 
 
 #抽奖活动
-def do_Lottery(Didi_jifen_token,activity_id,accout):
+def do_Lottery(Didi_jifen_token,lottery_lid,accout):
     try:
         flag = 6
         # nowtime = int (round (time.time () * 1000))
         while True:
-            do_Lottery_url = f'https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid={activity_id}&token={Didi_jifen_token}&env=%7B%22longitude%22%3A113.81251003689236%2C%22latitude%22%3A23.016395128038194%2C%22cityId%22%3A%2221%22%2C%22deviceId%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22ddfp%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22appVersion%22%3A%226.2.4%22%2C%22wifi%22%3A1%2C%22model%22%3A%22iPhone%2011%22%2C%22timeCost%22%3A637425%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2015_0%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Mobile%2F15E148%20didi.passenger%2F6.2.4%20FusionKit%2F1.2.20%20OffMode%2F0%22%2C%22isHitButton%22%3Atrue%7D'
+            do_Lottery_url = f'https://bosp-api.xiaojukeji.com/bosp-api/lottery/draw?lid={lottery_lid}&token={Didi_jifen_token}&env=%7B%22longitude%22%3A113.81251003689236%2C%22latitude%22%3A23.016395128038194%2C%22cityId%22%3A%2221%22%2C%22deviceId%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22ddfp%22%3A%2299d8f16bacaef4eef6c151bcdfa095f0%22%2C%22appVersion%22%3A%226.2.4%22%2C%22wifi%22%3A1%2C%22model%22%3A%22iPhone%2011%22%2C%22timeCost%22%3A637425%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2015_0%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Mobile%2F15E148%20didi.passenger%2F6.2.4%20FusionKit%2F1.2.20%20OffMode%2F0%22%2C%22isHitButton%22%3Atrue%7D'
             do_Lottery_headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Accept-Encoding": "gzip, deflate, br",
@@ -434,13 +444,14 @@ if __name__ == '__main__':
     print(Didi_jifen_token)
     url_id = get_url ()
     numb,id,day = get_id(url_id)
+    print(numb)
     numb = 9620
     if Didi_jifen_token != '':
         get_activity_info(Didi_jifen_token,day,numb,accout)
         reward(Didi_jifen_token,day,numb,accout)
-        activity_id = get_lid ()
+        # activity_id = get_lid ()
         if do_lottery == 'true':
-            do_Lottery (Didi_jifen_token,activity_id,accout)
+            do_Lottery (Didi_jifen_token,lottery_lid,accout)
 
     elif tokens == '' :
         print("检查变量Didi_jifen_token，DD_cookies是否已填写")
@@ -449,9 +460,9 @@ if __name__ == '__main__':
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
             get_activity_info (i, day,numb,accout)
             reward (i, day,numb,accout)
-            activity_id = get_lid()
+            # activity_id = get_lid()
             if do_lottery == 'true':
-                do_Lottery (i,activity_id,accout)
+                do_Lottery (i,lottery_lid,accout)
             accout += 1
 
     if "签到" in msg_info:
