@@ -102,7 +102,7 @@ path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 qgtime = '{} {}'.format (today, starttime)
-qgendtime = '{} {}'.format (tomorrow, endtime)
+qgendtime = '{} {}'.format (today, endtime)
 
 
 
@@ -150,7 +150,7 @@ def getEnvs(label):
 #            Didi_jifen_token = tokens[0]
 #            tokens = ''
 #            # print(tokens)
-#            # tokens = cookies[3]
+#            # tokens = token[3]
 #        else:
 #            pass
 #    printT ("已获取并使用ck环境 token")
@@ -164,7 +164,7 @@ if "Didi_jifen_token" in os.environ:
     if len (os.environ["Didi_jifen_token"]) > 419:
         tokens = os.environ["Didi_jifen_token"]
         # tokens = tokens.split ('&')
-        # cookies = temporary[0]
+        # token = temporary[0]
         printT ("已获取并使用Env环境Didi_jifen_token")
     else:
         Didi_jifen_token = os.environ["Didi_jifen_token"]
@@ -293,19 +293,21 @@ def do_Lottery(Didi_jifen_token,goods_id,DiDi_accout):
                 errmsg = result['errmsg']
                 is_started = result['data']['is_started']
                 is_repeat = result['data']['is_repeat']
-                if errmsg == 'ok' and is_started == 1 and is_repeat == 0:
+                is_soldout = result['data']['is_soldout']
+                if errmsg == 'ok' and is_started == 1 and is_repeat == 0 and is_soldout == 1:
                     msg("【账号{}】兑换成功".format(DiDi_accout))
                     break
                 elif errmsg == 'ok' and is_started == 1 and is_repeat == 1:
                     msg("秒杀商品每个账号每天限购1次")
                     break
                 elif nowtime > qgendtime:
-                    msg("【账号{0}】兑换失败，优惠券被抢空了".format(DiDi_accout))
+                    if is_soldout == 0:
+                        msg("【账号{0}】兑换失败，优惠券被抢空了，又或者是未到抢券场次".format(DiDi_accout))
                     break
 
     except Exception as e:
         print(e)
-        msg ("【账号{0}】兑换失败,可能是cookies过期".format(DiDi_accout))
+        msg ("【账号{0}】兑换失败,可能是token过期".format(DiDi_accout))
 
 
 if __name__ == '__main__':
@@ -324,6 +326,7 @@ if __name__ == '__main__':
     else:
             msg (f"单账号兑换模式，兑换【账号{DiDi_accout}】")
             if goods_id != '':
+                tokens = tokens[int(DiDi_accout)-1]
                 do_Lottery (tokens, goods_id, DiDi_accout)
             else:
                 msg ("goods_id未填写，不兑换")
