@@ -52,7 +52,7 @@ lottery_lid = ''
 
 '''
 tokens =''
-accout = 1
+account = 1
 id = ''
 try:
     import requests
@@ -224,18 +224,56 @@ if tokens != '':
         else:
             pass
 
+#获取v.didi.cn的url
+def get_v_url(Didi_jifen_token):
+    nowtime = int (round (time.time () * 1000))
+    url = f'https://common.diditaxi.com.cn/common/v5/usercenter/me?_t={nowtime}&access_key_id=1&appversion=6.2.4&channel=102&city_id=21&datatype=101&imei=99d8f16bacaef4eef6c151bcdfa095f0&lang=zh-CN&maptype=soso&model=iPhone&networkType=WIFI&os=15.0&sig=c783e6e425a59349309ad10a4c1843a54fc9e82c&terminal_id=1&token={Didi_jifen_token}&v6x_version=1'
+    heards = {
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+    }
+    response = requests.get (url=url, headers=heards, verify=False)    #获取响应请求头
+    result = response.json()                                       #获取响应请求头
+    # print(result)
+    bottom_items = result['data']['cards'][3]['bottom_items']
+    for i in range(len(bottom_items)):
+        title = bottom_items[i]['title']
+        if "积分商城" in title:
+            link = bottom_items[i]['link']
+            # print(link)
+            v_url = link[18:]
+            print(v_url)
+    return v_url
+    # print(json.dumps(result,sort_keys=True,indent=4,ensure_ascii=False))         #格式化后的json
+
+#获取s.didi.cn的url
+def get_s_url():
+    nowtime = int (round (time.time () * 1000))
+    url = f'https://v.didi.cn/K0gkogR'
+    heards = {
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+    }
+    response = requests.head (url=url, headers=heards, verify=False)            #获取响应请求头
+    result = response.headers['Location']                                       #获取响应请求头
+    # print(result)
+    s_url = result[18:]
+    s_url = s_url[:6]
+    # print(s_url)
+    return s_url
+
+
 #获取url
-def get_url():
-    url = f'https://s.didi.cn/eDneXk?channel_id=72%2C278%2C80537&entrance_channel=7227880537&xsc=&dchn=K0gkogR&prod_key=custom&xbiz=&xpsid=cc2e4bc570d74253ad56b6c927473c0d&xenv=passenger&xspm_from=&xpsid_from=&xpsid_root=cc2e4bc570d74253ad56b6c927473c0d'
+def get_url(s_url):
+    url = f'https://s.didi.cn/{s_url}?channel_id=72%2C278%2C80537&entrance_channel=7227880537&xsc=&dchn=K0gkogR&prod_key=custom&xbiz=&xpsid=cc2e4bc570d74253ad56b6c927473c0d&xenv=passenger&xspm_from=&xpsid_from=&xpsid_root=cc2e4bc570d74253ad56b6c927473c0d'
     heards = {
         "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
     }
     response = requests.head (url=url, headers=heards, verify=False)    #获取响应请求头
     res = response.headers['location']                                  #获取响应请求头
-    print(res)
+    # print(res)
     r = re.compile (r'dpubimg/(.*?)/index.html', re.M | re.S | re.I)
     url_id = r.findall (res)
     url_id = url_id[0]
+    print(url_id)
     return url_id
 
 #获取签到ID
@@ -287,10 +325,10 @@ def get_id(url_id):
         return numb,id,day
     except Exception as e:
         print (e)
-        msg ("【账号{0}】获取签到ID失败,可能是表达式错误".format (accout))
+        msg ("【账号{0}】获取签到ID失败,可能是表达式错误".format (account))
 
 #获取个人信息
-def get_activity_info(Didi_jifen_token,day,numb,accout):
+def get_activity_info(Didi_jifen_token,day,numb,account):
     try:
 
         do_sign_url = f'https://gsh5act.xiaojukeji.com/dpub_data_api/activities/{numb}/signin'
@@ -308,21 +346,21 @@ def get_activity_info(Didi_jifen_token,day,numb,accout):
         }
         response = requests.post (url=do_sign_url, headers=do_sign_heards, data=data, verify=False)
         do_sign_ = response.json ()
-        # print (do_sign_)
+        print (do_sign_)
         code = do_sign_['errmsg']
         if "已结束" in code:
-            msg("【账号{}】获取签到ID异常".format(accout))
+            msg("【账号{}】获取签到ID异常".format(account))
         elif "已经" in code:
             print (do_sign_)
-            msg ("【账号{}】今日已签到，跳过签到环节".format(accout))
+            msg ("【账号{}】今日已签到，跳过签到环节".format(account))
 
 
     except Exception as e:
         print (e)
-        msg ("【账号{0}】获取签到信息失败,可能是cookies过期".format (accout))
+        msg ("【账号{0}】获取签到信息失败,可能是cookies过期".format (account))
 
 #获取积分
-def reward(Didi_jifen_token,day,numb,accout):
+def reward(Didi_jifen_token,day,numb,account):
 
     try:
         while True:
@@ -341,7 +379,7 @@ def reward(Didi_jifen_token,day,numb,accout):
                 "content-length":"272",
             }
             data = '{'+ f'"user_token":"{Didi_jifen_token}","signin_day":{day},"lottery_id":"{id}"' +'}'
-            # print(data)
+            print(data)
             response = requests.post(url=info_url, headers=info_headers, verify=False,data=data)
             list = response.json()
             print(list)
@@ -361,17 +399,17 @@ def reward(Didi_jifen_token,day,numb,accout):
                 # print(reward)
                 total_reward = list['lottery']['userinfo']['current_point']  #总积分
                 # print(total_reward)
-                msg("【账号{2}】本次签到获取{0},账号共有{1}积分".format(reward,total_reward,accout))
+                msg("【账号{2}】本次签到获取{0},账号共有{1}积分".format(reward,total_reward,account))
                 break
     except Exception as e:
         print(e)
-        msg ("【账号{0}】获取获取积分失败,可能是cookies过期".format(accout))
+        msg ("【账号{0}】获取获取积分失败,可能是cookies过期".format(account))
 
 #获取抽奖lid
 def get_lid():
     try:
         nowtime = int (round (time.time () * 1000))     #13位
-        info_url = f'https://dpubstatic.udache.com/static/dpubimg/dpub2_project_1265696/index_bbnGG.json?r=0.07526362250404772?ts={nowtime}&app_id=common'
+        info_url = f'https://dpubstatic.udache.com/static/dpubimg/dpub2_project_1275480/index_VYom0.json?r=0.07526362250404772?ts={nowtime}&app_id=common'
         info_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Accept": "application/json, text/plain, */*",
@@ -386,11 +424,11 @@ def get_lid():
         return activity_id
     except Exception as e:
         print(e)
-        msg ("【账号{0}】获取获取抽奖lid失败,可能是cookies过期".format(accout))
+        msg ("【账号{0}】获取获取抽奖lid失败,可能是cookies过期".format(account))
 
 
 #抽奖活动
-def do_Lottery(Didi_jifen_token,lottery_lid,accout):
+def do_Lottery(Didi_jifen_token,lottery_lid,account):
     try:
         flag = 6
         # nowtime = int (round (time.time () * 1000))
@@ -413,27 +451,27 @@ def do_Lottery(Didi_jifen_token,lottery_lid,accout):
             print(result)
             code = result['code']
             if code == 20003:
-                msg("【账号{}】抽奖次数已达上限，跳出抽奖环节".format(accout))
+                msg("【账号{}】抽奖次数已达上限，跳出抽奖环节".format(account))
                 break
             elif code == 20017:
-                msg("【账号{}】抽奖操作过频，稍后再试".format(accout))
+                msg("【账号{}】抽奖操作过频，稍后再试".format(account))
                 break
             elif code == 20008:
-                msg("【账号{}】抽奖lid过期，请重新抓包更新".format(accout))
+                msg("【账号{}】抽奖lid过期，请重新抓包更新".format(account))
                 break
             elif code == 20010:
-                msg ("【账号{}】积分不足9分，跳出抽奖环节".format (accout))
+                msg ("【账号{}】积分不足9分，跳出抽奖环节".format (account))
                 break
             else:
                 draw_times = result['data']['userinfo']['draw_times']
                 flag = 6 - int(draw_times)
                 name = result['data']['prize']['name']
                 current_point = result['data']['userinfo']['current_point']
-                msg("【账号{3}】第{0}次抽奖获得{1},现账号共有{2}积分".format(flag,name,current_point,accout))
+                msg("【账号{3}】第{0}次抽奖获得{1},现账号共有{2}积分".format(flag,name,current_point,account))
                 time.sleep(5)
     except Exception as e:
         print(e)
-        msg ("【账号{0}】抽奖失败,可能是cookies过期".format(accout))
+        msg ("【账号{0}】抽奖失败,可能是cookies过期".format(account))
 
 
 if __name__ == '__main__':
@@ -442,28 +480,30 @@ if __name__ == '__main__':
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print("============执行滴滴积分签到脚本==============")
     print(Didi_jifen_token)
-    url_id = get_url ()
+    s_url = get_s_url()
+    url_id = get_url (s_url)
     numb,id,day = get_id(url_id)
     print(numb)
-    numb = 9620
+    # numb = 9620
+    # v_url = get_v_url (Didi_jifen_token)
     if Didi_jifen_token != '':
-        get_activity_info(Didi_jifen_token,day,numb,accout)
-        reward(Didi_jifen_token,day,numb,accout)
+        get_activity_info(Didi_jifen_token,day,numb,account)
+        reward(Didi_jifen_token,day,numb,account)
         # activity_id = get_lid ()
         if do_lottery == 'true':
-            do_Lottery (Didi_jifen_token,lottery_lid,accout)
+            do_Lottery (Didi_jifen_token,lottery_lid,account)
 
     elif tokens == '' :
         print("检查变量Didi_jifen_token，DD_cookies是否已填写")
     elif len(tokens) > 1 :
-        accout = 1
+        account = 1
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
-            get_activity_info (i, day,numb,accout)
-            reward (i, day,numb,accout)
+            get_activity_info (i, day,numb,account)
+            reward (i, day,numb,account)
             # activity_id = get_lid()
             if do_lottery == 'true':
-                do_Lottery (i,lottery_lid,accout)
-            accout += 1
+                do_Lottery (i,lottery_lid,account)
+            account += 1
 
     if "签到" in msg_info:
         send("滴滴积分签到", msg_info)
