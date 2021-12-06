@@ -9,7 +9,7 @@ Author: 一风一燕
 功能：滴滴app多走多赚签到
 Date: 2021-11-23
 cron: 1 6,22 * * * xF_DiDi_DZDZ_Sleep.py
-new Env('滴滴app多走多赚签到');
+new Env('滴滴app多走多赚睡觉');
 
 
 
