@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴app水果自动任务
 Date: 2021-11-23
-cron: 43 0-3,8,12,15,18,22 * * * xF_DiDi_fruit.py
+cron: 43 0,7,8,12,15,17-23/2 * * * xF_DiDi_fruit.py
 new Env('滴滴app水果自动任务');
 
 
@@ -31,7 +31,7 @@ Didi_jifen_token如何抓，请看didi_Sign说明
 在青龙变量中添加变量Didi_jifen_token="xxxx",xxx就是上面抓的ticker复制下来就OK了
 
 
-cron时间填写：43 0-3,8,12,15,18,22 * * *
+cron时间填写：43 0,7,8,12,15,17-23/2 * * *
 
 
 '''
@@ -51,7 +51,7 @@ id = ''
 try:
     import requests
     import json, sys, os, re
-    import time, datetime
+    import time, datetime,random
 except Exception as e:
     print (e)
 
@@ -70,6 +70,36 @@ get_time1 = '{} {}'.format (today, time1)
 get_time2 = '{} {}'.format (today, time2)
 get_time3 = '{} {}'.format (today, time3)
 get_time4 = '{} {}'.format (today, time4)
+
+wsgsig=['dd03-vx9tq2onDp0IZqcYVoABxTjsa%2BXNwlstUQ6fOSmVa%2BX%2BZhfRmNkDw6zkAz0%2BZA8rsJ2%2BzMKjCoJLpecxVoEAOMK%2FBzf2SAJmXo6ax6Nre%2BnNYVNkX72aP6KjAJE',
+        'dd03-67TGcdCHNXqCW0FVDMhX%2B%2F%2B650AFtbkyCIqj4r3350AEWfAm9TIW%2B9cKMnqEWXIwEPUQLAXc%2BWT0%2FiFqd1%2Fn%2Be36LslfUXIyD61n%2BAgNL096XnZxBMZUNl%2BN%2BXO',
+        'dd03-rxqml47pGugrvrGTzy%2FbOp8ud3nWyknnyQTDxoGxd3nXv%2FDzSNEfP8%2BSFQgXvBJlYJP3Q%2BvlFR3UTdGPxKw9RJGuE3%2BtZa8rPod9xp3uF3KrvEbhPolCP3KkEQ9',
+        'dd03-%2FbmamzeJR3QXGQJTThyOOv18ZuJqDzvOpFvUyJM1ZuJrGv%2BqxrbhQvEIOJQrGJGQPVzxPRAHQ3WnfpjwpEQmzRLaPJyXE%2BcyYhyiy763PujiGJiPSrWnRN28xJQV',
+        'dd03-UfTkqudHf%2B4nfF8UZV2awyM6Epv%2Fc9oqvBqBO%2BL3Epvhfd3OPVIdwyFKe84hfVcsxrU1zoBJg%2BKXGAWkvAwBxo2KBQgPfebhZqxdwRMHB%2BcjfF%2BtuFhMxReNd3Ct',
+        'dd03-CugL8XzfY9YxloS582DSCDiDQ%2F1u%2Fv656T3ZgbXEQ%2F1vlzPd%2BIjSDtoevAYvlNq74M7qAjmev9YTVReH6ScSftv0o%2Fqul7%2F6JP4RCcm9uqLZkvw48SGzfjzAZ9YY',
+        'dd03-aScF%2FD3Xy4FqxzWqMzcXogciSvVXYQRtNv7%2FYmClSvVWxo8R58nVS0KUxKFWx8frH43PpggVz3HVRJ3x2z8wYgNlxR6yPzfqM%2BNhZg7%2FzKHjx3Nr2z7kTXDVwKE',
+        'dd03-CugL8XzfY9YxloS582DSCDiDQ%2F1u%2Fv656T3ZgbXEQ%2F1vlzPd%2BIjSDtoevAYvlNq74M7qAjmev9YTVReH6ScSftv0o%2Fqul7%2F6JP4RCcm9uqLZkvw48SGzfjzAZ9YY',
+        'dd03-NEvAAAqxzcF7%2B%2B%2Fqb0pV6dhOTjV2J3xtacmlHlYpTjV1%2B7IRDn8q5EhywDF1%2BpArgjiS8drvwbH42uLxbbRXIkhWyD5M4z1rb0ok6hZWwjl4MpFhcnXVIalvPDH',
+        'dd03-DUXVE0SysCEZ%2BS1O7nX62jMR%2FsUyJZPj5jQ9LikS%2FsUz%2Bx6vNgDF1DxxrbEz%2BLdh3coI4cPvqjIw221TJXgA1tVvlnaPM2APJXba1tURrbhPMLBt7ntC1DhYks9',
+        'dd03-wDXIwYa7Z54GDovErARRsS5KRwvBGvJAtdQwkMILRwvADzyHh%2FDPqwA6uL4ADNnCVkoVtSd5vMfDe4v7sevTrwh%2Bu5baf4zBrAXPqLEEYICcD7j3kqcRsSA4YL1',
+        'dd03-y3uI01tMPCX7nJYRt2No3SQ1vs02i8IprMnw%2BTv8vs01n4xXjP7P45iNQbX1nQkTXTjV1LW%2BRcQ4rzYhq5iP42QgRgRBt8xzsZmQ%2BSj3O0R8t3PzsSs%2F4SWLyCq',
+        'dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL',
+        'dd03-z6%2BZsOikr8p3Z5vssNK6z5jrjz%2B6wIJZqJCLQ6QWjz%2B5ZMyhioR2yStns%2Bp5ZwnvWQGexwnmtNs8pPvXsv87yZnnm3n6T2oPtNbMzwtlnJj6vwGPsRbKzwgonJk',
+        'dd03-0%2F1PtGPrF8UO5avU3tAazsYkgzEp2EJz1Xe5RjhjgzEo5AynJDwIzCYsG%2BUo5hnx70aFwbSt0NPTJUvr3fHNzgSsb3wpHdop4tF6ybYqcJYp7hGp3GF4ybLvcJw',
+        'dd03-rDByxRBD9w%2BsAUn7w966q%2BEfC5pVFhGFydLKl72aC5pUAliMS%2FV7rp9AcS%2BUAEv0YkHbszEBbTCXfan4wVa2ruEA0ZgVdrsex95Jqz9CGPcVCEJewl5LqzU2GPd',
+        'dd03-gUaMGbSXHChPMWOhInVo1fTi3saoHj2QHj5YNXkl3sapMnTs3glT3fxUKbhpMGUONc1r2GPqJcwS4cOkKbHv1fMV8sVQLW9Q8nBlNWIUKiYwLWSoIsEz%2BfOhJXq',
+        'dd03-ZB27DIBhLttb1gkuUiIX8TLU7DDe6CFyWfdRKw2t7DDd1Ghmkixy8M9i%2Bjtd1nYwqm9i56EmNiogNskqUgESKTBU%2BfiC1glSUnHO8xBr3DbG2ihpUgIW76Um3jq',
+        'dd03-20QwPlA2%2FILbbHoaEks8lhBLsPSeg68eG9XIrA1KsPSdb2R6dkN5lha3j2LdbOsgA%2Ft9mrF7i1BgExoK9dzMldHNWIIA9TWN9ao2qkICWL9ebHs%2B0d71khHIiL5',
+        'dd03-35eouVsWdxONxlnc0%2BaNWavjG6HIYqGHFK14i9ukG6HHxUiAgphNWrjVgTOHxevJDR5CVhXrfSVKRAnf0QMHUURrg1x6OF%2BcE3H4iaujgYkaOFpcbQA8WrnqgHY',
+        'dd03-qRg6qKKGw8DUhpRWx14yy%2BGcozttku3szw3OOycdoztshyoQT1jxw%2B3Fz%2BDsh%2BXqZ57hz8NBzoNrX3RwPYNpxuNERz8tUztXwOsOxQbCzuf%2FV3nWx1sSy%2BJGx%2BE',
+        'dd03-zzyKkOo5PQ82t3sQsSuQOLnIvJz7W%2BchqOjyw6mNvJz8tKXZiL3ROSz8Qu88tuojWHnXRwR5QRb5lpspswWSQSJNQJc4tzultPnYx5R3QzKGrzzrswzuw2v8zQd',
+        'dd03-XGGZ8J%2FbhAtQdOYFue33BNV0tqDTaxI7YaKLgzOAtqDSdZxfQls2DNrai9tSdHk5yh%2BeA7ldiaopC6YAue4JB7SA%2FAtkf1rLulKLfyqCWVnldOTKul4KgvYC%2F9S',
+        'dd03-DOgz5gRWq%2FAYTS%2F26v82Acsji9qzOZBC5z3Jdsjki9qyTxlJN4j8AcuVtqAyTLwA387cDDoXsrMxv2%2F5KKfKAfX%2Fs9HyTIYG8NK0BtnjrV5uZ5LDJvfKAWWUrq5',
+        'dd03-kQNDYoKdpT7kl4cdP27UVJJBxMyj%2FNsaRxDm%2F4cGxMyilJf2Z2QtUQ3gSx7ilv8cT60pXuNdSwchtoc%2BPINqUJcETYN%2Fr7DdOSbqU3JgTO%2BqrRJEQP%2B%2FV%2BbfSTd',
+        'dd03-RnANOxOD1Z3H9sJdnUHQlIrfJ2u%2Ben09kqMvqH%2FaJ2uN9jj1WEUokZZA4P3N9CubiAIsnPrD4OgMGgmNmd5plZPCN2NIF0zGlUBwqLxCNPNHaitCnE6xlZqa2ZA'
+        ]
+
+
 
 
 def printT(s):
@@ -232,9 +262,9 @@ def get_xpsid():
 
 
 # 获取小动物id
-def get_pet_id(Didi_jifen_token, xpsid):
+def get_pet_id(Didi_jifen_token, xpsid,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/plant/enter?wsgsig=dd03-DUXVE0SysCEZ%2BS1O7nX62jMR%2FsUyJZPj5jQ9LikS%2FsUz%2Bx6vNgDF1DxxrbEz%2BLdh3coI4cPvqjIw221TJXgA1tVvlnaPM2APJXba1tURrbhPMLBt7ntC1DhYks9'
+        url = f'https://game.xiaojukeji.com/api/game/plant/enter?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -257,10 +287,11 @@ def get_pet_id(Didi_jifen_token, xpsid):
 
 
 # 获取任务列表
-def get_missons(Didi_jifen_token, xpsid):
+def get_missons(Didi_jifen_token, xpsid,wsgsig):
     missons_list = []
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/get?xbiz=240301&prod_key=didi-orchard&xpsid={xpsid}&dchn=O9aM923&xoid=aA%2Fiet7vTTmdKCRAgoHwyg&uid=281474990465673&xenv=passenger&xspm_from=&xpsid_root={xpsid}&xpsid_from=&xpsid_share=&game_id=23&loop=0&platform=1&token={Didi_jifen_token}&wsgsig=dd03-NEvAAAqxzcF7%2B%2B%2Fqb0pV6dhOTjV2J3xtacmlHlYpTjV1%2B7IRDn8q5EhywDF1%2BpArgjiS8drvwbH42uLxbbRXIkhWyD5M4z1rb0ok6hZWwjl4MpFhcnXVIalvPDH'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/get?xbiz=240301&prod_key=didi-orchard&xpsid={xpsid}&dchn=O9aM923&xoid=aA%2Fiet7vTTmdKCRAgoHwyg&uid=281474990465673&xenv=passenger&xspm_from=&xpsid_root={xpsid}&xpsid_from=&xpsid_share=&game_id=23&loop=0&platform=1&token={Didi_jifen_token}&wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -286,9 +317,10 @@ def get_missons(Didi_jifen_token, xpsid):
 
 
 # 签到
-def do_sign(Didi_jifen_token, xpsid, account):
+def do_sign(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/plant/sign?wsgsig=dd03-wDXIwYa7Z54GDovErARRsS5KRwvBGvJAtdQwkMILRwvADzyHh%2FDPqwA6uL4ADNnCVkoVtSd5vMfDe4v7sevTrwh%2Bu5baf4zBrAXPqLEEYICcD7j3kqcRsSA4YL1'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/plant/sign?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -318,10 +350,11 @@ def do_sign(Didi_jifen_token, xpsid, account):
 
 
 # 领取宝箱
-def get_treasure(Didi_jifen_token, xpsid, account):
+def get_treasure(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         for i in range (100):
-            url = f'https://game.xiaojukeji.com/api/game/plant/recCommonBox?wsgsig=dd03-y3uI01tMPCX7nJYRt2No3SQ1vs02i8IprMnw%2BTv8vs01n4xXjP7P45iNQbX1nQkTXTjV1LW%2BRcQ4rzYhq5iP42QgRgRBt8xzsZmQ%2BSj3O0R8t3PzsSs%2F4SWLyCq'
+            id = wsgsig[random.randint (0,25)]
+            url = f'https://game.xiaojukeji.com/api/game/plant/recCommonBox?wsgsig={id}'
             heards = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
@@ -352,9 +385,10 @@ def get_treasure(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（固定入口进入游戏）
-def get_misson1(Didi_jifen_token, xpsid, account):
+def get_misson1(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -385,10 +419,10 @@ def get_misson1(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（【浏览晒单区】任务）
-def get_misson2(Didi_jifen_token, xpsid, account):
+def get_misson2(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -419,9 +453,10 @@ def get_misson2(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（访问公交车页面任务）
-def get_misson3(Didi_jifen_token, xpsid, account):
+def get_misson3(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -452,9 +487,10 @@ def get_misson3(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（成长会员主页）
-def get_misson4(Didi_jifen_token, xpsid, account):
+def get_misson4(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -485,9 +521,10 @@ def get_misson4(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（积分商城）
-def get_misson5(Didi_jifen_token, xpsid, account):
+def get_misson5(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -518,9 +555,10 @@ def get_misson5(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（学会技能）
-def get_misson6(Didi_jifen_token, xpsid, account):
+def get_misson6(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -551,9 +589,10 @@ def get_misson6(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（果园入口）
-def get_misson7(Didi_jifen_token, xpsid, account):
+def get_misson7(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -584,9 +623,10 @@ def get_misson7(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（浇水100g）
-def get_misson8(Didi_jifen_token, xpsid, account):
+def get_misson8(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -607,7 +647,8 @@ def get_misson8(Didi_jifen_token, xpsid, account):
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
             msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
-
+        elif "任务未达到领奖条件" in errmsg:
+            msg("【账号{}】【浇水100g】未达到领奖条件".format(account))
         else:
             msg ("【账号{}】【浇水100g】任务早已完成，跳过执行环节".format (account))
 
@@ -617,9 +658,10 @@ def get_misson8(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（肥料200g）
-def get_misson9(Didi_jifen_token, xpsid, account):
+def get_misson9(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -640,7 +682,8 @@ def get_misson9(Didi_jifen_token, xpsid, account):
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
             msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
-
+        elif "任务未达到领奖条件" in errmsg:
+            msg("【账号{}】【浇水200g】未达到领奖条件".format(account))
         else:
             msg ("【账号{}】【浇水200g】任务早已完成，跳过执行环节".format (account))
 
@@ -650,9 +693,10 @@ def get_misson9(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（肥料500g）
-def get_misson10(Didi_jifen_token, xpsid, account):
+def get_misson10(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -673,7 +717,8 @@ def get_misson10(Didi_jifen_token, xpsid, account):
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
             msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
-
+        elif "任务未达到领奖条件" in errmsg:
+            msg("【账号{}】【浇水500g】未达到领奖条件".format(account))
         else:
             msg ("【账号{}】【浇水500g】任务早已完成，跳过执行环节".format (account))
 
@@ -683,9 +728,10 @@ def get_misson10(Didi_jifen_token, xpsid, account):
 
 
 # 领取任务（去除蚂蚱）
-def get_misson11(Didi_jifen_token, xpsid, account):
+def get_misson11(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-%2Fep12zdOxaJXJ8w9TGpxE42xphQq%2BJMdpCsTaJLuphQrJNZ5xWKYFvFRyBJrJz%2FfPsWkGRapzA0s5QwJTjQSFKAzRhci73VGSjvvFK9zzkgl7%2BYgoDuPaoLzRaL'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -716,9 +762,10 @@ def get_misson11(Didi_jifen_token, xpsid, account):
 
 
 # 领取7点41分后的水滴
-def get_misson12(Didi_jifen_token, xpsid, account):
+def get_misson12(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/plant/recExtWater?wsgsig=dd03-z6%2BZsOikr8p3Z5vssNK6z5jrjz%2B6wIJZqJCLQ6QWjz%2B5ZMyhioR2yStns%2Bp5ZwnvWQGexwnmtNs8pPvXsv87yZnnm3n6T2oPtNbMzwtlnJj6vwGPsRbKzwgonJk'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/plant/recExtWater?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -747,9 +794,10 @@ def get_misson12(Didi_jifen_token, xpsid, account):
 
 
 # 领取集水
-def get_misson13(Didi_jifen_token, xpsid, account):
+def get_misson13(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/plant/recBucketWater?wsgsig=dd03-0%2F1PtGPrF8UO5avU3tAazsYkgzEp2EJz1Xe5RjhjgzEo5AynJDwIzCYsG%2BUo5hnx70aFwbSt0NPTJUvr3fHNzgSsb3wpHdop4tF6ybYqcJYp7hGp3GF4ybLvcJw'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/plant/recBucketWater?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -778,9 +826,10 @@ def get_misson13(Didi_jifen_token, xpsid, account):
 
 
 # 领取肥料
-def get_misson14(Didi_jifen_token, xpsid, account):
+def get_misson14(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        url = f'https://game.xiaojukeji.com/api/game/plant/receivePer?wsgsig=dd03-rDByxRBD9w%2BsAUn7w966q%2BEfC5pVFhGFydLKl72aC5pUAliMS%2FV7rp9AcS%2BUAEv0YkHbszEBbTCXfan4wVa2ruEA0ZgVdrsex95Jqz9CGPcVCEJewl5LqzU2GPd'
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/plant/receivePer?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -802,10 +851,11 @@ def get_misson14(Didi_jifen_token, xpsid, account):
 
 
 # 领取饭点水滴8-10,12-14，15-17
-def get_misson15(Didi_jifen_token, xpsid, account):
+def get_misson15(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
-        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig=dd03-gUaMGbSXHChPMWOhInVo1fTi3saoHj2QHj5YNXkl3sapMnTs3glT3fxUKbhpMGUONc1r2GPqJcwS4cOkKbHv1fMV8sVQLW9Q8nBlNWIUKiYwLWSoIsEz%2BfOhJXq'
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -833,7 +883,7 @@ def get_misson15(Didi_jifen_token, xpsid, account):
             title = result['data']['title']
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
-            msg ("【账号{3}】领取{0}，获得{1}{2}g水滴".format (title, name, count, account))
+            msg ("【账号{3}】领取{0}，获得{1}{2}g".format (title, name, count, account))
         else:
             msg ("【账号{}】未到时间领取【饭点水滴】，跳过执行环节".format (account))
     except Exception as e:
@@ -842,10 +892,11 @@ def get_misson15(Didi_jifen_token, xpsid, account):
 
 
 # 固定入口进入游戏
-def do_misson1(Didi_jifen_token, xpsid, account):
+def do_misson1(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-ZB27DIBhLttb1gkuUiIX8TLU7DDe6CFyWfdRKw2t7DDd1Ghmkixy8M9i%2Bjtd1nYwqm9i56EmNiogNskqUgESKTBU%2BfiC1glSUnHO8xBr3DbG2ihpUgIW76Um3jq'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -871,10 +922,11 @@ def do_misson1(Didi_jifen_token, xpsid, account):
 
 
 # 【浏览晒单区】任务
-def do_misson2(Didi_jifen_token, xpsid, account):
+def do_misson2(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-ZB27DIBhLttb1gkuUiIX8TLU7DDe6CFyWfdRKw2t7DDd1Ghmkixy8M9i%2Bjtd1nYwqm9i56EmNiogNskqUgESKTBU%2BfiC1glSUnHO8xBr3DbG2ihpUgIW76Um3jq'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -900,10 +952,11 @@ def do_misson2(Didi_jifen_token, xpsid, account):
 
 
 # 访问公交车页面任务
-def do_misson3(Didi_jifen_token, xpsid, account):
+def do_misson3(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-ZB27DIBhLttb1gkuUiIX8TLU7DDe6CFyWfdRKw2t7DDd1Ghmkixy8M9i%2Bjtd1nYwqm9i56EmNiogNskqUgESKTBU%2BfiC1glSUnHO8xBr3DbG2ihpUgIW76Um3jq'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -929,10 +982,11 @@ def do_misson3(Didi_jifen_token, xpsid, account):
 
 
 # 访问成长会员任务
-def do_misson4(Didi_jifen_token, xpsid, account):
+def do_misson4(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-20QwPlA2%2FILbbHoaEks8lhBLsPSeg68eG9XIrA1KsPSdb2R6dkN5lha3j2LdbOsgA%2Ft9mrF7i1BgExoK9dzMldHNWIIA9TWN9ao2qkICWL9ebHs%2B0d71khHIiL5'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -958,10 +1012,11 @@ def do_misson4(Didi_jifen_token, xpsid, account):
 
 
 # 访问积分商城任务
-def do_misson5(Didi_jifen_token, xpsid, account):
+def do_misson5(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-35eouVsWdxONxlnc0%2BaNWavjG6HIYqGHFK14i9ukG6HHxUiAgphNWrjVgTOHxevJDR5CVhXrfSVKRAnf0QMHUURrg1x6OF%2BcE3H4iaujgYkaOFpcbQA8WrnqgHY'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -987,10 +1042,11 @@ def do_misson5(Didi_jifen_token, xpsid, account):
 
 
 # 学会技能任务
-def do_misson6(Didi_jifen_token, xpsid, account):
+def do_misson6(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-qRg6qKKGw8DUhpRWx14yy%2BGcozttku3szw3OOycdoztshyoQT1jxw%2B3Fz%2BDsh%2BXqZ57hz8NBzoNrX3RwPYNpxuNERz8tUztXwOsOxQbCzuf%2FV3nWx1sSy%2BJGx%2BE'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -1016,10 +1072,11 @@ def do_misson6(Didi_jifen_token, xpsid, account):
 
 
 # 点击果园任务
-def do_misson7(Didi_jifen_token, xpsid, account):
+def do_misson7(Didi_jifen_token, xpsid, account,wsgsig):
     try:
+        wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
-        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig=dd03-qRg6qKKGw8DUhpRWx14yy%2BGcozttku3szw3OOycdoztshyoQT1jxw%2B3Fz%2BDsh%2BXqZ57hz8NBzoNrX3RwPYNpxuNERz8tUztXwOsOxQbCzuf%2FV3nWx1sSy%2BJGx%2BE'
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -1047,11 +1104,12 @@ def do_misson7(Didi_jifen_token, xpsid, account):
 
 
 # 去除蚂蚱任务
-def do_misson8(Didi_jifen_token, xpsid, account):
+def do_misson8(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         for i in range (2):
+            id = wsgsig[random.randint (0,25)]
             nowtime = int (round (time.time () * 1000))
-            url = f'https://game.xiaojukeji.com/api/game/plant/killWorm?wsgsig=dd03-zzyKkOo5PQ82t3sQsSuQOLnIvJz7W%2BchqOjyw6mNvJz8tKXZiL3ROSz8Qu88tuojWHnXRwR5QRb5lpspswWSQSJNQJc4tzultPnYx5R3QzKGrzzrswzuw2v8zQd'
+            url = f'https://game.xiaojukeji.com/api/game/plant/killWorm?wsgsig={id}'
             heards = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
@@ -1080,44 +1138,45 @@ def do_misson8(Didi_jifen_token, xpsid, account):
         msg ("【账号{}】【去除蚂蚱】任务早已完成，跳过执行环节".format (account))
 
 
-# 安抚小动物
-def do_misson9(Didi_jifen_token, xpsid, pet_id, account):
+# 早起分享
+def do_misson9(Didi_jifen_token, xpsid, account,wsgsig):
     try:
-        for i in range (10):
-            url = f'https://game.xiaojukeji.com/api/game/plant/dogInteract?wsgsig=dd03-XGGZ8J%2FbhAtQdOYFue33BNV0tqDTaxI7YaKLgzOAtqDSdZxfQls2DNrai9tSdHk5yh%2BeA7ldiaopC6YAue4JB7SA%2FAtkf1rLulKLfyqCWVnldOTKul4KgvYC%2F9S'
-            heards = {
-                "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
-                "Referer": "https://fine.didialift.com/",
-                "Host": "game.xiaojukeji.com",
-                "Origin": "https://fine.didialift.com",
-                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-                "D-Header-T": f"{Didi_jifen_token}",
-                "Content-Type": "application/json",
-            }
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","friend_id":' + f"{pet_id}" + r',"inter_type":2,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
-            result = response.json ()
-            print (result)
-            errmsg = result['errmsg']
-            time.sleep (0.2)
-            if errmsg == 'success':
-                msg ("【账号{0}】安抚小狗成功{1}次".format (account, i + 1))
-            elif "服务内部错误" in errmsg:
-                msg ("【账号{}】【安抚小狗】任务执行失败".format (account))
-            else:
-                msg ("【账号{}】【安抚小狗】次数到达上限，跳过执行环节".format (account))
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/plant/recEarlyBird?wsgsig={wsgsig}'
+        heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://fine.didialift.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://fine.didialift.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"water_status":0,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        time.sleep (0.2)
+        if errmsg == 'success':
+            msg ("【账号{0}】【分享任务】执行成功，获取100g水滴".format (account))
+        elif "对应奖励已领取" in errmsg:
+            msg ("【账号{}】【分享任务】早已完成，跳过执行环节".format (account))
+        elif "请稍后再试" in errmsg:
+            msg ("【账号{}】【分享任务】异常，请重新执行".format (account))
 
     except Exception as e:
         print (e)
-        msg ("【账号{0}】【安抚小狗】任务失败,可能是token过期".format (account))
+        msg ("【账号{0}】【分享任务】任务失败,可能是token过期".format (account))
 
 
 # 使用肥料
-def do_misson10(Didi_jifen_token, xpsid, account):
+def do_misson10(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         for i in range (100):
+            id = wsgsig[random.randint (0,25)]
             nowtime = int (round (time.time () * 1000))
-            url = f'https://game.xiaojukeji.com/api/game/plant/fertilizer?wsgsig=dd03-DOgz5gRWq%2FAYTS%2F26v82Acsji9qzOZBC5z3Jdsjki9qyTxlJN4j8AcuVtqAyTLwA387cDDoXsrMxv2%2F5KKfKAfX%2Fs9HyTIYG8NK0BtnjrV5uZ5LDJvfKAWWUrq5'
+            url = f'https://game.xiaojukeji.com/api/game/plant/fertilizer?wsgsig={id}'
             heards = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
@@ -1155,12 +1214,13 @@ def do_misson10(Didi_jifen_token, xpsid, account):
 
 
 # 浇水
-def watering(Didi_jifen_token, xpsid, account):
+def watering(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         i = 1
         water = 0
         while True:
-            url = f'https://game.xiaojukeji.com/api/game/plant/watering?wsgsig=dd03-kQNDYoKdpT7kl4cdP27UVJJBxMyj%2FNsaRxDm%2F4cGxMyilJf2Z2QtUQ3gSx7ilv8cT60pXuNdSwchtoc%2BPINqUJcETYN%2Fr7DdOSbqU3JgTO%2BqrRJEQP%2B%2FV%2BbfSTd'
+            id = wsgsig[random.randint (0,25)]
+            url = f'https://game.xiaojukeji.com/api/game/plant/watering?wsgsig={id}'
             heards = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
@@ -1185,14 +1245,13 @@ def watering(Didi_jifen_token, xpsid, account):
                 water_times = result['data']['water_times']  # 浇水次数
                 next_box_progress = result['data']['next_box_progress']  # 下一次领取宝箱需多少g水
                 water = i * 10
-                if pack_water < 500:
+                if pack_water < 300:
                     msg ("【账号{0}】剩余水滴{1}g，退出浇水".format (account, pack_water))
                     break
                 time.sleep (5)
             elif "果实已成熟" in errmsg:
                 msg ("【帐号{}】果树已成熟，请自行上线领取".format (account))
                 break
-
             else:
                 break
         msg (
@@ -1210,66 +1269,70 @@ if __name__ == '__main__':
     print ("============执行滴滴果园自动脚本==============")
     # print(Didi_jifen_token)
     missons_list = []
+    nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
     if Didi_jifen_token != '':
         xpsid = get_xpsid ()
-        missons_list = get_missons (Didi_jifen_token, xpsid)
-        pet_id = get_pet_id (Didi_jifen_token, xpsid)
-        get_treasure (Didi_jifen_token, xpsid, account)
+        missons_list = get_missons (Didi_jifen_token, xpsid,wsgsig)
+        pet_id = get_pet_id (Didi_jifen_token, xpsid,wsgsig)
+        get_treasure (Didi_jifen_token, xpsid, account,wsgsig)
         time.sleep (0.2)
-        watering (Didi_jifen_token, xpsid, account)
+        watering (Didi_jifen_token, xpsid, account,wsgsig)
+        if nowtime > get_time1 and nowtime < get_time2:
+            do_misson9(Didi_jifen_token, xpsid, account,wsgsig)
         for k in missons_list:
             if "积分商城" in k:
-                do_sign (Didi_jifen_token, xpsid, account)
+                do_sign (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson10 (Didi_jifen_token, xpsid, account)
+                do_misson10 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson1 (Didi_jifen_token, xpsid, account)
+                do_misson1 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson2 (Didi_jifen_token, xpsid, account)
+                do_misson2 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson3 (Didi_jifen_token, xpsid, account)
+                do_misson3 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson4 (Didi_jifen_token, xpsid, account)
+                do_misson4 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson5 (Didi_jifen_token, xpsid, account)
+                do_misson5 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson6 (Didi_jifen_token, xpsid, account)
+                do_misson6 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson7 (Didi_jifen_token, xpsid, account)
+                do_misson7 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                do_misson8 (Didi_jifen_token, xpsid, account)
+                do_misson8 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson1 (Didi_jifen_token, xpsid, account)
+                get_misson1 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson2 (Didi_jifen_token, xpsid, account)
+                get_misson2 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson3 (Didi_jifen_token, xpsid, account)
+                get_misson3 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson4 (Didi_jifen_token, xpsid, account)
+                get_misson4 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson5 (Didi_jifen_token, xpsid, account)
+                get_misson5 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson6 (Didi_jifen_token, xpsid, account)
+                get_misson6 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson7 (Didi_jifen_token, xpsid, account)
+                get_misson7 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson11 (Didi_jifen_token, xpsid, account)
+                get_misson11 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
         for k in missons_list:
             if "每日浇水" in k:
-                get_misson8 (Didi_jifen_token, xpsid, account)
+                get_misson8 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson9 (Didi_jifen_token, xpsid, account)
+                get_misson9 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
-                get_misson10 (Didi_jifen_token, xpsid, account)
+                get_misson10 (Didi_jifen_token, xpsid, account,wsgsig)
+                break
         time.sleep (0.2)
-        get_misson12 (Didi_jifen_token, xpsid, account)
+        get_misson12 (Didi_jifen_token, xpsid, account,wsgsig)
         time.sleep (0.2)
-        get_misson13 (Didi_jifen_token, xpsid, account)
+        get_misson13 (Didi_jifen_token, xpsid, account,wsgsig)
         time.sleep (0.2)
-        get_misson14 (Didi_jifen_token, xpsid, account)
+        get_misson14 (Didi_jifen_token, xpsid, account,wsgsig)
         time.sleep (0.2)
-        get_misson15 (Didi_jifen_token, xpsid, account)
+        get_misson15 (Didi_jifen_token, xpsid, account,wsgsig)
         time.sleep (0.2)
     elif tokens == '':
         print ("检查变量Didi_jifen_token是否已填写")
@@ -1277,67 +1340,70 @@ if __name__ == '__main__':
         account = 1
         for i in tokens:  # 同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
-            missons_list = get_missons (i, xpsid)
-            pet_id = get_pet_id (i, xpsid)
-            get_treasure (i, xpsid, account)
+            missons_list = get_missons (i, xpsid,wsgsig)
+            pet_id = get_pet_id (i, xpsid,wsgsig)
+            get_treasure (i, xpsid, account,wsgsig)
             time.sleep (0.2)
-            watering (i, xpsid, account)
+            watering (i, xpsid, account,wsgsig)
+            if nowtime > get_time1 and nowtime < get_time2:
+                do_misson9 (i, xpsid, account, wsgsig)
             for k in missons_list:
                 if "积分商城" in k:
-                    do_sign (i, xpsid, account)
+                    do_sign (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson10 (i, xpsid, account)
+                    do_misson10 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson1 (i, xpsid, account)
+                    do_misson1 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson2 (i, xpsid, account)
+                    do_misson2 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson3 (i, xpsid, account)
+                    do_misson3 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson4 (i, xpsid, account)
+                    do_misson4 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson5 (i, xpsid, account)
+                    do_misson5 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson6 (i, xpsid, account)
+                    do_misson6 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson7 (i, xpsid, account)
+                    do_misson7 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    do_misson8 (i, xpsid, account)
+                    do_misson8 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson1 (i, xpsid, account)
+                    get_misson1 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson2 (i, xpsid, account)
+                    get_misson2 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson3 (i, xpsid, account)
+                    get_misson3 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson4 (i, xpsid, account)
+                    get_misson4 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson5 (i, xpsid, account)
+                    get_misson5 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson6 (i, xpsid, account)
+                    get_misson6 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson7 (i, xpsid, account)
+                    get_misson7 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson11 (i, xpsid, account)
+                    get_misson11 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
             for k in missons_list:
                 if "每日浇水" in k:
-                    get_misson8 (i, xpsid, account)
+                    get_misson8 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson9 (i, xpsid, account)
+                    get_misson9 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
-                    get_misson10 (i, xpsid, account)
+                    get_misson10 (i, xpsid, account,wsgsig)
+                    break
             time.sleep (0.2)
-            get_misson12 (i, xpsid, account)
+            get_misson12 (i, xpsid, account,wsgsig)
             time.sleep (0.2)
-            get_misson13 (i, xpsid, account)
+            get_misson13 (i, xpsid, account,wsgsig)
             time.sleep (0.2)
-            get_misson14 (i, xpsid, account)
+            get_misson14 (i, xpsid, account,wsgsig)
             time.sleep (0.2)
-            get_misson15 (i, xpsid, account)
+            get_misson15 (i, xpsid, account,wsgsig)
             account += 1
 
-    if "饭点水滴" in msg_info:
+    if "饭点领水滴" in msg_info:
         send ("滴滴水果活动", msg_info)
     elif "已成熟" in msg_info:
         send ("滴滴水果活动", msg_info)
