@@ -319,9 +319,9 @@ def do_sign1(DiDi_fulijin_token,xpsid,account):
 
 def do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account):
     try:
-        do_sign_url = f'https://bosp-api.xiaojukeji.com/gulfstream/hubble/open/signin/submit?wsgsig={DiDi_fulijin_token}'
+        url = f'https://bosp-api.xiaojukeji.com/gulfstream/hubble/open/signin/submit?wsgsig={DiDi_fulijin_token}'
         data = r'{"xbiz":"240200","prod_key":"custom","xpsid":"' + f"{xpsid}" + r',","dchn":"zjO1EbA","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r',","xpsid_from":"","xpsid_share":"","token":' + '"'+ f'{DiDi_token}'+ '"'+ r',"lat":"23.01633056640625","lng":"113.8125230577257","city_id":158,"env":"{\"newTicket\":\"' + f'{DiDi_token}' + r'\",\"latitude\":\"23.01633056640625\",\"longitude\":\"113.8125230577257\",\"cityId\":\"158\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0\",\"appVersion\":\"6.2.4\",\"wifi\":\"1\",\"model\":\"iPhone 11\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"fromChannel\":\"1\",\"newAppid\":\"10000\",\"isHitButton\":false,\"isOpenWeb\":true,\"timeCost\":31}","openid":"","platform":"na","res_params":"{\"resource_names\":\"pas_ut_discovery_banner1,pas_ut_discovery_billboard_card1,pas_ut_discovery_billboard_card2,pas_ut_discovery_billboard_card3,pas_ut_discovery_cx_resource_card,pas_ut_discovery_jifen_resource_card,pas_ut_discovery_banner2\",\"appversion\":\"6.2.4\",\"channel_id\":\"\",\"platform_type\":1}"}'
-        do_sign_heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://page.udache.com/",
             "Accept-Encoding": "gzip, deflate, br",
@@ -332,7 +332,7 @@ def do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account):
             "host":"bosp-api.xiaojukeji.com",
             "content-length":"1637",
         }
-        response = requests.post(url=do_sign_url,data=data,headers=do_sign_heards,verify=False)
+        response = requests.post(url=url,data=data,headers=headers,verify=False)
         do_sign_ = response.json()
         print(do_sign_)
         code = do_sign_['errno']   #本次签到获得的积分
@@ -342,13 +342,37 @@ def do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account):
             content = do_sign_['data']['content']
             content = content.replace('{icon}','')
             msg("【账号{1}】今日天天签到签到成功，获得{0}".format(content,account))
-
-
-
     except Exception as e:
         print(e)
         msg ('（滴滴天天签到）{}异常，可能是token过期'.format (DiDi_token))
         # send ("滴滴天天签到", msg_info)
+
+def guafen(DiDi_fulijin_token,xpsid,account):
+    try:
+        url = f'https://ut.xiaojukeji.com/ut/welfare/api/action/joinDivide'
+        data = r'{"xbiz":"","prod_key":"welfare-center","xpsid":"' + f"{xpsid}" + r'","dchn":"DpQ3dga","xoid":"9c52fa1a-ec11-46f9-9682-5d90694dd281","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r'","xpsid_from":"","xpsid_share":"","token":"' + f'{DiDi_fulijin_token}'+ '"'+ r',"lat":"23.016388346354166","lng":"113.81221218532986","platform":"na","env":"{\"cityId\":\"21\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\",\"longitude\":\"113.81221218532986\",\"latitude\":\"23.016388346354166\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}","activity_id":2199024005306,"count":10,"type":"ut_bonus"}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            "origin": "https://page.udache.com",
+            "host":"ut.xiaojukeji.com",
+        }
+        response = requests.post(url=url,data=data,headers=headers,verify=False)
+        result = response.json()
+        print(result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            msg("【账号{}】今日参加打卡瓜分活动成功".format(account))
+        elif "活动已经被领取" in errmsg:
+            msg("【账号{}】已参加打卡瓜分活动，请明天记得签到瓜分".format(account))
+        else:
+            print("打卡瓜分福利金活动未开启")
+
+    except Exception as e:
+        print(e)
+        msg ('【账号{0}】参加打卡瓜分异常，可能是token过期'.format (account))
+
+
 
 if __name__ == '__main__':
 
@@ -358,6 +382,7 @@ if __name__ == '__main__':
     if DiDi_fulijin_token != '':
         xpsid = get_xpsid()
         do_sign1(DiDi_fulijin_token,xpsid,account)
+        guafen (DiDi_fulijin_token, xpsid, account)
         # do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account)
         get_fulijin(DiDi_fulijin_token,account,wsgsig)
 
@@ -365,6 +390,7 @@ if __name__ == '__main__':
         for j in DiDi_fulijin_tokens:             #同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
             do_sign1 (j,xpsid,account)
+            guafen(j,xpsid,account)
             # do_sign2 (i, j,xpsid,account)
             get_fulijin (j,account,wsgsig)
             account += 1
