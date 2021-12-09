@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：福利金签到
 Date: 2021-12-6
-cron: 22 7,10 * * * xF_DiDi_FLJ_Sign.py
+cron: 22 10,15 * * * xF_DiDi_FLJ_Sign.py
 new Env('滴滴app福利金签到');
 
 
@@ -24,7 +24,7 @@ new Env('滴滴app福利金签到');
 或者查看一次福利金明细后，查看URL，
 https://rewards.xiaojukeji.com/loyalty_credit/bonus/getWelfareUsage4Wallet?，后面的token=xxxx&city，xxx便是DiDi_fulijin_token。
 
-cron时间填写：22 7,10 * * *
+cron时间填写：22 10,15 * * *
 
 '''
 
@@ -56,8 +56,11 @@ requests.packages.urllib3.disable_warnings()
 pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
 path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
+tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 mor_time ='08:00:00.00000000'
 moringtime = '{} {}'.format (today, mor_time)
+
+
 
 wsgsig=['dd03-vx9tq2onDp0IZqcYVoABxTjsa%2BXNwlstUQ6fOSmVa%2BX%2BZhfRmNkDw6zkAz0%2BZA8rsJ2%2BzMKjCoJLpecxVoEAOMK%2FBzf2SAJmXo6ax6Nre%2BnNYVNkX72aP6KjAJE',
         'dd03-67TGcdCHNXqCW0FVDMhX%2B%2F%2B650AFtbkyCIqj4r3350AEWfAm9TIW%2B9cKMnqEWXIwEPUQLAXc%2BWT0%2FiFqd1%2Fn%2Be36LslfUXIyD61n%2BAgNL096XnZxBMZUNl%2BN%2BXO',
@@ -347,10 +350,37 @@ def do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account):
         msg ('（滴滴天天签到）{}异常，可能是token过期'.format (DiDi_token))
         # send ("滴滴天天签到", msg_info)
 
-def guafen(DiDi_fulijin_token,xpsid,account):
+#参加瓜分
+def guafen(DiDi_fulijin_token,xpsid,account,activity_id_tomorrow,task_id_tomorrow,count):
     try:
         url = f'https://ut.xiaojukeji.com/ut/welfare/api/action/joinDivide'
-        data = r'{"xbiz":"","prod_key":"welfare-center","xpsid":"' + f"{xpsid}" + r'","dchn":"DpQ3dga","xoid":"9c52fa1a-ec11-46f9-9682-5d90694dd281","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r'","xpsid_from":"","xpsid_share":"","token":"' + f'{DiDi_fulijin_token}'+ '"'+ r',"lat":"23.016388346354166","lng":"113.81221218532986","platform":"na","env":"{\"cityId\":\"21\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\",\"longitude\":\"113.81221218532986\",\"latitude\":\"23.016388346354166\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}","activity_id":2199024005306,"count":10,"type":"ut_bonus"}'
+        data = r'{"xbiz":"","prod_key":"welfare-center","xpsid":"' + f"{xpsid}" + r'","dchn":"DpQ3dga","xoid":"9c52fa1a-ec11-46f9-9682-5d90694dd281","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r'","xpsid_from":"","xpsid_share":"","token":"' + f'{DiDi_fulijin_token}'+ '"'+ r',"lat":"23.016388346354166","lng":"113.81221218532986","platform":"na","env":"{\"cityId\":\"21\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\",\"longitude\":\"113.81221218532986\",\"latitude\":\"23.016388346354166\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}","activity_id":' + f"{activity_id_tomorrow}" + r',"count":' + f"{count}" + r',"type":"ut_bonus"}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            "origin": "https://page.udache.com",
+            "host":"ut.xiaojukeji.com",
+        }
+        response = requests.post(url=url,data=data,headers=headers,verify=False)
+        result = response.json()
+        print(result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            msg("【账号{}】参加明日打卡瓜分活动成功".format(account))
+        elif "活动已经被领取" in errmsg:
+            msg("【账号{}】已参加打卡瓜分活动，请明天记得签到瓜分".format(account))
+        else:
+            print("打卡瓜分福利金活动未开启")
+
+    except Exception as e:
+        print(e)
+        msg ('【账号{0}】参加打卡瓜分异常，可能是token过期'.format (account))
+
+#签到瓜分
+def guafen_Sign(DiDi_fulijin_token,xpsid,account,activity_id_today,task_id_today):
+    try:
+        url = f'https://ut.xiaojukeji.com/ut/welfare/api/action/divideReward'
+        data = r'{"xbiz":"","prod_key":"welfare-center","xpsid":"' + f"{xpsid}" + r'","dchn":"DpQ3dga","xoid":"3b5d5c47-2c82-4914-b633-227dfc0c687a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r'","xpsid_from":"","xpsid_share":"","token":"' + f'{DiDi_fulijin_token}' + r'","lat":"23.016388346354166","lng":"113.81221218532986","platform":"na","env":"{\"cityId\":\"21\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\",\"longitude\":\"113.81221218532986\",\"latitude\":\"23.016388346354166\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}","activity_id":' + f"{activity_id_today}" + r',"task_id":' + f"{task_id_today}" + r'}'
         headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://page.udache.com/",
@@ -370,7 +400,32 @@ def guafen(DiDi_fulijin_token,xpsid,account):
 
     except Exception as e:
         print(e)
-        msg ('【账号{0}】参加打卡瓜分异常，可能是token过期'.format (account))
+        msg ('【账号{0}】参加打卡瓜分签到，可能是token过期'.format (account))
+
+#获取瓜分活动ID
+def guafen_id(DiDi_fulijin_token,xpsid,account):
+    try:
+        url = f'https://ut.xiaojukeji.com/ut/welfare/api/home/init/v2'
+        data = r'{"xbiz":"","prod_key":"welfare-center","xpsid":"' + f"{xpsid}" + r'","dchn":"DpQ3dga","xoid":"3b5d5c47-2c82-4914-b633-227dfc0c687a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f"{xpsid}" + r'","xpsid_from":"","xpsid_share":"","token":"' + f'{DiDi_fulijin_token}' + r'","lat":"23.016388346354166","lng":"113.81221218532986","platform":"na","env":"{\"cityId\":\"21\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\",\"longitude\":\"113.81221218532986\",\"latitude\":\"23.016388346354166\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"ddfp\":\"99d8f16bacaef4eef6c151bcdfa095f0\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}","resparams":"{\"resource_name\":\"ut_welfare_center_play_background,pas_ut_welfare_center_normal,pas_ut_welfare_center_abnormal,pas_ut_welfare_center_more\",\"height\":712,\"width\":534,\"city_id\":0,\"lat\":0,\"lng\":0,\"app_key\":\"server\",\"lang\":\"zh-CN\",\"token\":\"' + f'{DiDi_fulijin_token}' + r'\"}","assist_check":true,"os":"ios"}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            "origin": "https://page.udache.com",
+            "host":"ut.xiaojukeji.com",
+        }
+        response = requests.post(url=url,data=data,headers=headers,verify=False)
+        result = response.json()
+        # print(result)
+        divide_data = result['data']['divide_data']['divide']
+        activity_id_today = divide_data[today]['activity_id']
+        task_id_today = divide_data[today]['task_id']
+        activity_id_tomorrow = divide_data[tomorrow]['activity_id']
+        task_id_tomorrow = divide_data[tomorrow]['task_id']
+        count = divide_data[tomorrow]['button']['count']
+        return activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count
+    except Exception as e:
+        print(e)
+        msg ('【账号{0}】获取瓜分id异常，可能是token过期'.format (account))
 
 
 
@@ -381,16 +436,20 @@ if __name__ == '__main__':
     print("============执行滴滴福利金签到脚本==============")
     if DiDi_fulijin_token != '':
         xpsid = get_xpsid()
+        activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count = guafen_id (DiDi_fulijin_token, xpsid, account)
         do_sign1(DiDi_fulijin_token,xpsid,account)
-        guafen (DiDi_fulijin_token, xpsid, account)
+        guafen_Sign (DiDi_fulijin_token, xpsid, account, activity_id_today, task_id_today)
+        guafen (DiDi_fulijin_token, xpsid, account,activity_id_tomorrow,task_id_tomorrow,count)
         # do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account)
         get_fulijin(DiDi_fulijin_token,account,wsgsig)
 
     elif DiDi_fulijin_tokens != '':
         for j in DiDi_fulijin_tokens:             #同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
+            activity_id_today, task_id_today, activity_id_tomorrow, task_id_tomorrow, count = guafen_id (j, xpsid, account)
             do_sign1 (j,xpsid,account)
-            guafen(j,xpsid,account)
+            guafen_Sign (j, xpsid, account, activity_id_today, task_id_today)
+            guafen (j, xpsid, account, activity_id_tomorrow, task_id_tomorrow, count)
             # do_sign2 (i, j,xpsid,account)
             get_fulijin (j,account,wsgsig)
             account += 1
