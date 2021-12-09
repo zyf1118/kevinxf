@@ -18,14 +18,15 @@ new Env('滴滴app水果自动任务');
 
 【教程】：方法一：
 需要自行用手机抓取Didi_jifen_token。
-在青龙变量中添加变量Didi_jifen_token
-多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token=xxxxx&xxxx
 Didi_jifen_token如何抓，请看didi_Sign说明
 
 方法二：
 手机抓包后，自己浇水一次，查看URL路径，https://game.xiaojukeji.com/api/game/plant/watering?wsgsig=xxxx
 然后查看headers，D-Header-T对应的数值，就是token
 
+
+在青龙变量中添加变量Didi_jifen_token
+多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token=xxxxx&xxxx
 
 cron时间填写：43 0,7,8,12,15,17-23/2 * * *
 
