@@ -219,8 +219,9 @@ def get_xpsid():
         print(xpsid)
         return xpsid
     except Exception as e:
-        print(e)
-        msg("获取xpsid失败，可能是表达式错误")
+#         print(e)
+#         msg("获取xpsid失败，可能是表达式错误")
+          pass
 
 #获取dchn
 def get_dchn():
