@@ -438,8 +438,9 @@ if __name__ == '__main__':
         xpsid = get_xpsid()
         activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count = guafen_id (DiDi_fulijin_token, xpsid, account)
         do_sign1(DiDi_fulijin_token,xpsid,account)
-        guafen_Sign (DiDi_fulijin_token, xpsid, account, activity_id_today, task_id_today)
-        guafen (DiDi_fulijin_token, xpsid, account,activity_id_tomorrow,task_id_tomorrow,count)
+        if activity_id_today != 0:
+            guafen_Sign (DiDi_fulijin_token, xpsid, account, activity_id_today, task_id_today)
+            guafen (DiDi_fulijin_token, xpsid, account,activity_id_tomorrow,task_id_tomorrow,count)
         # do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account)
         get_fulijin(DiDi_fulijin_token,account,wsgsig)
 
@@ -448,9 +449,10 @@ if __name__ == '__main__':
             xpsid = get_xpsid ()
             activity_id_today, task_id_today, activity_id_tomorrow, task_id_tomorrow, count = guafen_id (j, xpsid, account)
             do_sign1 (j,xpsid,account)
-            guafen_Sign (j, xpsid, account, activity_id_today, task_id_today)
-            guafen (j, xpsid, account, activity_id_tomorrow, task_id_tomorrow, count)
-            # do_sign2 (i, j,xpsid,account)
+            if activity_id_today != 0:
+                guafen_Sign (j, xpsid, account, activity_id_today, task_id_today)
+                guafen (j, xpsid, account, activity_id_tomorrow, task_id_tomorrow, count)
+           # do_sign2 (i, j,xpsid,account)
             get_fulijin (j,account,wsgsig)
             account += 1
     else:
