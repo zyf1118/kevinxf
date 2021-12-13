@@ -8,12 +8,13 @@
 Author: 一风一燕
 功能：滴滴app水果自动任务
 Date: 2021-11-23
-cron: 43 0,7,8,12,15,17-23/2 * * * xF_DiDi_fruit.py
+cron: 43 0-3,8,12,15,18,22 * * * xF_DiDi_fruit.py
 new Env('滴滴app水果自动任务');
 
 
 
 ****************滴滴出行APP*******************
+
 
 
 【教程】：方法一：
@@ -28,7 +29,7 @@ Didi_jifen_token如何抓，请看didi_Sign说明
 在青龙变量中添加变量Didi_jifen_token
 多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token=xxxxx&xxxx
 
-cron时间填写：43 0,7,8,12,15,17-23/2 * * *
+cron时间填写：43 0-3,8,12,15,18,22 * * *
 
 
 '''
@@ -678,7 +679,7 @@ def get_misson9(Didi_jifen_token, xpsid, account,wsgsig):
             title = result['data']['title']
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
-            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}袋".format (title, name, count, account))
         elif "任务未达到领奖条件" in errmsg:
             msg("【账号{}】【浇水200g】未达到领奖条件".format(account))
         else:
@@ -713,7 +714,7 @@ def get_misson10(Didi_jifen_token, xpsid, account,wsgsig):
             title = result['data']['title']
             name = result['data']['reward'][0]['name']
             count = result['data']['reward'][0]['count']
-            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}袋".format (title, name, count, account))
         elif "任务未达到领奖条件" in errmsg:
             msg("【账号{}】【浇水500g】未达到领奖条件".format(account))
         else:
@@ -1139,7 +1140,8 @@ def do_misson8(Didi_jifen_token, xpsid, account,wsgsig):
 def do_misson9(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
-        url = f'https://game.xiaojukeji.com/api/game/plant/recEarlyBird?wsgsig={wsgsig}'
+
+        url = f'https://game.xiaojukeji.com/api/game/plant/shareEarlyBird?wsgsig={wsgsig}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
@@ -1149,18 +1151,31 @@ def do_misson9(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"water_status":0,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         response = requests.post (url=url, headers=heards, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
         time.sleep (0.2)
         if errmsg == 'success':
-            msg ("【账号{0}】【分享任务】执行成功，获取100g水滴".format (account))
-        elif "对应奖励已领取" in errmsg:
-            msg ("【账号{}】【分享任务】早已完成，跳过执行环节".format (account))
-        elif "请稍后再试" in errmsg:
-            msg ("【账号{}】【分享任务】异常，请重新执行".format (account))
+            url = f'https://game.xiaojukeji.com/api/game/plant/recEarlyBird?wsgsig={wsgsig}'
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"water_status":0,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            result = response.json ()
+            print (result)
+            errmsg = result['errmsg']
+            if errmsg == 'success':
+                msg("【账号{}】【早起分享】任务执行成功，获得100g水滴".format(account))
+            elif "对应奖励已领取" in errmsg:
+                msg ("【账号{}】【早起分享】早已完成，跳过执行环节".format (account))
+            elif "请稍后再试" in errmsg:
+                msg ("【账号{}】【早起分享】异常，请重新执行".format (account))
+            elif "当前条件还不满足" in errmsg:
+                msg("【账号{}】【早起分享】异常，请在中午12点前执行一次脚本".format(account))
+        elif "今天已经分享" in errmsg:
+            msg ("【账号{}】【早起分享】早已完成，跳过执行环节".format (account))
+        else:
+            msg("【账号{}】请在中午12点前查看手机APP上时候有早起鸟分享活动".format(account))
 
     except Exception as e:
         print (e)
@@ -1252,11 +1267,11 @@ def watering(Didi_jifen_token, xpsid, account,wsgsig):
             else:
                 break
         msg (
-            "【账号{5}】本次浇水共{0}g水滴，剩余{1}g水滴，一共浇水次数为{2}次，距离果树升级进度{3}%，下一次领取宝箱需浇水{4}".format (water, pack_water, water_times,tree_progress,next_box_progress, account))
+            "【账号{5}】本次浇水共{0}g水滴，剩余{1}g水滴，今日一共浇水次数为{2}次，距离果树升级进度{3}%，下一次领取宝箱需浇水{4}".format (water, pack_water, water_times,tree_progress,next_box_progress, account))
 
     except Exception as e:
         print (e)
-        msg ("【账号{0}】浇水失败,可能是token过期".format (account))
+        msg ("【账号{0}】浇水异常，请稍后再试试".format (account))
 
 
 if __name__ == '__main__':
