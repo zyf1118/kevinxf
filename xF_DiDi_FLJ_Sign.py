@@ -425,8 +425,8 @@ def guafen_id(DiDi_fulijin_token,xpsid,account):
         return activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count
     except Exception as e:
         print(e)
-        msg ('【账号{0}】获取瓜分id异常，可能是token过期'.format (account))
-
+        msg ('【账号{0}】无法参加瓜分活动，请自行打开App查看是否有瓜分活动'.format (account))
+        return 0,0,0,0,0
 
 
 if __name__ == '__main__':
