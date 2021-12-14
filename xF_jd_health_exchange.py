@@ -3,12 +3,12 @@
 '''
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导
-项目名称:xF_jd_heath_exchange.py
-Author: 一风一燕
+项目名称:jd_health_exchange.py
+Author: 一风一扬
 功能：健康社区兑换
 Date: 2021-08-12
-cron: 18 8  * * * xF_jd_heath_exchange.py
-new Env('健康社区兑换京豆');
+cron: 9 1,15 * * * jd_health_exchange.py
+new Env('JD健康社区兑换');
 
 
 
@@ -33,9 +33,11 @@ id = '4'
 #ENV设置： export dd_thread=30
 dd_thread = '30'
 
+
+
+######################################################以下代码请不要乱改######################################
+
 UserAgent = ''
-
-
 
 
 import requests
@@ -255,7 +257,7 @@ except:
 if "JD_COOKIE" in os.environ:
     if len (os.environ["JD_COOKIE"]) > 1:
         cookies = os.environ["JD_COOKIE"]
-        # temporary = cookies.split ('&')
+        cookies = cookies.split ('&')
         # cookies = temporary[0]
         printT ("已获取并使用Env环境 Cookie")
 
@@ -503,13 +505,13 @@ def jdhealth_exchange(functionId,body,headers):
 
 def start():
     print (f"###### 启动并发线程 【Thread-{dd_thread}】")
-    cookiesList, userNameList, pinNameList = getCk.iscookie ()
-    cookies1 = checkUser (cookiesList)  # 将够钱兑换的账号保存下来给cookies，其余不够钱的账号剔除在外，不执行兑换
+    # cookiesList, userNameList, pinNameList = getCk.iscookie ()
+    # cookies1 = checkUser (cookiesList)  # 将够钱兑换的账号保存下来给cookies，其余不够钱的账号剔除在外，不执行兑换
     final = 1
     while True:
         print (f"\n【准备开始...】\n")
         user_num = 1
-        for i in cookies1:
+        for i in cookies:
             headers, userName = setHeaders (i)
             final = jdhealth_exchange ('jdhealth_exchange','{"commodityType":2,"commodityId":"4"}',headers)
             user_num += 1
@@ -521,7 +523,7 @@ def start():
 
             elif final == 999:
                 pass
-        if user_num > len(cookies1):
+        if user_num > len(cookies):
             break
 if __name__ == '__main__':
     print("脚本默认兑换20豆，18W分以上才兑换，具体修改教程可看脚本开头注释")
