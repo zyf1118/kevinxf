@@ -159,7 +159,7 @@ def getEnvs(label):
 
 if "DiDi_fulijin_token" in os.environ:
     print(len (os.environ["DiDi_fulijin_token"]))
-    if len (os.environ["DiDi_fulijin_token"]) > 363:
+    if len (os.environ["DiDi_fulijin_token"]) > 300:
         DiDi_fulijin_tokens = os.environ["DiDi_fulijin_token"]
         # temporary = DiDi_fulijin_token.split ('&')
         # DiDi_fulijin_token = temporary[0]
