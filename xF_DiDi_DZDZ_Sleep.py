@@ -148,7 +148,7 @@ def getEnvs(label):
 
 if "Didi_jifen_token" in os.environ:
     print(len (os.environ["Didi_jifen_token"]))
-    if len (os.environ["Didi_jifen_token"]) > 419:
+    if len (os.environ["Didi_jifen_token"]) > 319:
         tokens = os.environ["Didi_jifen_token"]
         # tokens = tokens.split ('&')
         # cookies = temporary[0]
