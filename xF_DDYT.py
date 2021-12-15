@@ -332,9 +332,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
 
     except Exception as e:
         print(e)
-        msg("【{0}】喂食失败,可能是cookies过期".format(name))
-        # msg ('（叮咚买菜）{}异常，可能是token过期'.format (name1))
-        # send ("叮咚买菜", msg_info)
+        msg("【{0}】鱼终于喂饱了，上线领取奖励啦！！".format(name))
 
 #每日签到任务
 def do_sign(name,uid,DD_token,DD_cookies):
