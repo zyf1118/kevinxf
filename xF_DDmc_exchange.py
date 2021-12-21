@@ -342,8 +342,9 @@ def exchange(name,DD_token,DD_cookies,activityId):
                 code = result['code']
                 if code == 0:
                     msg("【账号{0}】兑换{1}成功".format(name,DDmc_Coupon))
-            elif nowtime1 > qgendtime and "奖品单日预算不足" in messge:
-                msg("【账号{0}】兑换失败，优惠券被抢空了".format(name))
+                    break
+            elif nowtime1 > qgendtime:
+                msg("超过兑换时间，退出执行".format(name))
                 break
 
     except Exception as e:
@@ -362,7 +363,7 @@ if __name__ == '__main__':
     msg (f"单账号兑换模式，兑换【账号{DDmc_accout}{name}】")
     activityId = get_activityId (DD_token, DD_cookies, name)
     exchange(name,DD_token,DD_cookies,activityId)
-    if "兑换成功" in msg_info:
+    if "成功" in msg_info:
         send("叮咚积分优惠券兑换", msg_info)
     elif "过期" in msg_info:
         send("叮咚积分优惠券兑换", msg_info)
