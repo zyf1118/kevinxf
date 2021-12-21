@@ -37,7 +37,7 @@ new Env('叮咚买菜积分兑换');
 
 DD_token = ''
 DD_cookies = ''
-DDmc_Coupon = '5元无门槛券'
+DDmc_Coupon = '8元无门槛券'
 DDmc_accout = '1'
 
 
@@ -69,9 +69,9 @@ today = datetime.datetime.now().strftime('%Y-%m-%d')
 tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 #开始抢兑时间
-starttime='23:59:58.00000000'
+starttime='23:59:59.00000000'
 #结束时间
-endtime='00:00:30.00000000'
+endtime='00:00:10.00000000'
 
 qgtime = '{} {}'.format (today, starttime)
 qgendtime = '{} {}'.format (tomorrow, endtime)
@@ -161,7 +161,7 @@ else:
 
 if "DDmc_Coupon" in os.environ:
     DDmc_Coupon = os.environ["DDmc_Coupon"]
-    printT ("已获取并使用Env环境DDmc_Coupon")
+    printT (f"已获取并使用Env环境DDmc_Coupon，兑换{DDmc_Coupon}")
 else:
     print("DDmc_Coupon未填写")
     exit(0)
@@ -303,7 +303,7 @@ def get_activityId(DD_token,DD_cookies,name):
         elif DDmc_Coupon == '15元满减券':
             activityId = result['data'][0]['prizes'][0]['activityId']
         else:
-            msg("DDmc_Coupon未填写，不会兑换")
+            msg("DDmc_Coupon未填写，不兑换")
         # print(activityId)
         return activityId
     except Exception as e:
@@ -340,13 +340,9 @@ def exchange(name,DD_token,DD_cookies,activityId):
                 print(result)
                 messge = result['msg']
                 code = result['code']
-                if "奖品单日预算不足" in messge:
-                    msg("优惠券已被抢完，下次再来")
-                    break
                 if code == 0:
                     msg("【账号{0}】兑换{1}成功".format(name,DDmc_Coupon))
-                    break
-            elif nowtime1 > qgendtime:
+            elif nowtime1 > qgendtime and "奖品单日预算不足" in messge:
                 msg("【账号{0}】兑换失败，优惠券被抢空了".format(name))
                 break
 
