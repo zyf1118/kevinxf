@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴出行积分派兑
 Date: 2021-11-20
-cron: 59 8,14 * * * xF_DiDi_exchange.py
+cron: 29,59 8,9,14,18 * * * xF_DiDi_exchange.py
 new Env('滴滴出行积分派兑');
 
 
