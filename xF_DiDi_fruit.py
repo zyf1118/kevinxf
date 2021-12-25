@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴app水果自动任务
 Date: 2021-11-23
-cron: 43 0-3,8,12,15,18,22 * * * xF_DiDi_fruit.py
+cron: 43 0-3,8,9,12,15,18,22 * * * xF_DiDi_fruit.py
 new Env('滴滴app水果自动任务');
 
 
