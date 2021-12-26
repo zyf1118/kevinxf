@@ -245,7 +245,7 @@ def get_dchn():
     except Exception as e:
 #         print(e)
 #         msg("获取dchn失败，可能是表达式错误")
-          
+          pass
 
 #签到
 def sign(Didi_jifen_token,xpsid,account):
