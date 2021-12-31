@@ -156,7 +156,10 @@ if "exchange_jkd_numb" in os.environ:
     elif exchange_jkd_numb == 4:
         total_exchange = 15000
         FLJ = 150
-    printT (f"已获取并使用Env环境exchange_jkd_nnumb，兑换{FLJ}福利金，需要{total_exchange}健康豆")
+    else:
+        printT (f"环境变量exchange_jkd_numb填写错误")
+        exit(0)
+    printT (f"已获取并使用Env环境exchange_jkd_numb，兑换{FLJ}福利金，需要{total_exchange}健康豆")
 else:
     print("变量exchange_jkd_numb未填写，默认兑换500福利金，需要5000健康豆")
 
