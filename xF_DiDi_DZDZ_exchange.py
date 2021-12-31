@@ -8,9 +8,10 @@
 Author: 一风一燕
 功能：滴滴app多走多赚签到
 Date: 2021-12-19
-cron: 9 15 * * * xF_DiDi_DZDZ_exchange.py
+cron: 55 59 23 * * * xF_DiDi_DZDZ_exchange.py
 new Env('滴滴app多走多赚兑换福利金');
 
+updata:兑换改版，更新脚本
 
 
 ****************滴滴出行APP*******************
@@ -18,7 +19,10 @@ new Env('滴滴app多走多赚兑换福利金');
 
 【教程】：
 
-青龙变量exchange_jkd_numb=5的话，兑换5*1000健康豆=50福利金。建议填写6或者7，每天上限7次，按需填写。
+青龙变量exchange_jkd_numb=1的话，兑换100健康豆，1福利金
+青龙变量exchange_jkd_numb=2的话，兑换5000健康豆，50福利金
+青龙变量exchange_jkd_numb=3的话，兑换10000健康豆，100福利金
+青龙变量exchange_jkd_numb=4的话，兑换150000健康豆，150福利金
 
 需要自行用手机抓取Didi_jifen_token。
 在青龙变量中添加变量Didi_jifen_token
@@ -31,17 +35,16 @@ new Env('滴滴app多走多赚兑换福利金');
 
 
 
-cron时间填写：9 15 * * *
+cron时间填写：55 59 23 * * *
 
 
 '''
 
 
 Didi_jifen_token = ''
-exchange_numb = 1000
-exchange_jkd_numb = 1
-
-
+exchange_jkd_numb = 2
+total_exchange = 5000
+FLJ = 50
 '''
 
 
@@ -66,12 +69,15 @@ requests.packages.urllib3.disable_warnings()
 pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
 path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
-mor_time ='08:00:00.00000000'
-moringtime = '{} {}'.format (today, mor_time)
+tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
+#开始抢兑时间
+starttime='23:59:59.00000000'
+#结束时间
+endtime='00:00:05.00000000'
 
-
-
+qgtime = '{} {}'.format (today, starttime)
+qgendtime = '{} {}'.format (tomorrow, endtime)
 
 
 
@@ -138,10 +144,21 @@ else:
 
 if "exchange_jkd_numb" in os.environ:
     exchange_jkd_numb = os.environ["exchange_jkd_numb"]
-    total_exchange = int(exchange_jkd_numb) * 1000
-    printT (f"已获取并使用Env环境exchange_jkd_nnumb，兑换{total_exchange}健康豆")
+    if exchange_jkd_numb == 1:
+        total_exchange = 100
+        FLJ = 1
+    elif exchange_jkd_numb == 2:
+        total_exchange = 5000
+        FLJ = 50
+    elif exchange_jkd_numb == 3:
+        total_exchange = 10000
+        FLJ = 100
+    elif exchange_jkd_numb == 4:
+        total_exchange = 15000
+        FLJ = 150
+    printT (f"已获取并使用Env环境exchange_jkd_nnumb，兑换{FLJ}福利金，需要{total_exchange}健康豆")
 else:
-    print("变量exchange_jkd_numb未填写，默认兑换1000健康豆")
+    print("变量exchange_jkd_numb未填写，默认兑换500福利金，需要5000健康豆")
 
 ## 获取通知服务
 class msg(object):
@@ -237,40 +254,79 @@ def get_xpsid():
 
 #兑换福利金
 def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
-    try:
-        exchange_jkd_numb = int(exchange_jkd_numb)
-        for i in range(exchange_jkd_numb):
-            url = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ct%2F4IjT46lMZCt2NNqSuenkN%2BeTy0m9eLkxoBGlI%2BeTzCiU679dvenw17VMzCDTgJdZnfXY17eZPbW1BLlSzeXH88F9TftTf%2BAEvBXZK7e5TAfZN%2BqExBCq78lIY'
-            heards = {
-                "Host": "res.xiaojukeji.com",
-                "Accept":"application/json, text/plain, */*",
-                "Content-Type": "application/json",
-                "Origin": "https://page.udache.com",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Connection":"keep-alive",
-                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-                "ticket":f"{Didi_jifen_token}",
-                "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
-                "Referer": "https://page.udache.com/",
-                "Content-Length": "1013"
-            }
-            data = r'{"xbiz":"240300","prod_key":"","xpsid":"36f75fd5df6841c2abc13be6ec0a218e","dchn":"DpzAd35","xoid":"f24bac22-d420-493f-ad13-d2749d24c1e2","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"36f75fd5df6841c2abc13be6ec0a218e","xpsid_from":"89367ca938ca4febad1bb272af4984ce","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"dvJhibvsyKKWyG_lwfJoVucFLai8HOkVogb-A8aYfpIkzDmKA0EMQNG7_Fg0Ui1SldLJ5w6z9CxJGWwcNb67aZw_3sFSkrrppgjLSBNWIU1VVViVtOizeG3mo8wqrEaat3ALHyGsTvL2jvBBgvBJlmEt2pzavHtU4Zucwk4e3C7369dO6kP4Oas6x5mH8EtitQ8dw0Md4e9V_p_8GQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":1000}'
-            # print(data)
-            response = requests.post (url=url, headers=heards,verify=False,data=data)
-            res = response.text
-            # print(res)
-            result = response.json()
-            print (result)
-            errmsg = result['errmsg']
-            if errmsg == 'success':
-                msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,exchange_numb,int(exchange_numb)/100))
-                time.sleep(2)
-            elif "代币兑换错误" in errmsg:
-                msg("【账号{0}】今日兑换可能已达上限")
-                break
-    except Exception as e:
-        print (e)
-        msg ("【账号{0}】兑换福利金失败,可能是ticket过期".format (account))
+        url2 = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
+        url3 = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ndL%2FHykU0e3RLrBJQXEedQPheluSHdw9ODBFAKSmeluTM9H1uXO9duVXEF3TMrBbotF5gQrXElJv6EkEOC6DA3eX9lCTMh6dy0ZDeQYiGAfTMrHCyCEaBJlyGFGl'
+        heards = {
+            "Host": "res.xiaojukeji.com",
+            "Accept":"application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Origin": "https://page.udache.com",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection":"keep-alive",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "ticket":f"{Didi_jifen_token}",
+            "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            # "Content-Length": "1013"
+        }
+        data2 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":2}'
+        data3 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":3}'
+        # print(data)
+        print ("抢兑换开始时间为：{}".format (qgtime))
+        while True:
+            try:
+                nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+                if nowtime > qgtime:
+                    if exchange_jkd_numb == 2:
+                        response = requests.post (url=url2, headers=heards,verify=False,data=data2)
+                        # print(response.text)
+                        result = response.json()
+                        print (result)
+                        errmsg = result['errmsg']
+                        if errmsg == 'success':
+                            msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,total_exchange,FLJ))
+                            break
+                        elif "代币兑换错误" in errmsg:
+                            msg("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
+                            break
+                    elif exchange_jkd_numb == 3:
+                        response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                        result = response.json ()
+                        print (result)
+                        errmsg = result['errmsg']
+                        if errmsg == 'success':
+                            msg ("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format (account, total_exchange, FLJ))
+                            break
+                        elif "代币兑换错误" in errmsg:
+                            msg ("【账号{0}】今日兑换【100】福利金可能已达上限")
+                            break
+                    elif exchange_jkd_numb == 4:
+                        response = requests.post (url=url2, headers=heards, verify=False, data=data2)
+                        result = response.json ()
+                        print (result)
+                        errmsg = result['errmsg']
+                        if errmsg == 'success':
+                            msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
+                        elif "代币兑换错误" in errmsg:
+                            msg ("【账号{0}】今日兑换【50福利金】可能已达上限")
+                            flag2 = 1
+                        response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                        result = response.json ()
+                        print (result)
+                        errmsg = result['errmsg']
+                        if errmsg == 'success':
+                            msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
+                        elif "代币兑换错误" in errmsg:
+                            msg ("【账号{0}】今日兑换【100福利金】可能已达上限")
+                            flag3 = 1
+                            if flag2 == 1 and flag3 ==1:
+                                msg("【账号{0}】脚本执行完毕，是否抢到请查看日志")
+                                break
+                if nowtime > qgendtime:
+                    msg("【账号{0}】脚本执行完毕，是否抢到请查看日志".format(account))
+                    break
+            except Exception as e:
+                print (e)
 
 
 if __name__ == '__main__':
