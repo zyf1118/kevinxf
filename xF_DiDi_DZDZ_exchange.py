@@ -352,7 +352,7 @@ if __name__ == '__main__':
             account += 1
 
 
-    if "签到" in msg_info:
+    if "已兑换" in msg_info:
         send("滴滴多走多赚兑换", msg_info)
     elif "过期" in msg_info:
         send("滴滴多走多赚兑换", msg_info)
