@@ -74,7 +74,7 @@ tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-
 #开始抢兑时间
 starttime='23:59:59.00000000'
 #结束时间
-endtime='00:00:05.00000000'
+endtime='00:00:30.00000000'
 
 qgtime = '{} {}'.format (today, starttime)
 qgendtime = '{} {}'.format (tomorrow, endtime)
