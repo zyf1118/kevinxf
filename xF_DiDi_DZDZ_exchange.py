@@ -142,16 +142,16 @@ else:
 
 if "exchange_jkd_numb" in os.environ:
     exchange_jkd_numb = os.environ["exchange_jkd_numb"]
-    if exchange_jkd_numb == '1':
+    if exchange_jkd_numb == 1:
         total_exchange = 100
         FLJ = 1
-    elif exchange_jkd_numb == '2':
+    elif exchange_jkd_numb == 2:
         total_exchange = 5000
         FLJ = 50
-    elif exchange_jkd_numb == '3':
+    elif exchange_jkd_numb == 3:
         total_exchange = 10000
         FLJ = 100
-    elif exchange_jkd_numb == '4':
+    elif exchange_jkd_numb == 4:
         total_exchange = 15000
         FLJ = 150
     else:
