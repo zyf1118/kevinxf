@@ -52,9 +52,9 @@ FLJ = 50
 
 
 '''
-tokens =''
+tokens = ''
 account = 1
-id = ''
+
 try:
     import requests
     import json,sys,os,re
@@ -78,7 +78,6 @@ endtime='00:00:30.00000000'
 
 qgtime = '{} {}'.format (today, starttime)
 qgendtime = '{} {}'.format (tomorrow, endtime)
-
 
 
 
@@ -126,14 +125,13 @@ def getEnvs(label):
 #            pass
 #    printT ("已获取并使用ck环境 token")
 
-
-
 ########################################################################
 
 if "Didi_jifen_token" in os.environ:
     print(len (os.environ["Didi_jifen_token"]))
     if len (os.environ["Didi_jifen_token"]) > 319:
         tokens = os.environ["Didi_jifen_token"]
+        tokens = tokens.split ('&')
         # tokens = tokens.split ('&')
         # cookies = temporary[0]
         printT ("已获取并使用Env环境Didi_jifen_token")
@@ -144,16 +142,16 @@ else:
 
 if "exchange_jkd_numb" in os.environ:
     exchange_jkd_numb = os.environ["exchange_jkd_numb"]
-    if exchange_jkd_numb == 1:
+    if exchange_jkd_numb == '1':
         total_exchange = 100
         FLJ = 1
-    elif exchange_jkd_numb == 2:
+    elif exchange_jkd_numb == '2':
         total_exchange = 5000
         FLJ = 50
-    elif exchange_jkd_numb == 3:
+    elif exchange_jkd_numb == '3':
         total_exchange = 10000
         FLJ = 100
-    elif exchange_jkd_numb == 4:
+    elif exchange_jkd_numb == '4':
         total_exchange = 15000
         FLJ = 150
     else:
@@ -220,20 +218,7 @@ class msg(object):
                 printT("加载通知服务失败~")
         ###################
 msg().main()
-nowtime = int(round(time.time() * 1000))
 
-
-if tokens != '':
-    # if "Didi_jifen_token" in tokens:
-        # r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
-        # tokens = r.findall (ck)
-        tokens = tokens.split ('&')
-        # print(tokens)
-        if len (tokens) == 1:
-            Didi_jifen_token = tokens[0]
-
-        else:
-            pass
 
 #获取xpsid
 def get_xpsid():
@@ -257,91 +242,90 @@ def get_xpsid():
 
 #兑换福利金
 def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
-        url2 = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
-        url3 = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ndL%2FHykU0e3RLrBJQXEedQPheluSHdw9ODBFAKSmeluTM9H1uXO9duVXEF3TMrBbotF5gQrXElJv6EkEOC6DA3eX9lCTMh6dy0ZDeQYiGAfTMrHCyCEaBJlyGFGl'
-        heards = {
-            "Host": "res.xiaojukeji.com",
-            "Accept":"application/json, text/plain, */*",
-            "Content-Type": "application/json",
-            "Origin": "https://page.udache.com",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Connection":"keep-alive",
-            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-            "ticket":f"{Didi_jifen_token}",
-            "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
-            "Referer": "https://page.udache.com/",
-            # "Content-Length": "1013"
-        }
-        data2 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":2}'
-        data3 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":3}'
-        # print(data)
-        print ("抢兑换开始时间为：{}".format (qgtime))
+    url2 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
+    url3 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ndL%2FHykU0e3RLrBJQXEedQPheluSHdw9ODBFAKSmeluTM9H1uXO9duVXEF3TMrBbotF5gQrXElJv6EkEOC6DA3eX9lCTMh6dy0ZDeQYiGAfTMrHCyCEaBJlyGFGl'
+    heards = {
+        "Host": "res.xiaojukeji.com",
+        "Accept":"application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "Origin": "https://page.udache.com",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection":"keep-alive",
+        "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+        "ticket":f"{Didi_jifen_token}",
+        "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+        "Referer": "https://page.udache.com/",
+        # "Content-Length": "1013"
+    }
+    data2 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":2}'
+    data3 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":3}'
+    # print(data)
+    printT("抢兑换开始时间为：{}".format (qgtime))
+    printT (f"正在等待兑换时间，请勿终止退出...")
+    try:
         while True:
-            try:
-                nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
-                if nowtime > qgtime:
-                    if exchange_jkd_numb == 2:
-                        response = requests.post (url=url2, headers=heards,verify=False,data=data2)
-                        # print(response.text)
-                        result = response.json()
-                        print (result)
-                        errmsg = result['errmsg']
-                        if errmsg == 'success':
-                            msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,total_exchange,FLJ))
+            nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+            if nowtime > qgtime:
+                if exchange_jkd_numb == 2:
+                    response = requests.post (url=url2, headers=heards,verify=False,data=data2)
+                    # print(response.text)
+                    result = response.json()
+                    print(result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,total_exchange,FLJ))
+                        break
+                    elif "代币兑换错误" in errmsg:
+                        msg("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
+                        break
+                elif exchange_jkd_numb == 3:
+                    response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format (account, total_exchange, FLJ))
+                        break
+                    elif "代币兑换错误" in errmsg:
+                        msg ("【账号{0}】今日兑换【100】福利金可能已达上限")
+                        break
+                elif exchange_jkd_numb == 4:
+                    response = requests.post (url=url2, headers=heards, verify=False, data=data2)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
+                    elif "代币兑换错误" in errmsg:
+                        msg ("【账号{0}】今日兑换【50福利金】可能已达上限")
+                        flag2 = 1
+                    response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
+                    elif "代币兑换错误" in errmsg:
+                        msg ("【账号{0}】今日兑换【100福利金】可能已达上限")
+                        flag3 = 1
+                        if flag2 == 1 and flag3 ==1:
+                            msg("【账号{0}】脚本执行完毕，是否抢到请查看日志")
                             break
-                        elif "代币兑换错误" in errmsg:
-                            msg("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
-                            break
-                    elif exchange_jkd_numb == 3:
-                        response = requests.post (url=url3, headers=heards, verify=False, data=data3)
-                        result = response.json ()
-                        print (result)
-                        errmsg = result['errmsg']
-                        if errmsg == 'success':
-                            msg ("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format (account, total_exchange, FLJ))
-                            break
-                        elif "代币兑换错误" in errmsg:
-                            msg ("【账号{0}】今日兑换【100】福利金可能已达上限")
-                            break
-                    elif exchange_jkd_numb == 4:
-                        response = requests.post (url=url2, headers=heards, verify=False, data=data2)
-                        result = response.json ()
-                        print (result)
-                        errmsg = result['errmsg']
-                        if errmsg == 'success':
-                            msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
-                        elif "代币兑换错误" in errmsg:
-                            msg ("【账号{0}】今日兑换【50福利金】可能已达上限")
-                            flag2 = 1
-                        response = requests.post (url=url3, headers=heards, verify=False, data=data3)
-                        result = response.json ()
-                        print (result)
-                        errmsg = result['errmsg']
-                        if errmsg == 'success':
-                            msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
-                        elif "代币兑换错误" in errmsg:
-                            msg ("【账号{0}】今日兑换【100福利金】可能已达上限")
-                            flag3 = 1
-                            if flag2 == 1 and flag3 ==1:
-                                msg("【账号{0}】脚本执行完毕，是否抢到请查看日志")
-                                break
-                if nowtime > qgendtime:
-                    msg("【账号{0}】脚本执行完毕，是否抢到请查看日志".format(account))
-                    break
-            except Exception as e:
-                print (e)
+            if nowtime > qgendtime:
+                msg("【账号{0}】脚本执行完毕，是否抢到请查看日志".format(account))
+                break
+    except Exception as e:
+        print (e)
 
 
 if __name__ == '__main__':
-    global msg_info
     print("============脚本只支持青龙新版=============\n")
-    print("具体教程以文本模式打开文件，查看顶部教程\n\n")
+    print("具体教程以文本模式打开文件，查看顶部教程\n")
     print("============执行滴滴多走多赚兑换脚本==============")
-    print(Didi_jifen_token)
+    # print(Didi_jifen_token)
     if Didi_jifen_token != '':
         xpsid = get_xpsid ()
         exchange (Didi_jifen_token, xpsid, account, exchange_jkd_numb)
-
     elif tokens == '' :
         print("检查变量Didi_jifen_token是否已填写")
     elif len(tokens) > 1 :
@@ -350,8 +334,6 @@ if __name__ == '__main__':
             xpsid = get_xpsid ()
             exchange (i, xpsid, account, exchange_jkd_numb)
             account += 1
-
-
     if "已兑换" in msg_info:
         send("滴滴多走多赚兑换", msg_info)
     elif "过期" in msg_info:
