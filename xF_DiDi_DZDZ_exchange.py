@@ -142,16 +142,16 @@ else:
 
 if "exchange_jkd_numb" in os.environ:
     exchange_jkd_numb = os.environ["exchange_jkd_numb"]
-    if exchange_jkd_numb == 1:
+    if exchange_jkd_numb == '1':
         total_exchange = 100
         FLJ = 1
-    elif exchange_jkd_numb == 2:
+    elif exchange_jkd_numb == '2':
         total_exchange = 5000
         FLJ = 50
-    elif exchange_jkd_numb == 3:
+    elif exchange_jkd_numb == '3':
         total_exchange = 10000
         FLJ = 100
-    elif exchange_jkd_numb == 4:
+    elif exchange_jkd_numb == '4':
         total_exchange = 15000
         FLJ = 150
     else:
@@ -242,6 +242,8 @@ def get_xpsid():
 
 #兑换福利金
 def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
+    flag2 = 0
+    flag3 = 0
     url2 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
     url3 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ndL%2FHykU0e3RLrBJQXEedQPheluSHdw9ODBFAKSmeluTM9H1uXO9duVXEF3TMrBbotF5gQrXElJv6EkEOC6DA3eX9lCTMh6dy0ZDeQYiGAfTMrHCyCEaBJlyGFGl'
     heards = {
@@ -296,24 +298,33 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                     errmsg = result['errmsg']
                     if errmsg == 'success':
                         msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
+                        flag2 = 1
                     elif "代币兑换错误" in errmsg:
                         msg ("【账号{0}】今日兑换【50福利金】可能已达上限")
-                        flag2 = 1
                     response = requests.post (url=url3, headers=heards, verify=False, data=data3)
                     result = response.json ()
                     print (result)
                     errmsg = result['errmsg']
                     if errmsg == 'success':
                         msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
+                        flag3 = 1
                     elif "代币兑换错误" in errmsg:
                         msg ("【账号{0}】今日兑换【100福利金】可能已达上限")
-                        flag3 = 1
-                        if flag2 == 1 and flag3 ==1:
-                            msg("【账号{0}】脚本执行完毕，是否抢到请查看日志")
+                        if flag2 == 1 and flag3 == 1:
+                            msg("【账号{0}】脚本执行完毕，共获得福利金150")
+                            break
+                        elif flag2 == 0 and flag3 == 1:
+                            msg ("【账号{0}】脚本执行完毕，共获得福利金100")
+                            break
+                        elif flag2 == 1 and flag3 == 0:
+                            msg ("【账号{0}】脚本执行完毕，共获得福利金50")
                             break
             if nowtime > qgendtime:
-                msg("【账号{0}】脚本执行完毕，是否抢到请查看日志".format(account))
-                break
+                if flag2 == 0 and flag3 == 0:
+                    msg ("【账号{0}】脚本执行完毕，兑换失败".format (account))
+                    break
+                else:
+                    break
     except Exception as e:
         print (e)
 
