@@ -268,7 +268,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
         while True:
             nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
             if nowtime > qgtime:
-                if exchange_jkd_numb == 2:
+                if exchange_jkd_numb == '2':
                     response = requests.post (url=url2, headers=heards,verify=False,data=data2)
                     # print(response.text)
                     result = response.json()
@@ -280,7 +280,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                     elif "代币兑换错误" in errmsg:
                         msg("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
                         break
-                elif exchange_jkd_numb == 3:
+                elif exchange_jkd_numb == '3':
                     response = requests.post (url=url3, headers=heards, verify=False, data=data3)
                     result = response.json ()
                     print (result)
@@ -291,7 +291,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                     elif "代币兑换错误" in errmsg:
                         msg ("【账号{0}】今日兑换【100】福利金可能已达上限")
                         break
-                elif exchange_jkd_numb == 4:
+                elif exchange_jkd_numb == '4':
                     response = requests.post (url=url2, headers=heards, verify=False, data=data2)
                     result = response.json ()
                     print (result)
