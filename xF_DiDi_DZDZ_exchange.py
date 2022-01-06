@@ -245,8 +245,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
     flag2 = 0
     flag3 = 0
     url2 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
-    url3 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ndL%2FHykU0e3RLrBJQXEedQPheluSHdw9ODBFAKSmeluTM9H1uXO9duVXEF3TMrBbotF5gQrXElJv6EkEOC6DA3eX9lCTMh6dy0ZDeQYiGAfTMrHCyCEaBJlyGFGl'
-    heards = {
+    url3 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-m4G1HNtCTeCohKleO1Nzf3igzlsPlyLbPLKTAvv9zlsO%2FuY3vOsYdJiBoFCO%2FKh9pS%2Bkg3mBoVmyqoEGPHJxA3C2pVDwhoTHRHfud3tevejx%2FNUFzHjTB%2Bvcv%2Fgv'
         "Host": "res.xiaojukeji.com",
         "Accept":"application/json, text/plain, */*",
         "Content-Type": "application/json",
