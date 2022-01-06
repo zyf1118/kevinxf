@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴app多走多赚签到
 Date: 2021-12-19
-cron: 55 59 23 * * * xF_DiDi_DZDZ_exchange.py
+cron: 1 0 0 * * * xF_DiDi_DZDZ_exchange.py
 new Env('滴滴app多走多赚兑换福利金');
 
 updata:兑换改版，更新脚本
@@ -35,7 +35,7 @@ updata:兑换改版，更新脚本
 
 
 
-cron时间填写：55 59 23 * * *
+cron时间填写：1 0 0 * * *
 
 
 '''
@@ -72,12 +72,12 @@ today = datetime.datetime.now().strftime('%Y-%m-%d')
 tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 #开始抢兑时间
-starttime='23:59:59.00000000'
+starttime='00:01:00.00000000'
 #结束时间
-endtime='00:00:30.00000000'
+endtime='00:01:20.00000000'
 
 qgtime = '{} {}'.format (today, starttime)
-qgendtime = '{} {}'.format (tomorrow, endtime)
+qgendtime = '{} {}'.format (today, endtime)
 
 
 
@@ -276,10 +276,12 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                     errmsg = result['errmsg']
                     if errmsg == 'success':
                         msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,total_exchange,FLJ))
+                        flag2 = 1
                         break
                     elif "代币兑换错误" in errmsg:
-                        msg("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
-                        break
+                        print("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
+                        if flag2 = 1:
+                            break
                 elif exchange_jkd_numb == '3':
                     response = requests.post (url=url3, headers=heards, verify=False, data=data3)
                     result = response.json ()
@@ -287,10 +289,12 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                     errmsg = result['errmsg']
                     if errmsg == 'success':
                         msg ("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format (account, total_exchange, FLJ))
+                        flag3 = 1
                         break
                     elif "代币兑换错误" in errmsg:
-                        msg ("【账号{0}】今日兑换【100】福利金可能已达上限")
-                        break
+                        print ("【账号{0}】今日兑换【100】福利金可能已达上限".format(account))
+                        if flag3 = 1:
+                            break
                 elif exchange_jkd_numb == '4':
                     response = requests.post (url=url2, headers=heards, verify=False, data=data2)
                     result = response.json ()
@@ -300,7 +304,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                         msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
                         flag2 = 1
                     elif "代币兑换错误" in errmsg:
-                        msg ("【账号{0}】今日兑换【50福利金】可能已达上限")
+                        print ("【账号{0}】今日兑换【50福利金】可能已达上限".format(account))
                     response = requests.post (url=url3, headers=heards, verify=False, data=data3)
                     result = response.json ()
                     print (result)
@@ -309,21 +313,20 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                         msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
                         flag3 = 1
                     elif "代币兑换错误" in errmsg:
-                        msg ("【账号{0}】今日兑换【100福利金】可能已达上限")
-                        if flag2 == 1 and flag3 == 1:
-                            msg("【账号{0}】脚本执行完毕，共获得福利金150")
-                            break
-                        elif flag2 == 0 and flag3 == 1:
-                            msg ("【账号{0}】脚本执行完毕，共获得福利金100")
-                            break
-                        elif flag2 == 1 and flag3 == 0:
-                            msg ("【账号{0}】脚本执行完毕，共获得福利金50")
-                            break
+                        print ("【账号{0}】今日兑换【100福利金】可能已达上限".format(account))
+
             if nowtime > qgendtime:
                 if flag2 == 0 and flag3 == 0:
                     msg ("【账号{0}】脚本执行完毕，兑换失败".format (account))
                     break
-                else:
+                elif flag2 == 1 and flag3 == 1:
+                    msg("【账号{0}】脚本执行完毕，共获得福利金150".format(account))
+                    break
+                elif flag2 == 0 and flag3 == 1:
+                    msg ("【账号{0}】脚本执行完毕，共获得福利金100".format(account))
+                    break
+                elif flag2 == 1 and flag3 == 0:
+                    msg ("【账号{0}】脚本执行完毕，共获得福利金50".format(account))
                     break
     except Exception as e:
         print (e)
