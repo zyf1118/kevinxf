@@ -280,7 +280,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                         break
                     elif "代币兑换错误" in errmsg:
                         print("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
-                        if flag2 = 1:
+                        if flag2 == 1:
                             break
                 elif exchange_jkd_numb == '3':
                     response = requests.post (url=url3, headers=heards, verify=False, data=data3)
@@ -293,7 +293,7 @@ def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
                         break
                     elif "代币兑换错误" in errmsg:
                         print ("【账号{0}】今日兑换【100】福利金可能已达上限".format(account))
-                        if flag3 = 1:
+                        if flag3 == 1:
                             break
                 elif exchange_jkd_numb == '4':
                     response = requests.post (url=url2, headers=heards, verify=False, data=data2)
