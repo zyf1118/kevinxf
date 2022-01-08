@@ -334,6 +334,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
     except Exception as e:
         print (e)
         msg ("【{0}】浇水失败,可能是果树已成熟，请上线查看，".format(name))
+        send("叮咚买菜果园活动", msg_info)
 
 
 #每日签到任务
