@@ -31,8 +31,8 @@ cron时间填写：22 7,10,17 * * *
 '''
 
 
-DD_token = '60ace35775474200016efe49'
-DD_cookies = 'DDXQSESSID=fb57c0d95725aaceababc141011b47d5'
+DD_token = ''
+DD_cookies = ''
 
 
 '''
