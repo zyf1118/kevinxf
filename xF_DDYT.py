@@ -4,7 +4,7 @@
 
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:DDYT.py
+项目名称:xF_DDYT.py
 Author: 一风一燕
 功能：叮咚买菜鱼塘活动
 Date: 2021-09-16
@@ -31,8 +31,8 @@ cron时间填写：22 7,10,17 * * *
 '''
 
 
-DD_token = ''
-DD_cookies = ''
+DD_token = '60ace35775474200016efe49'
+DD_cookies = 'DDXQSESSID=fb57c0d95725aaceababc141011b47d5'
 
 
 '''
@@ -42,7 +42,7 @@ DD_cookies = ''
 
 
 '''
-tokens =''
+tokens = ''
 cookies = ''
 
 try:
@@ -293,7 +293,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
         }
         r = requests.get (url, headers=headers, verify=False).text
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
-        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&propsId={seedid}&seedId={seedid}'
+        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token=BInggv686P9lhVZegB8XtVpUt3HTNl4ZEpo0ObDTNf8PH1ItwYHSWeDQiovdquHCCIjZ6+9jWf46csrzgIYaiiw==&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
         feed_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -309,7 +309,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
         while True:
             response1_zyf = requests.get(url=feed_url,headers=feed_headers,verify=False)
             feed1_ = response1_zyf.json()
-            # print(feed1_)
+            print(feed1_)
             code = feed1_['code']
             success1 = feed1_['success']        #是否喂食成功
             if code == 1125:
@@ -331,8 +331,9 @@ def do_feed(name,uid,DD_token,DD_cookies):
             msg("【{0}】本次总共成功喂食{1}g，剩余鱼饵{2}g，已完成进度{3}%".format(name,total,amount1,is_done))
 
     except Exception as e:
-        print(e)
-        msg("【{0}】鱼终于喂饱了，上线领取奖励啦！！".format(name))
+        print (e)
+        msg ("【{0}】鱼终于喂饱了，上线领取奖励啦！！".format (name))
+        send ("叮咚买菜", msg_info)
 
 #每日签到任务
 def do_sign(name,uid,DD_token,DD_cookies):
