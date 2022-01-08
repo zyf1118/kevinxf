@@ -13,16 +13,19 @@ new Env('滴滴app多走多赚兑换福利金');
 
 updata:兑换改版，更新脚本
 
+2022-1-9 updata:
+更新多线程兑换，对于exchange_jkd_numb=4的人更加友好。
+
 
 ****************滴滴出行APP*******************
 
 
 【教程】：
 
-青龙变量exchange_jkd_numb=1的话，兑换100健康豆，1福利金
-青龙变量exchange_jkd_numb=2的话，兑换5000健康豆，50福利金
-青龙变量exchange_jkd_numb=3的话，兑换10000健康豆，100福利金
-青龙变量exchange_jkd_numb=4的话，兑换150000健康豆，150福利金
+青龙变量exchange_jkd_numb="1"的话，兑换100健康豆，1福利金
+青龙变量exchange_jkd_numb="2"的话，兑换5000健康豆，50福利金
+青龙变量exchange_jkd_numb="3"的话，兑换10000健康豆，100福利金
+青龙变量exchange_jkd_numb="4"的话，兑换150000健康豆，150福利金
 
 需要自行用手机抓取Didi_jifen_token。
 在青龙变量中添加变量Didi_jifen_token
@@ -60,6 +63,7 @@ try:
     import json,sys,os,re
     import time,datetime
     from urllib.parse import quote, unquote
+    import threading
 except Exception as e:
     print(e)
 
@@ -344,10 +348,15 @@ if __name__ == '__main__':
         print("检查变量Didi_jifen_token是否已填写")
     elif len(tokens) > 1 :
         account = 1
+        ttt = []
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
-            exchange (i, xpsid, account, exchange_jkd_numb)
+            thread = threading.Thread(target=exchange, args=(i, xpsid, account, exchange_jkd_numb))
+            ttt.append (thread)
+            thread.start ()
             account += 1
+        for thread in ttt:
+            thread.join ()
     if "已兑换" in msg_info:
         send("滴滴多走多赚兑换", msg_info)
     elif "过期" in msg_info:
