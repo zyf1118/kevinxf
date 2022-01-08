@@ -297,7 +297,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
         r = requests.get (url=url, headers=headers, verify=False).text
         print(r)
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
-        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&propsCode=FEED&seedId={seedid}&propsId={seedid}'
+        feed_url =f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&CityId=1117&OSVersion=15&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token=BInggv686P9lhVZegB8XtVpUt3HTNl4ZEpo0ObDTNf8PH1ItwYHSWeDQiovdquHCCIjZ6+9jWf46csrzgIYaiiw==&propsCode=FEED&seedId={seedid}&propsId={seedid}'
         feed_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
