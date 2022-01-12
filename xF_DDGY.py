@@ -295,7 +295,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
             "cookie": DD_cookies
         }
         r = requests.get (url=url, headers=headers, verify=False).text
-        print(r)
+        # print(r)
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
         feed_url =f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&CityId=1117&OSVersion=15&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token=BInggv686P9lhVZegB8XtVpUt3HTNl4ZEpo0ObDTNf8PH1ItwYHSWeDQiovdquHCCIjZ6+9jWf46csrzgIYaiiw==&propsCode=FEED&seedId={seedid}&propsId={seedid}'
         feed_headers = {
@@ -316,16 +316,20 @@ def do_feed(name,uid,DD_token,DD_cookies):
             feed1_ = response1.json ()
             # print(feed1_)
             code = feed1_['code']
-            success1 = feed1_['success']  # 是否浇水成功
             if code == 1125 and total == 0:
                 msg ('【{0}】退出浇水，水滴不足10g'.format(name))
                 break
-            if success1 == True:
+            elif code == '405':
+                msg("【{0}】浇水异常,风控账号，请手动浇水试试".format(name))
+                break
+            success1 = feed1_['success']  # 是否浇水成功
+            print(success1)
+            if success1 == 'true':
                 amount1 = feed1_['data']['feed']['amount']  # 剩余水滴
                 is_done = feed1_['data']['seed']['expPercent']  # 完成度
                 i += 1
                 total = i * 10
-                time.sleep (1)
+                time.sleep (5)
             else:
                 break
         if total != 0:
@@ -512,7 +516,7 @@ def add_fl(name,uid,DD_token,DD_cookies):
             }
             response = requests.get (url=add_fl_url, headers=add_fl_heards, verify=False)
             result = response.json ()
-            print (result)
+            # print (result)
             code = result['code']
             if code != 1125:
                 amount = result['data']['propsUse']['amount']  # 剩余肥料
