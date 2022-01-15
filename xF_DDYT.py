@@ -314,7 +314,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
         while True:
             response1_zyf = requests.get(url=feed_url,headers=feed_headers,verify=False)
             feed1_ = response1_zyf.json()
-            print(feed1_)
+#             print(feed1_)
             code = feed1_['code']
             if code == 1125:
                 msg('【{0}】退出喂食，鱼饵不足10g'.format(name))
