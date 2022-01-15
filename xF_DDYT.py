@@ -48,7 +48,7 @@ cookies = ''
 try:
     import requests
     import json,sys,os,re
-    import time,datetime
+    import time,datetime,random
 except Exception as e:
     print(e)
 
@@ -60,6 +60,9 @@ path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 mor_time ='08:00:00.00000000'
 moringtime = '{} {}'.format (today, mor_time)
+
+uuid = ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 15))
+device_token = ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQROTUVWXYZ', 69)) + r"+" + ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 18)) + r"=="
 
 
 def printT(s):
@@ -269,7 +272,7 @@ def tasklist_info(name,uid,DD_token,DD_cookies):
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": "https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid=6c2fbe8814c442fb&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
+            "Referer": f"https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid={uuid}&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
             "Origin": "https://cms.api.ddxq.mobi",
@@ -287,16 +290,16 @@ def do_feed(name,uid,DD_token,DD_cookies):
     try:
         url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
         headers = {
-            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
+            "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
             "Referer": "https://game.m.ddxq.mobi/index.html",
             "cookie": DD_cookies
         }
         r = requests.get (url, headers=headers, verify=False).text
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
-        # feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&propsId={seedid}&seedId={seedid}'
-        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token=BInggv686P9lhVZegB8XtVpUt3HTNl4ZEpo0ObDTNf8PH1ItwYHSWeDQiovdquHCCIjZ6+9jWf46csrzgIYaiiw==&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
+        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
+        #feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token={device_token}&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
         feed_headers = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
@@ -461,7 +464,7 @@ def view_mission(name,DD_token,DD_cookies):
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": "https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid=6c2fbe8814c442fb&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
+            "Referer": f"https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid={uuid}&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
             "Origin": "https://cms.api.ddxq.mobi",
@@ -521,6 +524,7 @@ def fudai_reward(name,uid,DD_token,DD_cookies):
         }
         response = requests.get (url=fudai_reward_url, headers=reward_headers, verify=False)
         list = response.json()
+        print(list)
         code = list['code']
         if code != 0:
             msg ("【{0}】未到领取福袋时间".format(name))
