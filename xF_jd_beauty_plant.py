@@ -857,14 +857,14 @@ def fertilization(cookie,plant_id,shop_id,account):
                 # print(result)
                 level = result['level']  #当前等级
                 complete_level = result['complete_level']   #完成等级
-                printT("【账号{0}】【shop_id:{3}】成功施肥10g，当前等级{1}，种子成熟等级为{2}".format(account,level,complete_level,shop_id))
+                printT("【账号{0}】【plant_id:{3}】成功施肥10g，当前等级{1}，种子成熟等级为{2}".format(account,level,complete_level,plant_id))
                 time.sleep(5)
 
             except Exception as e:
                 # print(e)
                 message = result['message']
                 if "肥料不足" in message:
-                    msg("【账号{0}】【shop_id:{1}】肥料不足10g".format(account,shop_id))
+                    msg("【账号{0}】【plant_id:{1}】肥料不足10g".format(account,plant_id))
                     break
 
 def start():
@@ -927,7 +927,6 @@ def start():
                     for i, j in zip (taskName_list3, taskId_list3):
                         do_task3 (cookie, i, j, sid,account)
 
-                    fertilization(cookie,planted_id,i,account)
                     for i in shop_id_list:
                         do_fertilizer_task (cookie,i, account)            #浏览关注
                     for k in shop_id_list:
@@ -957,7 +956,7 @@ def start():
             printT("请检查变量plant_cookie是否已填写")
 
 if __name__ == '__main__':
-    printT("京东健康社区-种植园")
+    printT("美丽研究院-种植园")
     start ()
     if '成熟' in msg_info:
         send ("美丽研究院-种植园", msg_info)
