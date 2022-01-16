@@ -794,8 +794,8 @@ def do_fertilizer_task6(cookie,shop_id,account):
             result = response.json()
             # print(result)
             score = result['inc']
-            print("账号【{0}】【shop_id{1}】正在【兑换肥料】等待10秒".format (account,shop_id))
-            msg ("账号【{0}】【shop_id{2}】执行【兑换肥料】任务成功，获取【{1}】肥料".format (account,score,shop_id))
+            print("账号【{0}】【shop_id:{1}】正在【兑换肥料】等待10秒".format (account,shop_id))
+            msg ("账号【{0}】【shop_id:{2}】执行【兑换肥料】任务成功，获取【{1}】肥料".format (account,score,shop_id))
             time.sleep(10)
     except Exception as e:
         print(e)
