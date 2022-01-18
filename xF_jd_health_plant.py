@@ -21,9 +21,10 @@ new Env('京东健康社区-种植园自动任务');
 
 
 青龙变量export charge_targe_id = 'xxxx'，表示需要充能的id，单账号可以先填写export charge_targe_id = '11111'，运行一次脚本
-日志输出会有charge_targe_id，然后再重新修改export planted_id = 'xxxxxx'。多个账号也一样，如果2个账号export planted_id = '11111&11111'
-3个账号export planted_id = '11111&11111&11111'，以此类推。
-注意：planted_id和ck位置要对应。而且首次11111填写时，为5位数。
+日志输出会有charge_targe_id，然后再重新修改export charge_targe_id = 'xxxxxx'。多个账号也一样，如果2个账号export charge_targe_id = '11111&11111'
+3个账号export charge_targe_id = '11111&11111&11111'，以此类推。
+注意：charge_targe_id和ck位置要对应。而且你有多少个账号，就得填多少个charge_targe_id，首次11111填写时，为5位数。
+例如export plant_cookie="xxxx&xxxx&xxx"，那export charge_targe_id = "11111&11111&11111",也要写满3个id，这样才能保证所有账号都能跑
 
 '''
 
@@ -35,7 +36,7 @@ UserAgent = ''
 cookie = ''
 account = ''
 charge_targe_id = ''
-cookies = ''
+cookies = []
 charge_targe_ids = ''
 
 import requests
@@ -68,6 +69,9 @@ flag_time2 = '{} {}'.format (today, time2)
 pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
 path = pwd + "env.sh"
 
+sid = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 32))
+
+sid_ck = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQRSTUVWXYZ', 43))
 
 
 
@@ -124,15 +128,22 @@ except:
 
 
 if "plant_cookie" in os.environ:
-    if len(os.environ["plant_cookie"]) > 150:
-        cookies = os.environ["plant_cookie"]
-        cookies = cookies.split('&')
-        printT("已获取并使用Env环境 plant_cookie")
-    else:
-        cookie = os.environ["plant_cookie"]
+    if len (os.environ["plant_cookie"]) == 1:
+        is_ck = int(os.environ["plant_cookie"])
+        cookie1 = os.environ["JD_COOKIE"].split('&')
+        cookie = cookie1[is_ck-1]
+        printT ("已获取并使用Env环境cookie")
+    elif len (os.environ["plant_cookie"]) > 1:
+        cookies1 = []
+        cookies1 = os.environ["JD_COOKIE"]
+        cookies1 = cookies1.split ('&')
+        is_ck = os.environ["plant_cookie"].split('&')
+        for i in is_ck:
+            cookies.append(cookies1[int(i)-1])
+        printT ("已获取并使用Env环境plant_cookies")
 else:
-    printT("变量plant_cookie未填写")
-    exit(0)
+    printT ("变量plant_cookie未填写")
+    exit (0)
 
 if "charge_targe_id" in os.environ:
     if len (os.environ["charge_targe_id"]) > 8:
@@ -236,7 +247,7 @@ def setName(cookie):
         exit(2)
 
 #获取ck
-def get_ck(token,account):
+def get_ck(token,sid_ck,account):
     try:
         url = 'https://api.m.jd.com/client.action?functionId=isvObfuscator'
         headers = {
@@ -253,7 +264,7 @@ def get_ck(token,account):
         }
         timestamp = int (round (time.time () * 1000))
         timestamp1 = int(timestamp / 1000)
-        data =r'body=%7B%22url%22%3A%22https%3A%5C/%5C/xinruismzd-isv.isvjcloud.com%22%2C%22id%22%3A%22%22%7D&build=167922&client=apple&clientVersion=10.3.2&d_brand=apple&d_model=iPhone12%2C1&ef=1&eid=eidI4a9081236as4w7JpXa5zRZuwROIEo3ORpcOyassXhjPBIXtrtbjusqCxeW3E1fOtHUlGhZUCur1Q1iocDze1pQ9jBDGfQs8UXxMCTz02fk0RIHpB&ep=%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22screen%22%3A%22ENS4AtO3EJS%3D%22%2C%22wifiBssid%22%3A%22CwPtZNC0D2UyEQPsZNO2ZWO5ZNZwYtu3D2CyCzKmDwG%3D%22%2C%22osVersion%22%3A%22CJUkCK%3D%3D%22%2C%22area%22%3A%22CJvpCJY1DV80ENY2XzK%3D%22%2C%22openudid%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22uuid%22%3A%22aQf1ZRdxb2r4ovZ1EJZhcxYlVNZSZz09%22%7D%2C%22ts%22%3A1642002985%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D&ext=%7B%22prstate%22%3A%220%22%2C%22pvcStu%22%3A%221%22%7D&isBackground=N&joycious=88&lang=zh_CN&networkType=wifi&networklibtype=JDNetworkBaseAF&partner=apple&rfs=0000&scope=01&sign=946db60626658b250cf47aafb6f67691&st=1642002999847&sv=112&uemps=0-0&uts=0f31TVRjBSu3kkqwe7t25AkQCKuzV3pz8JrojVuU0630g%2BkZigs9kTwRghT26sE72/e92RRKan/%2B9SRjIJYCLuhew91djUwnIY47k31Rwne/U1fOHHr9FmR31X03JKJjwao/EC1gy4fj7PV1Co0ZOjiCMTscFo/8id2r8pCHYMZcaeH3yPTLq1MyFF3o3nkStM/993MbC9zim7imw8b1Fg%3D%3D'
+        data =r'body=%7B%22url%22%3A%22https%3A%5C/%5C/xinruismzd-isv.isvjcloud.com%22%2C%22id%22%3A%22%22%7D&build=167922&client=apple&clientVersion=10.3.2&d_brand=apple&d_model=iPhone12%2C1&ef=1&eid=eidI4a9081236as4w7JpXa5zRZuwROIEo3ORpcOyassXhjPBIXtrtbjusqCxeW3E1fOtHUlGhZUCur1Q1iocDze1pQ9jBDGfQs8UXxMCTz02fk0RIHpB&ep=%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22screen%22%3A%22ENS4AtO3EJS%3D%22%2C%22wifiBssid%22%3A%22' + f"{sid_ck}" + r'%3D%22%2C%22osVersion%22%3A%22CJUkCK%3D%3D%22%2C%22area%22%3A%22CJvpCJY1DV80ENY2XzK%3D%22%2C%22openudid%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22uuid%22%3A%22aQf1ZRdxb2r4ovZ1EJZhcxYlVNZSZz09%22%7D%2C%22ts%22%3A1642002985%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D&ext=%7B%22prstate%22%3A%220%22%2C%22pvcStu%22%3A%221%22%7D&isBackground=N&joycious=88&lang=zh_CN&networkType=wifi&networklibtype=JDNetworkBaseAF&partner=apple&rfs=0000&scope=01&sign=946db60626658b250cf47aafb6f67691&st=1642002999847&sv=112&uemps=0-0&uts=0f31TVRjBSu3kkqwe7t25AkQCKuzV3pz8JrojVuU0630g%2BkZigs9kTwRghT26sE72/e92RRKan/%2B9SRjIJYCLuhew91djUwnIY47k31Rwne/U1fOHHr9FmR31X03JKJjwao/EC1gy4fj7PV1Co0ZOjiCMTscFo/8id2r8pCHYMZcaeH3yPTLq1MyFF3o3nkStM/993MbC9zim7imw8b1Fg%3D%3D'
         # data = '{"token":"AAFh3ANjADAPSunyKSzXTA-UDxrs3Tn9hoy92x4sWmVB0Kv9ey-gAMEdJaSDWLWtnMX8lqLujBo","source":"01"}'
         # print(data)
         response = requests.post (url=url, verify=False, headers=headers,data=data)
@@ -296,7 +307,7 @@ def get_Authorization(access_token,account):
         msg("账号【{0}】获取Authorization失败，cookie过期".format(account))
 
 #获取已种植的信息
-def get_planted_info(cookies):
+def get_planted_info(cookies,sid):
     name_list = []
     planted_id_list = []
     url = 'https://xinruismzd-isv.isvjcloud.com/api/get_home_info'
@@ -304,7 +315,7 @@ def get_planted_info(cookies):
         'Connection': 'keep-alive',
         'Accept': 'application/json, text/plain, */*',
         "Authorization": cookies,
-        'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
         'Host': 'xinruismzd-isv.isvjcloud.com',
         # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
         'User-Agent': userAgent (),
@@ -328,13 +339,13 @@ def get_planted_info(cookies):
 
 
 #获取早睡打卡
-def get_sleep(cookies):
+def get_sleep(cookies,sid):
     url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
     headers = {
         'Connection': 'keep-alive',
         'Accept': 'application/json, text/plain, */*',
         "Authorization": cookies,
-        'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
         'Host': 'xinruismzd-isv.isvjcloud.com',
         # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
         'User-Agent': userAgent (),
@@ -357,7 +368,7 @@ def get_sleep(cookies):
 
 
 #获取任务信息
-def get_task(cookies,account):
+def get_task(cookies,sid,account):
     try:
         taskName_list = []
         taskId_list = []
@@ -367,7 +378,7 @@ def get_task(cookies,account):
             'Connection': 'keep-alive',
             'Accept': 'application/json, text/plain, */*',
             "Authorization":cookies,
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
             'Host': 'xinruismzd-isv.isvjcloud.com',
             # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
             'User-Agent': userAgent (),
@@ -393,10 +404,10 @@ def get_task(cookies,account):
         return taskName_list, taskId_list, taskToken_list
     except Exception as e:
         print (e)
-        msg("【账号{0}】登录失败，cookie过期".format(account))
+        msg("【账号{0}】浏览任务已全部完成".format(account))
 
 #获取加购任务信息
-def get_task2(cookies,account):
+def get_task2(cookies,sid,account):
     try:
         taskToken_list = []
         url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
@@ -404,7 +415,7 @@ def get_task2(cookies,account):
             'Connection': 'keep-alive',
             'Accept': 'application/json, text/plain, */*',
             "Authorization":cookies,
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
             'Host': 'xinruismzd-isv.isvjcloud.com',
             # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
             'User-Agent': userAgent (),
@@ -428,11 +439,11 @@ def get_task2(cookies,account):
         return taskName, taskId, taskToken_list
     except Exception as e:
         print (e)
-        msg("【账号{0}】登录失败，cookie过期".format(account))
+        msg("【账号{0}】加购任务已全部完成".format(account))
 
 
 #做任务
-def do_task(cookies,taskName,taskId,taskToken,account):
+def do_task(cookies,taskName,taskId,taskToken,sid,account):
     try:
         url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
         url1 = 'https://xinruismzd-isv.isvjcloud.com/api/catch_task'
@@ -441,7 +452,7 @@ def do_task(cookies,taskName,taskId,taskToken,account):
             'Accept': 'application/json, text/plain, */*',
             "Content-Type":"application/json",
             "Authorization":cookies,
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
             'Host': 'xinruismzd-isv.isvjcloud.com',
             # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
             'User-Agent': userAgent (),
@@ -453,8 +464,8 @@ def do_task(cookies,taskName,taskId,taskToken,account):
         }
         data = r'{"taskToken":"' +f"{taskToken}" +r'","task_id":' + f"{taskId}" + r',"task_type":9,"task_name":"' + f"{taskName}" + r'"}'
         res = requests.post(url=url1, verify=False, headers=headers,data=data.encode())
-        # print(res.text)
-        if res.text != '':
+        # print(res.status_code)
+        if res.status_code == 200:
             msg("账号【{0}】正在执行任务，请稍等10秒".format(account))
             time.sleep(10)
             response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
@@ -466,7 +477,7 @@ def do_task(cookies,taskName,taskId,taskToken,account):
         print(e)
 
 #做任务
-def do_task2(cookies,taskName,taskId,taskToken,account):
+def do_task2(cookies,taskName,taskId,taskToken,sid,account):
     try:
         url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
         headers = {
@@ -474,7 +485,7 @@ def do_task2(cookies,taskName,taskId,taskToken,account):
             'Accept': 'application/json, text/plain, */*',
             "Content-Type":"application/json",
             "Authorization":cookies,
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
             'Host': 'xinruismzd-isv.isvjcloud.com',
             # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
             'User-Agent': userAgent (),
@@ -496,7 +507,7 @@ def do_task2(cookies,taskName,taskId,taskToken,account):
 
 
 #充能
-def charge(charge_targe_id,cookies,account):
+def charge(charge_targe_id,cookies,sid,account):
     try:
         url = 'https://xinruismzd-isv.isvjcloud.com/api/add_growth_value'
         headers = {
@@ -504,7 +515,7 @@ def charge(charge_targe_id,cookies,account):
             'Accept': 'application/json, text/plain, */*',
             "Content-Type":"application/json",
             "Authorization":cookies,
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid=d5bbbc57afbd9688f3df22b18b46226w&un_area=19_1655_4866_0',
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
             'Host': 'xinruismzd-isv.isvjcloud.com',
             # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
             'User-Agent': userAgent (),
@@ -537,40 +548,40 @@ def start():
         nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
         if cookie != '':
             account = setName (cookie)
-            access_token = get_ck(cookie,account)
+            access_token = get_ck(cookie,sid_ck,account)
             cookie = get_Authorization (access_token, account)
-            get_planted_info (cookie)
+            get_planted_info (cookie,sid)
             if nowtime > flag_time1 and nowtime < flag_time2:
-                taskName,taskId,taskToken = get_sleep (cookie)
-                do_task(cookie,taskName,taskId,taskToken,account)
-                charge(charge_targe_id,cookie,account)
+                taskName,taskId,taskToken = get_sleep (cookie,sid)
+                do_task(cookie,taskName,taskId,taskToken,sid,account)
+                charge(charge_targe_id,cookie,sid,sid,account)
             else:
-                taskName_list,taskId_list,taskToken_list = get_task (cookie,account)
+                taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
                 for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
-                    do_task(cookie,i,j,k,account)
+                    do_task(cookie,i,j,k,sid,account)
                 taskName, taskId, taskToken_list = get_task2 (cookie, account)
                 for i in taskToken_list:
-                    do_task2 (cookie, taskName, taskId, i, account)
+                    do_task2 (cookie, taskName, taskId, i, sid,account)
                 charge(charge_targe_id,cookie,account)
         elif cookies != '':
             for cookie,charge_targe_id in zip(cookies,charge_targe_ids):
                 try:
                     account = setName (cookie)
-                    access_token = get_ck (cookie, account)
+                    access_token = get_ck (cookie, sid_ck,account)
                     cookie = get_Authorization (access_token, account)
-                    get_planted_info (cookie)
+                    get_planted_info (cookie,sid)
                     if nowtime > flag_time1 and nowtime < flag_time2:
-                        taskName, taskId, taskToken = get_sleep (cookie)
-                        do_task (cookie, taskName, taskId, taskToken, account)
-                        charge (charge_targe_id, cookie, account)
+                        taskName, taskId, taskToken = get_sleep (cookie,sid)
+                        do_task (cookie, taskName, taskId, taskToken, sid,account)
+                        charge (charge_targe_id, cookie, sid,account)
                     else:
-                        taskName_list, taskId_list, taskToken_list = get_task (cookie, account)
+                        taskName_list, taskId_list, taskToken_list = get_task (cookie, sid,account)
                         for i, j, k in zip (taskName_list, taskId_list, taskToken_list):
-                            do_task (cookie, i, j, k, account)
+                            do_task (cookie, i, j, k, sid,account)
                         taskName, taskId, taskToken_list = get_task2 (cookie, account)
                         for i in taskToken_list:
-                            do_task2 (cookie, taskName, taskId, i, account)
-                        charge (charge_targe_id, cookie, account)
+                            do_task2 (cookie, taskName, taskId, i, sid,account)
+                        charge (charge_targe_id, cookie,sid, account)
                 except Exception as e:
                     pass
         else:
