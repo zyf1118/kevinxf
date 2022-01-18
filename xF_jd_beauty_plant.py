@@ -24,8 +24,8 @@ new Env('化妆馆-种植园自动任务');
 青龙变量export planted_id = 'xxxx'，表示需要浇水的id，单账号可以先填写export planted_id = '111111'，export choose_plant_id="true"，运行一次脚本
 日志输出会有planted_id，然后再重新修改export planted_id = 'xxxxxx'。多个账号也一样，如果2个账号export planted_id = '111111&111111'
 3个账号export planted_id = '111111&111111&111111'，以此类推。
-注意：planted_id和ck位置要对应。而且首次111111填写时，为6位数。
-
+注意：planted_id和ck位置要对应。而且你有多少个账号，就得填多少个planted_id，首次111111填写时，为6位数。
+例如export plant_cookie="xxxx&xxxx&xxx"，那export planted_id = "111111&111111&111111",也要写满3个id，这样才能保证所有账号都能跑
 
 '''
 
@@ -68,8 +68,7 @@ path = pwd + "env.sh"
 
 sid = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 32))
 
-sid_ck = ''.join (
-    random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQRSTUVWXYZ', 43))
+sid_ck = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQRSTUVWXYZ', 43))
 
 
 def printT(s):
