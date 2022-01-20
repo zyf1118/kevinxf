@@ -866,6 +866,7 @@ def fertilization(cookie, plant_id, shop_id, account):
         "Content-Type": "application/json;charset=utf-8",
     }
     data = r'{"plant_id":' + f"{plant_id}" + r'}'
+    i = 1
     while True:
         try:
             response = requests.post (url=url, verify=False, headers=headers, data=data)  # data中有汉字，需要encode为utf-8
@@ -873,14 +874,17 @@ def fertilization(cookie, plant_id, shop_id, account):
             # print(result)
             level = result['level']  # 当前等级
             complete_level = result['complete_level']  # 完成等级
-            msg ("【账号{0}】【plant_id:{3}】成功施肥10g，当前等级{1}，种子成熟等级为{2}".format (account, level, complete_level, plant_id))
+            printT ("【账号{0}】【plant_id:{3}】成功施肥10g，当前等级{1}，种子成熟等级为{2}".format (account, level, complete_level, plant_id))
             time.sleep (5)
+            i += 1
 
         except Exception as e:
             # print(e)
             message = result['message']
+            total = i * 10
             if "肥料不足" in message:
-                msg ("【账号{0}】【plant_id:{1}】肥料不足10g".format (account, plant_id))
+                msg("【账号{0}】【plant_id:{1}】本次一共施肥{2}g".format (account, plant_id,total))
+                printT ("【账号{0}】【plant_id:{1}】肥料不足10g".format (account, plant_id))
                 break
 
 
