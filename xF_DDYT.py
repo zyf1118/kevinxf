@@ -4,12 +4,12 @@
 
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:xF_DDYT.py
+项目名称:xF_DDGY.py
 Author: 一风一燕
-功能：叮咚买菜鱼塘活动
+功能：叮咚买菜果园活动
 Date: 2021-09-16
-cron: 22 7,10,17 * * * xF_DDYT.py
-new Env('叮咚鱼塘活动');
+cron: 22 7,10,17 * * * xF_DDGY.py
+new Env('叮咚果园活动');
 
 ****************叮咚买菜是买菜APP，30分钟内到家，挺快挺专业的。如果没有用过叮咚买菜APP的人，可以TG私聊我，我就叫一风一燕，我发个邀请码给你注册，这样双方都有优惠券，也算是支持一下小风，谢谢各位大佬*******************
 
@@ -26,6 +26,7 @@ new Env('叮咚鱼塘活动');
 
 可以用手机抓包，也可以用微信小程序抓。
 
+
 cron时间填写：22 7,10,17 * * *
 
 '''
@@ -33,7 +34,6 @@ cron时间填写：22 7,10,17 * * *
 
 DD_token = ''
 DD_cookies = ''
-
 
 '''
 
@@ -45,10 +45,11 @@ DD_cookies = ''
 tokens = ''
 cookies = ''
 
+
 try:
     import requests
     import json,sys,os,re
-    import time,datetime,random
+    import time,datetime
 except Exception as e:
     print(e)
 
@@ -60,9 +61,6 @@ path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 mor_time ='08:00:00.00000000'
 moringtime = '{} {}'.format (today, mor_time)
-
-uuid = ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 15))
-device_token = ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQROTUVWXYZ', 69)) + r"+" + ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 18)) + r"=="
 
 
 def printT(s):
@@ -95,33 +93,32 @@ def getEnvs(label):
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     tokens = ck
-#     # if "DD_token" in ck:
-#     #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
-#     #     tokens = r.findall(ck)
-#     #     tokens = tokens[0].split ('&')
-#     #     if len (tokens) == 1:
-#     #         DD_token = tokens[0]
-#     #         tokens = ''
-#     # #     print(tokens)
-#     # #     tokens = cookies[3]
-#     #     else:
-#     #         DD_token = tokens[0]
-#     # printT ("已获取并使用ck环境 token")
+#     if "DD_token" in ck:
+#         r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
+#         tokens = r.findall(ck)
+#         tokens = tokens[0].split ('&')
+#         # print(tokens)
+#         if len (tokens) == 1:
+#             DD_token = tokens[0]
+#             tokens = ''
+#     #     print(tokens)
+#     #     tokens = cookies[3]
 #
+#     printT ("已获取并使用ck环境 token")
+# #
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     cookies = ck
-#     # if "DD_cookies" in ck:
-#     #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-#     #     cookies = r.findall (ck)
-#     #     cookies = cookies[0].split('&')
-#     # if len(cookies) == 1:
-#     #     DD_cookies = cookies[0]
-#     #     cookies = ''
-#     # #     print(cookies)
-#     # #     cookies = cookies[3]
-#     # else:
-#     #     DD_cookies = cookies[0]
+#     if "DD_cookies" in ck:
+#         r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
+#         cookies = r.findall (ck)
+#         cookies = cookies[0].split('&')
+#         # print (cookies)
+#     if len(cookies) == 1:
+#         DD_cookies = cookies[0]
+#         cookies = ''
+#         print(cookies)
+#     #     cookies = cookies[3]
 #     printT ("已获取并使用ck环境 DD_cookies")
 
 ########################################################################
@@ -149,6 +146,7 @@ if "DD_cookies" in os.environ:
         DD_cookies = os.environ["DD_cookies"]
 else:
     print("检查变量DD_cookies是否已填写")
+
 
 
 ## 获取通知服务
@@ -215,20 +213,19 @@ uid = ''
 
 if tokens != '':
     # if "DD_token" in tokens:
-        # r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
-        # tokens = r.findall (ck)
+    #     r = re.compile (r'DD_token="(.*?)"', re.M | re.S | re.I)
+    #     tokens = r.findall (ck)
         tokens = tokens.split ('&')
         # print(tokens)
         if len (tokens) == 1:
             DD_token = tokens[0]
-
         else:
             pass
 
 if cookies != '':
     # if "DD_cookies" in cookies:
-    #     r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
-    #     cookies = r.findall (ck)
+        # r = re.compile (r'DD_cookies="(.*?)"', re.M | re.S | re.I)
+        # cookies = r.findall (ck)
         cookies = cookies.split ('&')
         # print(cookies)
         if len (cookies) == 1:
@@ -263,309 +260,313 @@ def get_info(DD_token,DD_cookies):
         print(e)
         msg ("{0}获取个人信息失败,可能是cookies过期".format(DD_token))
 
+
 #获取今日任务列表信息
 def tasklist_info(name,uid,DD_token,DD_cookies):
     try:
-        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&cityCode=1117'
-        view_headers = {
+        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list-orchard?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&reward=FEED&cityCode=1117'
+        view_heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": f"https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid={uuid}&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
+            "Referer": "https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid=d196228f82e541e8&themeColor=e7fbd6&hideShare=true&gameTask=BROWSE_GOODS&s=mine_orchard&native_city_number=1117",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
             "Origin": "https://cms.api.ddxq.mobi",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get (url=tasklist_url, headers=view_headers, verify=False)
+        response = requests.get (url=tasklist_url, headers=view_heards, verify=False)
         list = response.json()
-        view_id = list['data']['userTasks'][1]['userTaskLogId']
-        lucky_draw_id = list['data']['userTasks'][8]['userTaskLogId']
-        return view_id,lucky_draw_id
+        view_id = list['data']['userTasks'][0]['userTaskLogId']
+        return view_id
     except Exception as e:
         print(e)
-        msg ("{【0】}获取任务列表失败,可能是cookies过期".format(name))
+        msg ("【{0}】获取任务列表失败,可能是cookies过期".format(name))
 
+#喂食
 def do_feed(name,uid,DD_token,DD_cookies):
     try:
         url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
         headers = {
-            "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
-            "Referer": "https://game.m.ddxq.mobi/index.html",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 5.1.1) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 xzone/9.29.0",
+            "Referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&s=mine_orchard",
+            "DDMC-GAME-TID": "2",
             "cookie": DD_cookies
         }
-        r = requests.get (url, headers=headers, verify=False).text
+        r = requests.get (url=url, headers=headers, verify=False).text
+        # print(r)
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
-        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
-        #feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token={device_token}&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
+        feed_url =f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&CityId=1117&OSVersion=15&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token=BInggv686P9lhVZegB8XtVpUt3HTNl4ZEpo0ObDTNf8PH1ItwYHSWeDQiovdquHCCIjZ6+9jWf46csrzgIYaiiw==&propsCode=FEED&seedId={seedid}&propsId={seedid}'
         feed_headers = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
-            "Connection": "keep-alive",
+            "accept-language": "zh-cn",
             "Accept": "*/*",
-            "Referer": "https://game.m.ddxq.mobi/index.html",
+            "Referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&isResetAudio=true&s=mine_orchard",
+            "ddmc-game-tid": "2",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
-            "Origin": "https://game.m.ddxq.mobi",
+            "Origin": "https://orchard-m.ddxq.mobi",
         }
         i = 0
-        total = 10
-        flag = 0
+        total = 0
         while True:
-            response1_zyf = requests.get(url=feed_url,headers=feed_headers,verify=False)
-            feed1_ = response1_zyf.json()
-#             print(feed1_)
+            response1 = requests.get (url=feed_url, headers=feed_headers, verify=False)
+            feed1_ = response1.json ()
+            # print(feed1_)
             code = feed1_['code']
-            if code == 1125:
-                msg('【{0}】退出喂食，鱼饵不足10g'.format(name))
+            if code == 1125 and total == 0:
+                msg ('【{0}】退出浇水，水滴不足10g'.format(name))
                 break
             elif code == '405':
-                msg("【{0}】喂食异常,风控账号，请手动喂食试试".format(name))
-                flag = 1
+                msg("【{0}】浇水异常,风控账号，请手动浇水试试".format(name))
                 break
-            success1 = feed1_['success']        #是否喂食成功
-            if success1 == True:
-                amount1 = feed1_['data']['feed']['amount']  # 剩余鱼饵
+            success1 = feed1_['success']  # 是否浇水成功
+            print(success1)
+            if success1 == 'true':
+                amount1 = feed1_['data']['feed']['amount']  # 剩余水滴
                 is_done = feed1_['data']['seed']['expPercent']  # 完成度
-                if amount1 <= 30:
-                    printT("【{0}】当前鱼饵不足30g，退出喂食".format(name))
-                    #msg ("本次总共成功喂食【{0}】g，剩余鱼饵{1}g，已完成进度{1}%".format (total, amount1, is_done))
-                    break
                 i += 1
                 total = i * 10
-                time.sleep(1)
+                time.sleep (5)
             else:
                 break
-        if code != 1125 and flag == 0:
-            msg("【{0}】本次总共成功喂食{1}g，剩余鱼饵{2}g，已完成进度{3}%".format(name,total,amount1,is_done))
+        if total != 0:
+            msg ("【{0}】本次总共成功浇水{1}g，剩余水滴{2}g，已完成进度{3}%".format (name,total, amount1, is_done))
 
     except Exception as e:
         print (e)
-        msg ("【{0}】鱼终于喂饱了，上线领取奖励啦！！".format (name))
-        send ("叮咚买菜", msg_info)
+        msg ("【{0}】浇水失败,可能是果树已成熟，请上线查看，".format(name))
+        send("叮咚买菜果园活动", msg_info)
+
 
 #每日签到任务
 def do_sign(name,uid,DD_token,DD_cookies):
     try:
-        do_sign1_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=DAILY_SIGN'
-        do_sign1_headers = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
+        do_sign_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&taskCode=DAILY_SIGN'
+        do_sign_heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Cookie": DD_cookies,
+            "referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&isResetAudio=true&s=mine_orchard",
+            "origin": "https://orchard-m.ddxq.mobi",
+            "host": "farm.api.ddxq.mobi",
+            "accept-encoding": "gzip, deflate, br",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get (url=do_sign1_url, headers=do_sign1_headers, verify=False)
-        list = response.json()
-        success = list['success']     #任务签到
+        response = requests.get (url=do_sign_url, headers=do_sign_heards, verify=False)
+        list = response.json ()
+        success = list['success']  # 任务签到
         code = list['code']
         if code == 601:
-            printT("【{0}】今日已完成每日签到任务,无需重复签到".format(name))
+            printT ("【{0}】今日已完成每日签到任务,无需重复签到".format(name))
             return 0
         if success == True:
-            #amount = list['data']['rewards']['amount']  # 本次任务获得鱼饵
-            amount = list['data']['rewards'][0]['amount']  # 本次任务获得鱼饵
-            msg("【{0}】签到任务已完成，获得{1}g鱼饵".format (name,amount))
+            # amount = list['data']['rewards']['amount']  # 本次任务获得水滴
+            amount = list['data']['rewards'][0]['amount']  # 本次任务获得水滴
+            msg ("【{0}】签到任务已完成，获得{1}g水滴".format (name,amount))
         elif success == False and code != 601:
-            msg("【{0}】每日签到任务失败".format(name))
+            msg ("【{0}】每日签到任务失败".format(name))
     except Exception as e:
-        print(e)
-        msg("【{0}】每日签到任务失败,可能是cookies过期".format(name))
+        print (e)
+        msg ("【{0}】每日签到任务失败,可能是cookies过期".format(name))
 
 #连续签到任务
 def do_sign2(name,uid,DD_token,DD_cookies):
     try:
-        do_sign2_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=CONTINUOUS_SIGN'
-        do_sign1_headers = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
+        do_sign_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&taskCode=CONTINUOUS_SIGN'
+        do_sign_heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Cookie": DD_cookies,
+            "referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&isResetAudio=true&s=mine_orchard",
+            "origin": "https://orchard-m.ddxq.mobi",
+            "host": "farm.api.ddxq.mobi",
+            "accept-encoding": "gzip, deflate, br",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get (url=do_sign2_url, headers=do_sign1_headers, verify=False)
-        list = response.json()
+        response = requests.get (url=do_sign_url, headers=do_sign_heards, verify=False)
+        list = response.json ()
         success = list['success']  # 连续签到任务
         code = list['code']
         if code == 601:
-            printT("【【{0}】】今日已完成连续签到任务,无需重复签到".format(name))
+            printT ("【{0}】今日已完成连续签到任务,无需重复签到".format(name))
             return 0
         if success == True:
-            #amount = list['data']['rewards']['amount']  # 本次任务获得鱼饵
-            amount = list['data']['rewards'][0]['amount']  # 本次任务获得鱼饵
-            msg("【{0}】连续签到任务已完成，获得{1}g鱼饵".format (name,amount))
+            # amount = list['data']['rewards']['amount']  # 本次任务获得水滴
+            amount = list['data']['rewards'][0]['amount']  # 本次任务获得水滴
+            msg ("【{0}】连续签到任务已完成，获得{1}g水滴".format (name,amount))
         elif success == False and code != 601:
-            msg("【{0}】连续签到任务失败".format(name))
+            msg ("【{0}】连续签到任务失败".format(name))
 
     except Exception as e:
-        print(e)
-        msg("【{0}】连续签到任务失败,可能是cookies过期".format(name))
+        print (e)
+        msg ("【{0}】连续签到任务失败,可能是cookies过期".format(name))
 
-def lucky_draw(name,DD_token,DD_cookies):
-
-    i=1
-    while True:
-        try:
-            lucky_draw_url = f'https://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?api_version=9.7.3&app_version=1.0.0&app_client_id=3&station_id={DD_token}&native_version=9.35.1&city_number=1117&latitude=23.017158&longitude=113.811603&gameId=1'
-            do_sign1_headers = {
-                "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
-                "Cookie": DD_cookies,
-            }
-            reward = 0
-            response = requests.get (url=lucky_draw_url, headers=do_sign1_headers, verify=False)
-            list = response.json ()
-            success = list['success']     #天天翻牌，可翻10次
-            code = list['code']
-            time.sleep(1)
-            if success == True:
-                reward = list['data']['chosen']['name']
-                print('【{0}】第{1}次翻牌，获得{2}'.format(name,i,reward))
-                i += 1
-                if i == 11:
-                    msg("【{0}】已翻牌10次，获取的奖励可查看日志".format(name))
-                    break
-            elif success == False and code == 1119 and i == 1:
-                msg("【{0}】天天翻牌任务已完成，跳过执行环节".format(name))
-                break
-            elif code == 801:
-                msg ("【{0}】鱼饵不足5g，退出翻牌任务".format(name))
-                break
-        except Exception as e:
-            print (e)
-            msg("【{0}】天天翻牌任务失败,可能是cookies过期".format(name))
-
-#领取天天翻牌奖励
-def lucky_draw_reward(name,uid,taskid,DD_token,DD_cookies):
-    try:
-        lucky_draw_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
-        reward_headers = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Connection": "keep-alive",
-            "Accept": "*/*",
-            "Referer": "https://game.m.ddxq.mobi/index.html",
-            "Host": "farm.api.ddxq.mobi",
-            "Cookie": DD_cookies,
-            "Origin": "https://game.m.ddxq.mobi",
-        }
-        response = requests.get (url=lucky_draw_reward_url, headers=reward_headers, verify=False)
-        list = response.json ()
-        success = list['success']
-        code = list['code']
-        if code == 810:
-            msg ("【{0}】天天翻牌奖励已领取，去领其他奖励吧".format(name))
-        if success == True:
-            # amount = list['data']['rewards']['amount']  # 本次任务获得鱼饵
-            amount = list['data']['rewards'][0]['amount']  # 本次任务获得鱼饵
-            msg ("【{0}】领取天天翻牌奖励{1}g鱼饵".format (name,amount))
-    except Exception as e:
-        print(e)
-        msg("【{0}】领取天天翻牌奖励失败,可能是cookies过期".format(name))
 #浏览30秒任务
 def view_mission(name,DD_token,DD_cookies):
     try:
-        view_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?latitude=23.017158&longitude=113.811603&env=PE&station_id={DD_token}&city_number=1117&api_version=9.28.0&app_client_id=3&native_version=9.35.1&h5_source=&page_type=2&gameId=1&taskCode=BROWSE_GOODS&'
-        view_headers = {
+        view_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?latitude=23.017158&longitude=113.811603&env=PE&station_id={DD_token}&city_number=1117&api_version=9.28.0&app_client_id=3&native_version=9.35.1&h5_source=&page_type=2&gameId=2&taskCode=BROWSE_GOODS&'
+        view_heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": f"https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid={uuid}&themeColor=72b1ff&hideShare=true&gameTask=BROWSE_GOODS&s=mine_farm_new&native_city_number=1117",
+            "Referer": "https://cms.api.ddxq.mobi/cms-service/client/page/v1/getPageInfo?uuid=d196228f82e541e8&themeColor=e7fbd6&hideShare=true&gameTask=BROWSE_GOODS&s=mine_orchard&native_city_number=1117",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
             "Origin": "https://cms.api.ddxq.mobi",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get(url=view_url, headers=view_headers, verify=False)
-        list = response.json()
+        response = requests.get (url=view_url, headers=view_heards, verify=False)
+        list = response.json ()
         code = list['code']
         if code == 0:
-            printT("【{0}】正在执行浏览任务，等待30秒".format(name))
-            time.sleep(30)
+            printT ("【{0}】正在执行浏览任务，等待30秒".format(name))
+            time.sleep (30)
             msg ("【{0}】浏览任务已完成".format(name))
         if code == 601:
-            printT("【{0}】浏览任务早已完成，跳过执行环节".format(name))
+            msg ("【{0}】今日浏览任务早已完成，跳过执行环节".format(name))
     except Exception as e:
         print (e)
         msg ("【{0}】浏览任务失败,可能是cookies过期".format(name))
 
 #领取浏览任务奖励
-def do_reward(name,uid,taskid,DD_token,DD_cookies):
+def do_reward(name,taskid,DD_token,DD_cookies):
     try:
-        view_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
-        reward_headers = {
+        view_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&userTaskLogId={taskid}'
+        reward_heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": "https://game.m.ddxq.mobi/index.html",
+            "Referer": "https://orchard-m.ddxq.mobi/",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
-            "Origin": "https://game.m.ddxq.mobi",
+            "Origin": "https://orchard-m.ddxq.mobi",
+            "accept-language": "zh-cn",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get (url=view_reward_url, headers=reward_headers, verify=False)
+        response = requests.get (url=view_reward_url, headers=reward_heards, verify=False)
         list = response.json ()
-        # print(name,list)
         code = list['code']
         if code == 810:
             msg ("【{0}】浏览任务已领取奖励，去领其他奖励吧".format(name))
         elif code == 0:
-            amount = list['data']['rewards'][0]['amount']  # 本次任务获得鱼饵
-            msg ("【{0}】浏览任务已完成，领取奖励{1}g鱼饵".format(name,amount))
+            amount = list['data']['rewards'][0]['amount']  # 本次任务获得水滴
+            msg ("【{0}】浏览任务已完成，领取奖励{1}g水滴".format (name,amount))
     except Exception as e:
         print (e)
         msg ("【{0}】领取浏览任务奖励失败,可能是cookies过期".format(name))
 
+#领取福利待袋
 def fudai_reward(name,uid,DD_token,DD_cookies):
     try:
-        fudai_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=LOTTERY'
-        reward_headers = {
+        fudai_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&taskCode=LOTTERY'
+        reward_heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Accept": "*/*",
-            "Referer": "https://game.m.ddxq.mobi/index.html",
+            "Referer": "https://orchard-m.ddxq.mobi/",
             "Host": "farm.api.ddxq.mobi",
             "Cookie": DD_cookies,
-            "Origin": "https://game.m.ddxq.mobi",
+            "Origin": "https://orchard-m.ddxq.mobi",
+            "accept-language": "zh-cn",
+            "ddmc-game-tid": "2",
         }
-        response = requests.get (url=fudai_reward_url, headers=reward_headers, verify=False)
-        list = response.json()
-        print(list)
+        response = requests.get (url=fudai_reward_url, headers=reward_heards, verify=False)
+        list = response.json ()
+        # print (list)
         code = list['code']
         if code != 0:
             msg ("【{0}】未到领取福袋时间".format(name))
             return 0
-        amount = list['data']['rewards'][0]['amount']  # 本次任务获得鱼饵
-        msg ("【{0}】已领取福袋奖励，本时间段获得{1}g鱼饵".format (name,amount))
+        amount = list['data']['rewards'][0]['amount']  # 本次任务获得水滴
+        msg ("【{0}】已领取福袋奖励，本时间段获得{1}g水滴".format (name,amount))
     except Exception as e:
         print (e)
         msg ("【{0}】领取福袋奖励失败,可能是cookies过期".format(name))
+
+#增加肥力
+def add_fl(name,uid,DD_token,DD_cookies):
+    try:
+        url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 5.1.1) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/52.0.2743.100 Mobile Safari/537.36 xzone/9.29.0",
+            "Referer": "https://orchard-m.ddxq.mobi/?is_nav_hide=true&s=mine_orchard",
+            "DDMC-GAME-TID": "2",
+            "cookie": DD_cookies
+        }
+        r = requests.get (url, headers=headers, verify=False).text
+        seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
+        i = 1
+        while True:
+            add_fl_url = f'https://farm.api.ddxq.mobi/api/v2/props/props-use?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&uid={uid}&latitude=23.017158&longitude=113.811603&propsCode=FERTILIZER&propsId=210912164372360018&seedId={seedid}'
+            add_fl_heards = {
+                "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive",
+                "Accept": "*/*",
+                "Referer": "https://orchard-m.ddxq.mobi/",
+                "Host": "farm.api.ddxq.mobi",
+                "Cookie": DD_cookies,
+                "Origin": "https://orchard-m.ddxq.mobi",
+                "accept-language": "zh-cn",
+                "ddmc-game-tid": "2",
+            }
+            response = requests.get (url=add_fl_url, headers=add_fl_heards, verify=False)
+            result = response.json ()
+            # print (result)
+            code = result['code']
+            if code != 1125:
+                amount = result['data']['propsUse']['amount']  # 剩余肥料
+                total = i * 10
+                cur_amount = result['data']['propsUseResultVo']['amount']  # 当前肥力值
+                if amount == 0:
+                    msg ("【{0}】当前肥力值{1}g，本次增加肥力值{2}g".format (name,cur_amount,total))
+                if code != 0:
+                    msg ("【{0}】肥料不足，无法增加".format(name))
+                    return 0
+            else:
+                msg ("【{0}】肥料不足，无法增加".format (name))
+                return 0
+            i += 1
+    except Exception as e:
+        print (e)
+        msg ("【{0}】肥料不足，无法增加".format(name))
+
 if __name__ == '__main__':
     global msg_info
     print("============脚本只支持青龙新版=============\n")
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
-    print("============执行叮咚鱼塘活动脚本==============")
-    # print(DD_token,DD_cookies)
+    print("============执行叮咚果园活动脚本==============")
+    print(DD_token,DD_cookies)
     if DD_token != '' and DD_cookies != '':
+        msg("单账号模式")
         name,uid = get_info(DD_token,DD_cookies)
         do_sign (name,uid,DD_token,DD_cookies)
         do_sign2 (name,uid,DD_token,DD_cookies)
         fudai_reward (name,uid,DD_token,DD_cookies)
-        lucky_draw(name,DD_token,DD_cookies)
         view_mission (name,DD_token,DD_cookies)
-        view_id, lucky_draw_id = tasklist_info (name,uid,DD_token,DD_cookies)
-        lucky_draw_reward (name,uid,lucky_draw_id,DD_token,DD_cookies)
-        do_reward (name,uid,view_id,DD_token,DD_cookies)
+        view_id = tasklist_info (name,uid,DD_token,DD_cookies)
+        do_reward (name,view_id,DD_token,DD_cookies)
+        add_fl(name,uid,DD_token,DD_cookies)
         do_feed (name,uid,DD_token,DD_cookies)
-    elif tokens == '' or  cookies == '':
+    elif tokens == '' or cookies == '':
         print("检查变量DD_token，DD_cookies是否已填写")
     else:
+        msg ("多账号模式")
         for i,j in zip(tokens,cookies):             #同时遍历两个list，需要用ZIP打包
             name, uid = get_info (i, j)
             do_sign (name, uid, i, j)
             do_sign2 (name, uid, i, j)
             fudai_reward (name, uid, i, j)
-            lucky_draw (name, i, j)
             view_mission (name, i, j)
-            view_id, lucky_draw_id = tasklist_info (name, uid, i, j)
-            lucky_draw_reward (name, uid, lucky_draw_id, i, j)
-            do_reward (name,uid, view_id, i, j)
+            view_id = tasklist_info (name, uid, i, j)
+            do_reward (name, view_id, i, j)
+            add_fl(name, uid, i, j)
             do_feed (name,uid,i, j)
     if "已完成" in msg_info:
-        send("叮咚买菜鱼塘活动", msg_info)
+        send("叮咚买菜果园活动", msg_info)
     elif "过期" in msg_info:
-        send("叮咚买菜鱼塘活动", msg_info)
+        send("叮咚买菜果园活动", msg_info)
