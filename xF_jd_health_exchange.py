@@ -3,42 +3,41 @@
 '''
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导
-项目名称:xF_jd_health_exchange.py
+项目名称:xF_jd_health_plant.py
 Author: 一风一扬
-功能：健康社区兑换
-Date: 2021-08-12
-cron: 9 1,15 * * * xF_jd_health_exchange.py
-new Env('JD健康社区兑换');
+功能：健康社区-种植园自动任务
+Date: 2022-1-4
+cron: 23 11,13,21 * * * xF_jd_health_plant.py
+new Env('京东健康社区-种植园自动任务');
 
 
+活动入口：20:/#1DouT0KAaKuqv%
 
-教程：本脚本默认兑换20京豆，需要8W积分，默认保留10W积分，有18W积分以上才兑换20京豆
+教程：该活动与京东的ck通用，但是变量我还是独立出来。
 
-cron时间填写：兑换京豆随意写，如果是其他商品，根据相关时间填写
+青龙变量填写export plant_cookie="xxxx"
+
+多账号用&隔开，例如export plant_cookie="xxxx&xxxx"
+
+
+青龙变量export charge_targe_id = 'xxxx'，表示需要充能的id，单账号可以先填写export charge_targe_id = '11111'，运行一次脚本
+日志输出会有charge_targe_id，然后再重新修改export charge_targe_id = 'xxxxxx'。多个账号也一样，如果2个账号export charge_targe_id = '11111&11111'
+3个账号export charge_targe_id = '11111&11111&11111'，以此类推。
+注意：charge_targe_id和ck位置要对应。而且你有多少个账号，就得填多少个charge_targe_id，首次11111填写时，为5位数。
+例如export plant_cookie="xxxx&xxxx&xxx"，那export charge_targe_id = "11111&11111&11111",也要写满3个id，这样才能保证所有账号都能跑
 
 '''
-#如果不想兑换京豆，ENV设置： export heath_noexchage='x'
-# x填写数字，x对应cookies中第几个账号，如果中间有黑号，黑号不算。多个账号不兑换用&隔开，例如2&3&4
-heath_noexchage='2&3&4'
-
-##############默认保留10W积分，18W积分才兑换20京豆############
-###想保留其他分数，ENV设置： export least='xxx'
-least = '180000'
-
-# 20京豆id为4
-id = '4'
-
-
-#每秒点击兑换次数...适当调整，手机会发烫
-#ENV设置： export dd_thread=30
-dd_thread = '30'
 
 
 
 ######################################################以下代码请不要乱改######################################
 
 UserAgent = ''
-
+cookie = ''
+account = ''
+charge_targe_id = ''
+cookies = []
+charge_targe_ids = ''
 
 import requests
 import time,datetime
@@ -55,20 +54,25 @@ requests.packages.urllib3.disable_warnings()
 
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-starttime = '23:59:58.00000000'
+
+nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+
+time1 = '21:00:00.00000000'
+time2 = '23:00:00.00000000'
+
+flag_time1 = '{} {}'.format (today, time1)
+flag_time2 = '{} {}'.format (today, time2)
+
+
+
 
 pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
 path = pwd + "env.sh"
 
-script_name = '健康社区兑换-Python'
+sid = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 32))
 
-jd_host='https://api.m.jd.com/'
+sid_ck = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQRSTUVWXYZ', 43))
 
-functionId=''
-
-body = '{}'
-
-uuid = ''
 
 
 def printT(s):
@@ -95,138 +99,6 @@ def getEnvs(label):
     except:
         return label
 
-
-
-class getJDCookie(object):
-#     # 适配各种平台环境ck
-#
-#     def getckfile(self):
-#         global v4f
-#         curf = pwd + 'JDCookies.txt'
-#         v4f = '/jd/config/config.sh'
-#         ql_new = '/ql/config/env.sh'
-#         ql_old = '/ql/config/cookie.sh'
-#         if os.path.exists(curf):
-#             with open(curf, "r", encoding="utf-8") as f:
-#                 cks = f.read()
-#                 f.close()
-#             r = re.compile(r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
-#             cks = r.findall(cks)
-#             if len(cks) > 0:
-#                 return curf
-#             else:
-#                 pass
-#         if os.path.exists(ql_new):
-#             printT()("当前环境青龙面板新版")
-#             return ql_new
-#         elif os.path.exists(ql_old):
-#             printT()("当前环境青龙面板旧版")
-#             return ql_old
-#         elif os.path.exists(v4f):
-#             printT()("当前环境V4")
-#             return v4f
-#         return curf
-#
-#     # 获取cookie
-#     def getCookie(self):
-#         global cookies
-#         ckfile = self.getckfile()
-#         try:
-#             if os.path.exists(ckfile):
-#                 with open(ckfile, "r", encoding="utf-8") as f:
-#                     cks = f.read()
-#                     f.close()
-#                 if 'pt_key=' in cks and 'pt_pin=' in cks:
-#                     r = re.compile(r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
-#                     cks = r.findall(cks)
-#                     if len(cks) > 0:
-#                         if 'JDCookies.txt' in ckfile:
-#                             printT()("当前获取使用 JDCookies.txt 的cookie")
-#                         cookies = ''
-#                         for i in cks:
-#                             if 'pt_key=xxxx' in i:
-#                                 pass
-#                             else:
-#                                 cookies += i
-#                         return
-#             else:
-#                 with open(pwd + 'JDCookies.txt', "w", encoding="utf-8") as f:
-#                     cks = "#多账号换行，以下示例：（通过正则获取此文件的ck，理论上可以自定义名字标记ck，也可以随意摆放ck）\n账号1【Curtinlv】cookie1;\n账号2【TopStyle】cookie2;"
-#                     f.write(cks)
-#                     f.close()
-#             if "JD_COOKIE" in os.environ:
-#                 if len(os.environ["JD_COOKIE"]) > 10:
-#                     cookies = os.environ["JD_COOKIE"]
-#                     printT()("已获取并使用Env环境 Cookie")
-#         except Exception as e:
-#             printT()(f"【getCookie Error】{e}")
-
-    # 检测cookie格式是否正确
-    def getUserInfo(self, ck, pinName, userNum):
-        url = 'https://me-api.jd.com/user_new/info/GetJDUserInfoUnion?orgFlag=JD_PinGou_New&callSource=mainorder&channel=4&isHomewhite=0&sceneval=2&sceneval=2&callback=GetJDUserInfoUnion'
-        headers = {
-            'Cookie': ck,
-            'Accept': '*/*',
-            'Connection': 'close',
-            'Referer': 'https://home.m.jd.com/myJd/home.action',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Host': 'me-api.jd.com',
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.2 Mobile/15E148 Safari/604.1',
-            'Accept-Language': 'zh-cn'
-        }
-        try:
-            resp = requests.get(url=url, verify=False, headers=headers, timeout=60).text
-            r = re.compile(r'GetJDUserInfoUnion.*?\((.*?)\)')
-            result = r.findall(resp)
-            userInfo = json.loads(result[0])
-            nickname = userInfo['data']['userInfo']['baseInfo']['nickname']
-            return ck, nickname
-        except Exception:
-            context = f"账号{userNum}【{pinName}】Cookie 已失效！请重新获取。"
-            printT(context)
-            return ck, False
-
-    def iscookie(self):
-        """
-        :return: cookiesList,userNameList,pinNameList
-        """
-        cookiesList = []
-        userNameList = []
-        pinNameList = []
-        if 'pt_key=' in cookies and 'pt_pin=' in cookies:
-            r = re.compile(r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
-            result = r.findall(cookies)
-            if len(result) >= 1:
-                printT("您已配置{}个账号".format(len(result)))
-                u = 1
-                for i in result:
-                    r = re.compile(r"pt_pin=(.*?);")
-                    pinName = r.findall(i)
-                    pinName = unquote(pinName[0])
-                    # 获取账号名
-                    ck, nickname = self.getUserInfo(i, pinName, u)
-                    if nickname != False:
-                        cookiesList.append(ck)
-                        userNameList.append(nickname)
-                        pinNameList.append(pinName)
-                    else:
-                        u += 1
-                        continue
-                    u += 1
-                if len(cookiesList) > 0 and len(userNameList) > 0:
-                    return cookiesList, userNameList, pinNameList
-                else:
-                    printT("没有可用Cookie，已退出")
-                    exit(3)
-            else:
-                printT("cookie 格式错误！...本次操作已退出")
-                exit(4)
-        else:
-            printT("cookie 格式错误！...本次操作已退出")
-            exit(4)
-getCk = getJDCookie()
-#getCk.getCookie()
-
 # 获取v4环境 特殊处理
 try:
     with open(v4f, 'r', encoding='utf-8') as v4f:
@@ -241,40 +113,49 @@ try:
 except:
     pass
 
-##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
+#############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 # with open(path, "r+", encoding="utf-8") as f:
 #     ck = f.read()
 #     if "JD_COOKIE" in ck:
-#         # r = re.compile (r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
-#         # cookies = r.findall (ck)
+#         r = re.compile (r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
+#         cookies = r.findall (ck)
+#         # print(cookies)
 #         # cookies = cookies[0]
 #         # print(cookies)
-#         cookies = ck
+#         # cookies = cookies.split ('&')
 #         printT ("已获取并使用ck环境 Cookie")
-########################################################################
+#######################################################################
 
 
-if "JD_COOKIE" in os.environ:
-    if len (os.environ["JD_COOKIE"]) > 1:
-        cookies = os.environ["JD_COOKIE"]
-        cookies = cookies.split ('&')
-        # cookies = temporary[0]
-        printT ("已获取并使用Env环境 Cookie")
+if "plant_cookie" in os.environ:
+    if len (os.environ["plant_cookie"]) == 1:
+        is_ck = int(os.environ["plant_cookie"])
+        cookie1 = os.environ["JD_COOKIE"].split('&')
+        cookie = cookie1[is_ck-1]
+        printT ("已获取并使用Env环境cookie")
+    elif len (os.environ["plant_cookie"]) > 1:
+        cookies1 = []
+        cookies1 = os.environ["JD_COOKIE"]
+        cookies1 = cookies1.split ('&')
+        is_ck = os.environ["plant_cookie"].split('&')
+        for i in is_ck:
+            cookies.append(cookies1[int(i)-1])
+        printT ("已获取并使用Env环境plant_cookies")
+else:
+    printT ("变量plant_cookie未填写")
+    exit (0)
 
-if "heath_noexchage" in os.environ:
-    heath_noexchage = os.environ["heath_noexchage"]
-    printT(f"已获取并使用Env环境 heath_noexchage:{heath_noexchage}")
+if "charge_targe_id" in os.environ:
+    if len (os.environ["charge_targe_id"]) > 8:
+        charge_targe_ids = os.environ["charge_targe_id"]
+        charge_targe_ids = charge_targe_ids.split ('&')
+    else:
+        charge_targe_id = os.environ["charge_targe_id"]
+        printT (f"已获取并使用Env环境 charge_targe_id={charge_targe_id}")
+else:
+    printT("变量charge_targe_id未填写，无法充能")
 
-if "least" in os.environ:
-    least = getEnvs(os.environ["least"])
-    printT(f"已获取并使用Env环境 least:{least}")
 
-if "dd_thread" in os.environ:
-    if len (os.environ["dd_thread"]) > 1:
-        dd_thread = getEnvs (os.environ["dd_thread"])
-        printT(f"已获取并使用Env环境 dd_thread:{dd_thread}")
-
-heath_noexchage_list = heath_noexchage.split('&')
 
 def userAgent():
     """
@@ -353,181 +234,367 @@ class msg(object):
         ###################
 msg().main()
 
-class TaskThread(threading.Thread):
-    """
-    处理task相关的线程类
-    """
-    def __init__(self, func, args=()):
-        super(TaskThread, self).__init__()
-        self.func = func  # 要执行的task类型
-        self.args = args  # 要传入的参数
-
-    def run(self):
-        # 线程类实例调用start()方法将执行run()方法,这里定义具体要做的异步任务
-        #print("start func {}".format(self.func.__name__))  # 打印task名字　用方法名.__name__
-        self.result = self.func(*self.args)  # 将任务执行结果赋值给self.result变量   前面加*，表示传入多个参数
-
-    def get_result(self):
-        # 该方法返回task函数的执行结果,方法名不是非要get_result
-        try:
-            return self.result
-        except Exception as ex:
-            print(ex)
-            return "ERROR"
-def listcookie():             #将JDCookies.txt的cookies变成list[]
-    if 'pt_key=' in cookies and 'pt_pin=' in cookies:
-        r = re.compile(r"pt_key=.*?pt_pin=.*?;" ,  re.M | re.S | re.I)         #r"" 的作用是去除转义字符.
-        result = r.findall(cookies)        #输出为list列表
-        if len(result) == 1:
-            return result
-        elif len(result)>1:
-            return result
-        else:
-            print("cookie 格式错误！...本次操作已退出")
-            exit(1)
-    else:
-        print("cookie 格式错误！...本次操作已退出")
-        exit(9)
-
-def setHeaders(cookie):
+def setName(cookie):
     try:
         r = re.compile(r"pt_pin=(.*?);")    #指定一个规则：查找pt_pin=与;之前的所有字符,但pt_pin=与;不复制。r"" 的作用是去除转义字符.
         userName = r.findall(cookie)        #查找pt_pin=与;之前的所有字符，并复制给r，其中pt_pin=与;不复制。
         #print (userName)
         userName = unquote(userName[0])     #r.findall(cookie)赋值是list列表，这个赋值为字符串
         #print(userName)
+        return userName
     except Exception as e:
         print(e,"cookie格式有误！")
         exit(2)
+
+#获取ck
+def get_ck(token,sid_ck,account):
+    try:
+        url = 'https://api.m.jd.com/client.action?functionId=isvObfuscator'
+        headers = {
+            # 'Connection': 'keep-alive',
+            'accept': '*/*',
+            "cookie": f"{token}",
+            'host': 'api.m.jd.com',
+            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+            'user-Agent': "JD4iPhone/167922%20(iPhone;%20iOS;%20Scale/2.00)",
+            'accept-Encoding': 'gzip, deflate, br',
+            'accept-Language': 'zh-Hans-CN;q=1',
+            "content-type":"application/x-www-form-urlencoded",
+            # "content-length":"1348",
+        }
+        timestamp = int (round (time.time () * 1000))
+        timestamp1 = int(timestamp / 1000)
+        data =r'body=%7B%22url%22%3A%22https%3A%5C/%5C/xinruismzd-isv.isvjcloud.com%22%2C%22id%22%3A%22%22%7D&build=167922&client=apple&clientVersion=10.3.2&d_brand=apple&d_model=iPhone12%2C1&ef=1&eid=eidI4a9081236as4w7JpXa5zRZuwROIEo3ORpcOyassXhjPBIXtrtbjusqCxeW3E1fOtHUlGhZUCur1Q1iocDze1pQ9jBDGfQs8UXxMCTz02fk0RIHpB&ep=%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22screen%22%3A%22ENS4AtO3EJS%3D%22%2C%22wifiBssid%22%3A%22' + f"{sid_ck}" + r'%3D%22%2C%22osVersion%22%3A%22CJUkCK%3D%3D%22%2C%22area%22%3A%22CJvpCJY1DV80ENY2XzK%3D%22%2C%22openudid%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22uuid%22%3A%22aQf1ZRdxb2r4ovZ1EJZhcxYlVNZSZz09%22%7D%2C%22ts%22%3A1642002985%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D&ext=%7B%22prstate%22%3A%220%22%2C%22pvcStu%22%3A%221%22%7D&isBackground=N&joycious=88&lang=zh_CN&networkType=wifi&networklibtype=JDNetworkBaseAF&partner=apple&rfs=0000&scope=01&sign=946db60626658b250cf47aafb6f67691&st=1642002999847&sv=112&uemps=0-0&uts=0f31TVRjBSu3kkqwe7t25AkQCKuzV3pz8JrojVuU0630g%2BkZigs9kTwRghT26sE72/e92RRKan/%2B9SRjIJYCLuhew91djUwnIY47k31Rwne/U1fOHHr9FmR31X03JKJjwao/EC1gy4fj7PV1Co0ZOjiCMTscFo/8id2r8pCHYMZcaeH3yPTLq1MyFF3o3nkStM/993MbC9zim7imw8b1Fg%3D%3D'
+        # data = '{"token":"AAFh3ANjADAPSunyKSzXTA-UDxrs3Tn9hoy92x4sWmVB0Kv9ey-gAMEdJaSDWLWtnMX8lqLujBo","source":"01"}'
+        # print(data)
+        response = requests.post (url=url, verify=False, headers=headers,data=data)
+        result = response.json ()
+        # print(result)
+        access_token = result['token']
+        print(access_token)
+        return access_token
+    except Exception as e:
+        msg("账号【{0}】获取ck失败，cookie过期".format(account))
+
+#获取Authorization
+def get_Authorization(access_token,account):
+    try:
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/auth'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Authorization": 'Bearer undefined',
+            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/logined_jd/',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            "Origin":"https://xinruismzd-isv.isvjcloud.com",
+            "Content-Type":"application/json;charset=utf-8",
+
+        }
+        data = '{"token":"'+ f"{access_token}" + r'","source":"01"}'
+        # print(data)
+        response = requests.post (url=url, verify=False, headers=headers,data=data)
+        result = response.json ()
+        print(result)
+        access_token = result['access_token']
+        access_token = r"Bearer " + access_token
+        # print(access_token)
+        return access_token
+    except Exception as e:
+        msg("账号【{0}】获取Authorization失败，cookie过期".format(account))
+
+#获取已种植的信息
+def get_planted_info(cookies,sid,account):
+    name_list = []
+    planted_id_list = []
+    url = 'https://xinruismzd-isv.isvjcloud.com/api/get_home_info'
     headers = {
-        'Origin': 'https://h5.m.jd.com',
-        'Cookie': cookie,
         'Connection': 'keep-alive',
         'Accept': 'application/json, text/plain, */*',
-        'Referer': 'https://h5.m.jd.com/',
-        #'Host': 'ms.jr.jd.com',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        #'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-        'User-Agent': userAgent(),
+        "Authorization": cookies,
+        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+        'Host': 'xinruismzd-isv.isvjcloud.com',
+        # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+        'User-Agent': userAgent (),
         'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'zh-cn'
+        'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
     }
-    return headers,userName
-
-#返回符合条件的ck list
-def checkUser(cookies):
-    global goodsid, mid_time,afternoon_time
-    if isinstance(cookies,list):            #isinstance() 函数来判断一个对象是否是一个已知的类型，类似 type()。此方法为：判断cookies是否为list[]列表，是返回True，否返回False
-        pass
-    elif isinstance(cookies,str):          #判断cookies是否为str字符串，是返回True，否返回False
-        cookies = listcookie()
-    else:
-        print("cookie 类型有误")
-        exit(2)
-    cookieList=[]
-    #print(cookies)
-    user_num=1
-    for i in cookies:
-        headers,userName = setHeaders(i)
+    response = requests.get (url=url, verify=False, headers=headers)
+    result = response.json ()
+    # print(result)
+    planted_list = result['plant']
+    # print(planted_list)
+    for i in range (len (planted_list)):
         try:
-            total_exchangePoints = cheak_points('jdhealth_getTaskDetail','{"buildingId":"","taskId":22,"channelId":1}',headers)
-            title,exchangePoints,bizMsg,bizCode = jdhealth_getCommodities('jdhealth_getCommodities','{}',headers)
-            if user_num == 1:
-                printT("您已设置兑换的商品：【{0}豆】 需要{1}积分".format(title, exchangePoints))
-                print("********** 首先检测您是否有钱呀 ********** ")
-            if str(total_exchangePoints) > least:
-                total_exchangePoints = int(total_exchangePoints)
-                if not str(user_num) in heath_noexchage_list:
-                    cookieList.append(i)            #将够钱兑换的账号保存下来给cookieList[]，其余不够钱的账号剔除在外，不执行兑换
-                    printT(f"账号{user_num}:【{userName}】积分:{total_exchangePoints}...yes")
-            else:
-                total_exchangePoints = int (total_exchangePoints)
-                printT(f"账号{user_num}:【{userName}】积分:{total_exchangePoints}...no")
+            name = result['plant'][f'{i+1}']['data']['name']
+            planted_id = result['plant'][f'{i+1}']['data']['id']
+            print(f"账号{account}所种植的",f"【{name}】","充能ID为:",planted_id)
+            name_list.append(name)
+            planted_id_list.append(planted_id)
         except Exception as e:
-            #printT(f"账号{user_num}:【{userName}】，该用户异常，查不到商品关键词【{Coupon}】，或者cookies已过期")
-            msg(f"账号{user_num}:【{userName}】，该用户异常，查不到商品id【{id}】")
-            # if '异常' in msg_info:
-            #     send (script_name, msg_info)
-            #     if len (cookies) == 1:
-            #exit (0)
-        user_num+=1
-    if len (cookieList) > 0:
-        printT ("共有{0}个账号符合兑换条件".format (len (cookieList)))
-        return cookieList
-    else:
-        printT ("没有账号符合兑换要求，退出执行")
-        exit(0)
-#查询总分
-def cheak_points(functionId,body,headers):
-    url = jd_host + '?' +'functionId=' + functionId + '&body=' + body + '&client=wh5&clientVersion=1.0.0&' + 'uuid=' + uuid
-    try:
-        respon = requests.post(url=url, verify=False, headers=headers)
-        result=respon.json()
-        #print(result)
-        total_exchangePoints = result['data']['result']['userScore']   #兑换所需分数
-        return float(total_exchangePoints)
-    except Exception as e:
-            print(e)
+            pass
 
-#查询
-def jdhealth_getCommodities(functionId,body,headers):
-    url = jd_host + '?' +'functionId=' + functionId + '&body=' + body + '&client=wh5&clientVersion=1.0.0&' + 'uuid=' + uuid
-    try:
-        respon = requests.post(url=url, verify=False, headers=headers)
-        result=respon.json()
-        title = result['data']['result']['jBeans'][3]['title']
-        exchangePoints = result['data']['result']['jBeans'][3]['exchangePoints']    #兑换所需分数
-        bizMsg = result['data']['bizMsg']
-        bizCode = result['data']['bizCode']
-        return title,exchangePoints,bizMsg,bizCode
-    except Exception as e:
-            print(e)
 
-#兑换
-def jdhealth_exchange(functionId,body,headers):
-    url = jd_host + '?' +'functionId=' + functionId + '&body=' + body + '&client=wh5&clientVersion=1.0.0&' + 'uuid=' + uuid
+#获取早睡打卡
+def get_sleep(cookies,sid):
+    url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
+    headers = {
+        'Connection': 'keep-alive',
+        'Accept': 'application/json, text/plain, */*',
+        "Authorization": cookies,
+        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+        'Host': 'xinruismzd-isv.isvjcloud.com',
+        # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+        'User-Agent': userAgent (),
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
+    }
+    response = requests.get (url=url, verify=False, headers=headers)
+    result = response.json ()
+   # print(result)
+    taskToken_list = result['result']['taskVos']
+    for i in range (len (taskToken_list)):
+        try:
+            taskName = taskToken_list[i]['taskName']
+            taskId = taskToken_list[i]['taskId']
+            if "早睡" in taskName:
+                taskToken = taskToken_list[i]['threeMealInfoVos'][0]['taskToken']
+            return taskName,taskId,taskToken
+        except Exception as e:
+            print (e)
+
+
+#获取任务信息
+def get_task(cookies,sid,account):
     try:
-        respon = requests.post(url=url, verify=False, headers=headers)
-        result=respon.json()
-        #title = result['data']['result']['jingBeanNum']
-        #userScore = result['data']['result']['userScore']           #剩余积分
-        bizMsg = result['data']['bizMsg']
-        bizCode = result['data']['bizCode']
-        success = result['data']['success']
-        if bizMsg == 'success' or bizCode == '0' :
-                printT("{0}...恭喜兑换成功！".format(bizMsg))
-                return 0
-        else:
-            printT(f"\t{bizMsg}" + ',兑换失败')          #f 表达式----可以解析任意的数据类型。      \t表示空4格，相当于tab。
-            return 999
+        taskName_list = []
+        taskId_list = []
+        taskToken_list = []
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Authorization":cookies,
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
+        }
+        response = requests.get(url=url, verify=False, headers=headers)
+        result = response.json()
+        # print(result)
+        task_list = result['result']['taskVos']
+        # print(task_list)
+        for i in range (len (task_list)):
+            try:
+                taskName = task_list[i]['taskName']
+                taskId = task_list[i]['taskId']
+                taskToken = task_list[i]['shoppingActivityVos'][0]['taskToken']
+                taskName_list.append(taskName)
+                taskId_list.append(taskId)
+                taskToken_list.append(taskToken)
+            except Exception as e:
+                print(e)
+        # print(taskName_list, taskId_list, taskToken_list)
+        return taskName_list, taskId_list, taskToken_list
     except Exception as e:
-            print(e)
+        print (e)
+        msg("【账号{0}】浏览任务已全部完成".format(account))
+
+#获取加购任务信息
+def get_task2(cookies,sid,account):
+    try:
+        taskToken_list = []
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Authorization":cookies,
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
+        }
+        response = requests.get(url=url, verify=False, headers=headers)
+        result = response.json()
+        # print(result)
+        taskName = result['result']['taskVos'][0]['taskName']
+        taskId = result['result']['taskVos'][0]['taskId']
+        task_list  =  result['result']['taskVos'][0]['productInfoVos']
+        # print(task_list)
+        for i in range (len (task_list)):
+            try:
+                taskToken = task_list[i]['taskToken']
+                taskToken_list.append(taskToken)
+            except Exception as e:
+                pass
+        # print(taskName, taskId, taskToken_list)
+        return taskName, taskId, taskToken_list
+    except Exception as e:
+        print (e)
+        msg("【账号{0}】加购任务已全部完成".format(account))
+
+
+#做任务
+def do_task(cookies,taskName,taskId,taskToken,sid,account):
+    try:
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
+        url1 = 'https://xinruismzd-isv.isvjcloud.com/api/catch_task'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Content-Type":"application/json",
+            "Authorization":cookies,
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
+            "Origin":"https://xinruismzd-isv.isvjcloud.com",
+            # "Content-Length":"124",
+        }
+        data = r'{"taskToken":"' +f"{taskToken}" +r'","task_id":' + f"{taskId}" + r',"task_type":9,"task_name":"' + f"{taskName}" + r'"}'
+        res = requests.post(url=url1, verify=False, headers=headers,data=data.encode())
+        # print(res.status_code)
+        if res.status_code == 200:
+            msg("账号【{0}】正在执行任务，请稍等10秒".format(account))
+            time.sleep(10)
+            response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
+            result = response.json()
+            print(result)
+            score = result['score']
+            msg ("账号【{0}】执行任务【{1}】成功，获取【{2}】能量".format (account, taskName,score))
+    except Exception as e:
+        print(e)
+
+#做任务
+def do_task2(cookies,taskName,taskId,taskToken,sid,account):
+    try:
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Content-Type":"application/json",
+            "Authorization":cookies,
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
+            "Origin":"https://xinruismzd-isv.isvjcloud.com",
+            # "Content-Length":"124",
+        }
+        data = r'{"taskToken":"' +f"{taskToken}" +r'","task_id":' + f"{taskId}" + r',"task_type":9,"task_name":"' + f"{taskName}" + r'"}'
+        time.sleep(1)
+        response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
+        result = response.json()
+        # print(result)
+        score = result['score']
+        msg ("账号【{0}】执行任务【{1}】成功，获取【{2}】能量".format (account, taskName,score))
+    except Exception as e:
+        print(e)
+
+
+#充能
+def charge(charge_targe_id,cookies,sid,account):
+    try:
+        url = 'https://xinruismzd-isv.isvjcloud.com/api/add_growth_value'
+        headers = {
+            'Connection': 'keep-alive',
+            'Accept': 'application/json, text/plain, */*',
+            "Content-Type":"application/json",
+            "Authorization":cookies,
+            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
+            'Host': 'xinruismzd-isv.isvjcloud.com',
+            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
+            'User-Agent': userAgent (),
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
+            "Origin":"https://xinruismzd-isv.isvjcloud.com",
+            # "Content-Length":"124",
+        }
+        data = r'{"plant_id":' + f"{charge_targe_id}" + r'}'
+        for i in range(10):
+            response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
+            result = response.json()
+            # print(result)
+            user_coins = result['user_coins']   #剩余能量
+            coins = result['plant_info']['coins']   #消耗能量
+            msg ("账号【{0}】充能成功，消耗【{1}】能量，剩余能量【{2}】".format (account, coins,user_coins))
+            time.sleep(2)
+
+    except Exception as e:
+        # print(e)
+        message = result['message']
+        if "充值次数达到上限" in message:
+            msg("账号【{0}】充能次数已达上限10次".format(account))
+
 
 def start():
-    print (f"###### 启动并发线程 【Thread-{dd_thread}】")
-    # cookiesList, userNameList, pinNameList = getCk.iscookie ()
-    # cookies1 = checkUser (cookiesList)  # 将够钱兑换的账号保存下来给cookies，其余不够钱的账号剔除在外，不执行兑换
-    final = 1
-    while True:
+        global cookie,cookies,charge_targe_id
         print (f"\n【准备开始...】\n")
-        user_num = 1
-        for i in cookies:
-            headers, userName = setHeaders (i)
-            final = jdhealth_exchange ('jdhealth_exchange','{"commodityType":2,"commodityId":"4"}',headers)
-            user_num += 1
-            if final == 0:
-                last_points = cheak_points ('jdhealth_getTaskDetail','{"buildingId":"","taskId":22,"channelId":1}',headers)
-                title, exchangePoints, bizMsg, bizCode = jdhealth_getCommodities ('jdhealth_getCommodities', '{}',headers)
-                # printT (f"账号{user_num}:【{userName}】剩余积分:{last_integration}...")
-                msg (f"账号{user_num}:【{userName}】成功兑换【{title}豆】，剩余积分:{last_points}...")
+        nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+        if cookie != '':
+            account = setName (cookie)
+            access_token = get_ck(cookie,sid_ck,account)
+            cookie = get_Authorization (access_token, account)
+            get_planted_info (cookie,sid)
+            if nowtime > flag_time1 and nowtime < flag_time2:
+                taskName,taskId,taskToken = get_sleep (cookie,sid)
+                do_task(cookie,taskName,taskId,taskToken,sid,account)
+                charge(charge_targe_id,cookie,sid,sid,account)
+            else:
+                taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
+                for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
+                    do_task(cookie,i,j,k,sid,account)
+                taskName, taskId, taskToken_list = get_task2 (cookie, account)
+                for i in taskToken_list:
+                    do_task2 (cookie, taskName, taskId, i, sid,account)
+                charge(charge_targe_id,cookie,account)
+        elif cookies != '':
+            for cookie, charge_targe_id in zip (cookies, charge_targe_ids):
+                account = setName (cookie)
+                access_token = get_ck (cookie, sid_ck, account)
+                cookie = get_Authorization (access_token, account)
+                get_planted_info (cookie, sid,account)
+            for cookie,charge_targe_id in zip(cookies,charge_targe_ids):
+                try:
+                    account = setName (cookie)
+                    access_token = get_ck (cookie, sid_ck,account)
+                    cookie = get_Authorization (access_token, account)
+                    get_planted_info (cookie,sid,account)
+                    if nowtime > flag_time1 and nowtime < flag_time2:
+                        taskName, taskId, taskToken = get_sleep (cookie,sid)
+                        do_task (cookie, taskName, taskId, taskToken, sid,account)
+                    else:
+                        taskName_list, taskId_list, taskToken_list = get_task (cookie, sid,account)
+                        for i, j, k in zip (taskName_list, taskId_list, taskToken_list):
+                            do_task (cookie, i, j, k, sid,account)
+                        taskName, taskId, taskToken_list = get_task2 (cookie, account)
+                        for i in taskToken_list:
+                            do_task2 (cookie, taskName, taskId, i, sid,account)
+                    charge (charge_targe_id, cookie,sid, account)
+                except Exception as e:
+                    pass
+        else:
+            printT("请检查变量plant_cookie是否已填写")
 
-            elif final == 999:
-                pass
-        if user_num > len(cookies):
-            break
 if __name__ == '__main__':
-    print("脚本默认兑换20豆，18W分以上才兑换，具体修改教程可看脚本开头注释")
-    print ("\t\t【{}】".format (script_name))
+    printT("京东健康社区-种植园")
     start ()
-    if '成功兑换' in msg_info:
-        send (script_name, msg_info)
+    if '成熟' in msg_info:
+        send ("京东健康社区-种植园", msg_info)
+    if '成功' in msg_info:
+        send ("京东健康社区-种植园", msg_info)
