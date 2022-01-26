@@ -846,8 +846,8 @@ def watering(cookie, plant_id, sid, account):
             time.sleep (5)
 
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+        # pass
 
 
 # 施肥
@@ -939,8 +939,15 @@ def start():
                 access_token = get_ck (cookie, sid_ck, account)
                 cookie = get_Authorization (access_token, account)
                 name_list, position_list, shop_id_list, planted_id_list = get_planted_info (cookie, sid, account)
-                taskName_list, taskId_list, taskName_list2, taskId_list2, taskName_list3, taskId_list3 = get_task (
-                    cookie, account)
+            except Exception as e:
+                pass
+        for cookie, planted_id in zip (cookies, planted_ids):
+            try:
+                account = setName (cookie)
+                access_token = get_ck (cookie, sid_ck, account)
+                cookie = get_Authorization (access_token, account)
+                name_list, position_list, shop_id_list, planted_id_list = get_planted_info (cookie, sid, account)
+                taskName_list, taskId_list, taskName_list2, taskId_list2, taskName_list3, taskId_list3 = get_task (cookie, account)
                 get_water (cookie, position_list, sid, account)
                 get_fertilizer (cookie, shop_id_list, account)
                 for i, j in zip (taskName_list, taskId_list):
@@ -972,7 +979,9 @@ def start():
                             fertilization (cookie, i, k, account)
                             watering (cookie, i, sid, account)
                     else:
+                        print("【账号{}现在开始施肥】".format(account))
                         fertilization (cookie, planted_id_list[flag], k, account)
+                        print ("【账号{}现在开始浇水】".format (account))
                         watering (cookie, planted_id, sid, account)
                     flag += 1
             except Exception as e:
