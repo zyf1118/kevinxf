@@ -1,83 +1,95 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*
 '''
-感谢Curtin提供的其他脚本供我参考
-感谢aburd ch大佬的指导
-项目名称:xF_jd_health_plant.py
-Author: 一风一扬
-功能：健康社区-种植园自动任务
-Date: 2022-1-4
-cron: 23 11,13,21 * * * xF_jd_health_plant.py
-new Env('京东健康社区-种植园自动任务');
+
+感谢CurtinLV提供的其他脚本供我参考
+感谢aburd ch大佬的指导抓包
+项目名称:xF_DiDi_DZDZ_exchange.py
+Author: 一风一燕
+功能：滴滴app多走多赚签到
+Date: 2021-12-19
+cron: 1 0 0 * * * xF_DiDi_DZDZ_exchange.py
+new Env('滴滴app多走多赚兑换福利金');
+
+2022-1-7 updata:兑换改版，更新脚本
+
+2022-1-9 updata:
+更新多线程兑换，对于exchange_jkd_numb=4的人更加友好。
 
 
-活动入口：20:/#1DouT0KAaKuqv%
-
-教程：该活动与京东的ck通用，但是变量我还是独立出来。
-
-青龙变量填写export plant_cookie="xxxx"
-
-多账号用&隔开，例如export plant_cookie="xxxx&xxxx"
+****************滴滴出行APP*******************
 
 
-青龙变量export charge_targe_id = 'xxxx'，表示需要充能的id，单账号可以先填写export charge_targe_id = '11111'，运行一次脚本
-日志输出会有charge_targe_id，然后再重新修改export charge_targe_id = 'xxxxxx'。多个账号也一样，如果2个账号export charge_targe_id = '11111&11111'
-3个账号export charge_targe_id = '11111&11111&11111'，以此类推。
-注意：charge_targe_id和ck位置要对应。而且你有多少个账号，就得填多少个charge_targe_id，首次11111填写时，为5位数。
-例如export plant_cookie="xxxx&xxxx&xxx"，那export charge_targe_id = "11111&11111&11111",也要写满3个id，这样才能保证所有账号都能跑
+【教程】：
+
+青龙变量exchange_jkd_numb="1"的话，兑换100健康豆，1福利金
+青龙变量exchange_jkd_numb="2"的话，兑换5000健康豆，50福利金
+青龙变量exchange_jkd_numb="3"的话，兑换10000健康豆，100福利金
+青龙变量exchange_jkd_numb="4"的话，兑换150000健康豆，150福利金
+
+需要自行用手机抓取Didi_jifen_token。
+在青龙变量中添加变量Didi_jifen_token
+多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token="xxxxx&xxxx"
+
+手机抓包后，手动点击多看多赚，签到一次后，查看URL，https://res.xiaojukeji.com/sigma/api/step/sign/v2?wsgsig=
+再查看表头，ticket就是需要抓的变量了
+
+在青龙变量中添加变量Didi_jifen_token="xxxx",xxx就是上面抓的ticker复制下来就OK了
+
+
+
+cron时间填写：1 0 0 * * *
+
 
 '''
 
 
+Didi_jifen_token = ''
+exchange_jkd_numb = 2
+total_exchange = 5000
+FLJ = 50
+'''
 
-######################################################以下代码请不要乱改######################################
 
-UserAgent = ''
-cookie = ''
-account = ''
-charge_targe_id = ''
-cookies = []
-charge_targe_ids = ''
+=================================以下代码不懂不要随便乱动=================================
 
-import requests
-import time,datetime
-import requests,re,os,sys,random,json
-from urllib.parse import quote, unquote
-import threading
-import urllib3
-#urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+'''
+tokens = ''
+account = 1
+
+try:
+    import requests
+    import json,sys,os,re
+    import time,datetime
+    from urllib.parse import quote, unquote
+    import threading
+except Exception as e:
+    print(e)
 
 requests.packages.urllib3.disable_warnings()
 
 
-
-
+pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
+path = pwd + "env.sh"
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 tomorrow=(datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
-nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+#开始抢兑时间
+starttime='00:01:00.00000000'
+#结束时间
+endtime='00:01:20.00000000'
 
-time1 = '21:00:00.00000000'
-time2 = '23:00:00.00000000'
+qgtime = '{} {}'.format (today, starttime)
+qgendtime = '{} {}'.format (today, endtime)
 
-flag_time1 = '{} {}'.format (today, time1)
-flag_time2 = '{} {}'.format (today, time2)
-
-
-
-
-pwd = os.path.dirname(os.path.abspath(__file__)) + os.sep
-path = pwd + "env.sh"
-
-sid = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 32))
-
-sid_ck = ''.join (random.sample ('123456789abcdef123456789abcdef123456789abcdef123456789abcdefABCDEFGHIJKLMNOPQRSTUVWXYZ', 43))
 
 
 
 def printT(s):
-    print("[{0}]: {1}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), s))
+    print("[【{0}】]: {1}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), s))
     sys.stdout.flush()
+
 
 def getEnvs(label):
     try:
@@ -99,82 +111,59 @@ def getEnvs(label):
     except:
         return label
 
-# 获取v4环境 特殊处理
-try:
-    with open(v4f, 'r', encoding='utf-8') as v4f:
-        v4Env = v4f.read()
-    r = re.compile(r'^export\s(.*?)=[\'\"]?([\w\.\-@#&=_,\[\]\{\}\(\)]{1,})+[\'\"]{0,1}$',
-                   re.M | re.S | re.I)
-    r = r.findall(v4Env)
-    curenv = locals()
-    for i in r:
-        if i[0] != 'JD_COOKIE':
-            curenv[i[0]] = getEnvs(i[1])
-except:
-    pass
+##############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 
-#############      在pycharm测试ql环境用，实际用下面的代码运行      #########
 # with open(path, "r+", encoding="utf-8") as f:
-#     ck = f.read()
-#     if "JD_COOKIE" in ck:
-#         r = re.compile (r"pt_key=.*?pt_pin=.*?;", re.M | re.S | re.I)
-#         cookies = r.findall (ck)
-#         # print(cookies)
-#         # cookies = cookies[0]
-#         # print(cookies)
-#         # cookies = cookies.split ('&')
-#         printT ("已获取并使用ck环境 Cookie")
-#######################################################################
+#    ck = f.read()
+#    tokens = ck
+#    if "Didi_jifen_token" in ck:
+#        r = re.compile (r'Didi_jifen_token="(.*?)"', re.M | re.S | re.I)
+#        tokens = r.findall(ck)
+#        tokens = tokens[0].split ('&')
+#        if len (tokens) == 1:
+#            Didi_jifen_token = tokens[0]
+#            tokens = ''
+#            # print(tokens)
+#            # tokens = cookies[3]
+#        else:
+#            pass
+#    printT ("已获取并使用ck环境 token")
 
+########################################################################
 
-if "plant_cookie" in os.environ:
-    if len (os.environ["plant_cookie"]) == 1:
-        is_ck = int(os.environ["plant_cookie"])
-        cookie1 = os.environ["JD_COOKIE"].split('&')
-        cookie = cookie1[is_ck-1]
-        printT ("已获取并使用Env环境cookie")
-    elif len (os.environ["plant_cookie"]) > 1:
-        cookies1 = []
-        cookies1 = os.environ["JD_COOKIE"]
-        cookies1 = cookies1.split ('&')
-        is_ck = os.environ["plant_cookie"].split('&')
-        for i in is_ck:
-            cookies.append(cookies1[int(i)-1])
-        printT ("已获取并使用Env环境plant_cookies")
-else:
-    printT ("变量plant_cookie未填写")
-    exit (0)
-
-if "charge_targe_id" in os.environ:
-    if len (os.environ["charge_targe_id"]) > 8:
-        charge_targe_ids = os.environ["charge_targe_id"]
-        charge_targe_ids = charge_targe_ids.split ('&')
+if "Didi_jifen_token" in os.environ:
+    print(len (os.environ["Didi_jifen_token"]))
+    if len (os.environ["Didi_jifen_token"]) > 319:
+        tokens = os.environ["Didi_jifen_token"]
+        tokens = tokens.split ('&')
+        # tokens = tokens.split ('&')
+        # cookies = temporary[0]
+        printT ("已获取并使用Env环境Didi_jifen_token")
     else:
-        charge_targe_id = os.environ["charge_targe_id"]
-        printT (f"已获取并使用Env环境 charge_targe_id={charge_targe_id}")
+        Didi_jifen_token = os.environ["Didi_jifen_token"]
 else:
-    printT("变量charge_targe_id未填写，无法充能")
+    print("检查变量Didi_jifen_token是否已填写")
 
-
-
-def userAgent():
-    """
-    随机生成一个UA
-    :return: jdapp;iPhone;9.4.8;14.3;xxxx;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1
-    """
-    if not UserAgent:
-        uuid = ''.join(random.sample('123456789abcdef123456789abcdef123456789abcdef123456789abcdef', 40))
-        addressid = ''.join(random.sample('1234567898647', 10))
-        iosVer = ''.join(
-            random.sample(["14.5.1", "14.4", "14.3", "14.2", "14.1", "14.0.1", "13.7", "13.1.2", "13.1.1"], 1))
-        iosV = iosVer.replace('.', '_')
-        iPhone = ''.join(random.sample(["8", "9", "10", "11", "12", "13"], 1))
-        ADID = ''.join(random.sample('0987654321ABCDEF', 8)) + '-' + ''.join(
-            random.sample('0987654321ABCDEF', 4)) + '-' + ''.join(random.sample('0987654321ABCDEF', 4)) + '-' + ''.join(
-            random.sample('0987654321ABCDEF', 4)) + '-' + ''.join(random.sample('0987654321ABCDEF', 12))
-        return f'jdapp;iPhone;10.0.4;{iosVer};{uuid};network/wifi;ADID/{ADID};supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone{iPhone},1;addressid/{addressid};supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS {iosV} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1'
+if "exchange_jkd_numb" in os.environ:
+    exchange_jkd_numb = os.environ["exchange_jkd_numb"]
+    if exchange_jkd_numb == '1':
+        total_exchange = 100
+        FLJ = 1
+    elif exchange_jkd_numb == '2':
+        total_exchange = 5000
+        FLJ = 50
+    elif exchange_jkd_numb == '3':
+        total_exchange = 10000
+        FLJ = 100
+    elif exchange_jkd_numb == '4':
+        total_exchange = 15000
+        FLJ = 150
     else:
-        return UserAgent
+        printT (f"环境变量exchange_jkd_numb填写错误")
+        exit(0)
+    printT (f"已获取并使用Env环境exchange_jkd_numb，兑换{FLJ}福利金，需要{total_exchange}健康豆")
+else:
+    print("变量exchange_jkd_numb未填写，默认兑换500福利金，需要5000健康豆")
 
 ## 获取通知服务
 class msg(object):
@@ -234,367 +223,141 @@ class msg(object):
         ###################
 msg().main()
 
-def setName(cookie):
-    try:
-        r = re.compile(r"pt_pin=(.*?);")    #指定一个规则：查找pt_pin=与;之前的所有字符,但pt_pin=与;不复制。r"" 的作用是去除转义字符.
-        userName = r.findall(cookie)        #查找pt_pin=与;之前的所有字符，并复制给r，其中pt_pin=与;不复制。
-        #print (userName)
-        userName = unquote(userName[0])     #r.findall(cookie)赋值是list列表，这个赋值为字符串
-        #print(userName)
-        return userName
-    except Exception as e:
-        print(e,"cookie格式有误！")
-        exit(2)
 
-#获取ck
-def get_ck(token,sid_ck,account):
+#获取xpsid
+def get_xpsid():
     try:
-        url = 'https://api.m.jd.com/client.action?functionId=isvObfuscator'
-        headers = {
-            # 'Connection': 'keep-alive',
-            'accept': '*/*',
-            "cookie": f"{token}",
-            'host': 'api.m.jd.com',
-            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-            'user-Agent': "JD4iPhone/167922%20(iPhone;%20iOS;%20Scale/2.00)",
-            'accept-Encoding': 'gzip, deflate, br',
-            'accept-Language': 'zh-Hans-CN;q=1',
-            "content-type":"application/x-www-form-urlencoded",
-            # "content-length":"1348",
+        url = f'https://v.didi.cn/p/DpzAd35?appid=10000&lang=zh-CN&clientType=1&trip_cityid=21&datatype=101&imei=99d8f16bacaef4eef6c151bcdfa095f0&channel=102&appversion=6.2.4&trip_country=CN&TripCountry=CN&lng=113.812538&maptype=soso&os=iOS&utc_offset=480&access_key_id=1&deviceid=99d8f16bacaef4eef6c151bcdfa095f0&phone=UCvMSok42+5+tfafkxMn+A==&model=iPhone11&lat=23.016271&origin_id=1&client_type=1&terminal_id=1&sig=8503d986c0349e40ea10ff360f75d208c78c989a'
+        heards = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
         }
-        timestamp = int (round (time.time () * 1000))
-        timestamp1 = int(timestamp / 1000)
-        data =r'body=%7B%22url%22%3A%22https%3A%5C/%5C/xinruismzd-isv.isvjcloud.com%22%2C%22id%22%3A%22%22%7D&build=167922&client=apple&clientVersion=10.3.2&d_brand=apple&d_model=iPhone12%2C1&ef=1&eid=eidI4a9081236as4w7JpXa5zRZuwROIEo3ORpcOyassXhjPBIXtrtbjusqCxeW3E1fOtHUlGhZUCur1Q1iocDze1pQ9jBDGfQs8UXxMCTz02fk0RIHpB&ep=%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22screen%22%3A%22ENS4AtO3EJS%3D%22%2C%22wifiBssid%22%3A%22' + f"{sid_ck}" + r'%3D%22%2C%22osVersion%22%3A%22CJUkCK%3D%3D%22%2C%22area%22%3A%22CJvpCJY1DV80ENY2XzK%3D%22%2C%22openudid%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22uuid%22%3A%22aQf1ZRdxb2r4ovZ1EJZhcxYlVNZSZz09%22%7D%2C%22ts%22%3A1642002985%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D&ext=%7B%22prstate%22%3A%220%22%2C%22pvcStu%22%3A%221%22%7D&isBackground=N&joycious=88&lang=zh_CN&networkType=wifi&networklibtype=JDNetworkBaseAF&partner=apple&rfs=0000&scope=01&sign=946db60626658b250cf47aafb6f67691&st=1642002999847&sv=112&uemps=0-0&uts=0f31TVRjBSu3kkqwe7t25AkQCKuzV3pz8JrojVuU0630g%2BkZigs9kTwRghT26sE72/e92RRKan/%2B9SRjIJYCLuhew91djUwnIY47k31Rwne/U1fOHHr9FmR31X03JKJjwao/EC1gy4fj7PV1Co0ZOjiCMTscFo/8id2r8pCHYMZcaeH3yPTLq1MyFF3o3nkStM/993MbC9zim7imw8b1Fg%3D%3D'
-        # data = '{"token":"AAFh3ANjADAPSunyKSzXTA-UDxrs3Tn9hoy92x4sWmVB0Kv9ey-gAMEdJaSDWLWtnMX8lqLujBo","source":"01"}'
-        # print(data)
-        response = requests.post (url=url, verify=False, headers=headers,data=data)
-        result = response.json ()
+        response = requests.head (url=url, headers=heards, verify=False)    #获取响应请求头
+        result = response.headers['Location']                                  #获取响应请求头
         # print(result)
-        access_token = result['token']
-        print(access_token)
-        return access_token
-    except Exception as e:
-        msg("账号【{0}】获取ck失败，cookie过期".format(account))
-
-#获取Authorization
-def get_Authorization(access_token,account):
-    try:
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/auth'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Authorization": 'Bearer undefined',
-            'Referer': 'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/logined_jd/',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            "Origin":"https://xinruismzd-isv.isvjcloud.com",
-            "Content-Type":"application/json;charset=utf-8",
-
-        }
-        data = '{"token":"'+ f"{access_token}" + r'","source":"01"}'
-        # print(data)
-        response = requests.post (url=url, verify=False, headers=headers,data=data)
-        result = response.json ()
-        print(result)
-        access_token = result['access_token']
-        access_token = r"Bearer " + access_token
-        # print(access_token)
-        return access_token
-    except Exception as e:
-        msg("账号【{0}】获取Authorization失败，cookie过期".format(account))
-
-#获取已种植的信息
-def get_planted_info(cookies,sid,account):
-    name_list = []
-    planted_id_list = []
-    url = 'https://xinruismzd-isv.isvjcloud.com/api/get_home_info'
-    headers = {
-        'Connection': 'keep-alive',
-        'Accept': 'application/json, text/plain, */*',
-        "Authorization": cookies,
-        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-        'Host': 'xinruismzd-isv.isvjcloud.com',
-        # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-        'User-Agent': userAgent (),
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
-    }
-    response = requests.get (url=url, verify=False, headers=headers)
-    result = response.json ()
-    # print(result)
-    planted_list = result['plant']
-    # print(planted_list)
-    for i in range (len (planted_list)):
-        try:
-            name = result['plant'][f'{i+1}']['data']['name']
-            planted_id = result['plant'][f'{i+1}']['data']['id']
-            print(f"账号{account}所种植的",f"【{name}】","充能ID为:",planted_id)
-            name_list.append(name)
-            planted_id_list.append(planted_id)
-        except Exception as e:
-            pass
-
-
-#获取早睡打卡
-def get_sleep(cookies,sid):
-    url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
-    headers = {
-        'Connection': 'keep-alive',
-        'Accept': 'application/json, text/plain, */*',
-        "Authorization": cookies,
-        'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-        'Host': 'xinruismzd-isv.isvjcloud.com',
-        # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-        'User-Agent': userAgent (),
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
-    }
-    response = requests.get (url=url, verify=False, headers=headers)
-    result = response.json ()
-   # print(result)
-    taskToken_list = result['result']['taskVos']
-    for i in range (len (taskToken_list)):
-        try:
-            taskName = taskToken_list[i]['taskName']
-            taskId = taskToken_list[i]['taskId']
-            if "早睡" in taskName:
-                taskToken = taskToken_list[i]['threeMealInfoVos'][0]['taskToken']
-            return taskName,taskId,taskToken
-        except Exception as e:
-            print (e)
-
-
-#获取任务信息
-def get_task(cookies,sid,account):
-    try:
-        taskName_list = []
-        taskId_list = []
-        taskToken_list = []
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Authorization":cookies,
-            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
-        }
-        response = requests.get(url=url, verify=False, headers=headers)
-        result = response.json()
-        # print(result)
-        task_list = result['result']['taskVos']
-        # print(task_list)
-        for i in range (len (task_list)):
-            try:
-                taskName = task_list[i]['taskName']
-                taskId = task_list[i]['taskId']
-                taskToken = task_list[i]['shoppingActivityVos'][0]['taskToken']
-                taskName_list.append(taskName)
-                taskId_list.append(taskId)
-                taskToken_list.append(taskToken)
-            except Exception as e:
-                print(e)
-        # print(taskName_list, taskId_list, taskToken_list)
-        return taskName_list, taskId_list, taskToken_list
-    except Exception as e:
-        print (e)
-        msg("【账号{0}】浏览任务已全部完成".format(account))
-
-#获取加购任务信息
-def get_task2(cookies,sid,account):
-    try:
-        taskToken_list = []
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/get_task'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Authorization":cookies,
-            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
-        }
-        response = requests.get(url=url, verify=False, headers=headers)
-        result = response.json()
-        # print(result)
-        taskName = result['result']['taskVos'][0]['taskName']
-        taskId = result['result']['taskVos'][0]['taskId']
-        task_list  =  result['result']['taskVos'][0]['productInfoVos']
-        # print(task_list)
-        for i in range (len (task_list)):
-            try:
-                taskToken = task_list[i]['taskToken']
-                taskToken_list.append(taskToken)
-            except Exception as e:
-                pass
-        # print(taskName, taskId, taskToken_list)
-        return taskName, taskId, taskToken_list
-    except Exception as e:
-        print (e)
-        msg("【账号{0}】加购任务已全部完成".format(account))
-
-
-#做任务
-def do_task(cookies,taskName,taskId,taskToken,sid,account):
-    try:
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
-        url1 = 'https://xinruismzd-isv.isvjcloud.com/api/catch_task'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Content-Type":"application/json",
-            "Authorization":cookies,
-            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
-            "Origin":"https://xinruismzd-isv.isvjcloud.com",
-            # "Content-Length":"124",
-        }
-        data = r'{"taskToken":"' +f"{taskToken}" +r'","task_id":' + f"{taskId}" + r',"task_type":9,"task_name":"' + f"{taskName}" + r'"}'
-        res = requests.post(url=url1, verify=False, headers=headers,data=data.encode())
-        # print(res.status_code)
-        if res.status_code == 200:
-            msg("账号【{0}】正在执行任务，请稍等10秒".format(account))
-            time.sleep(10)
-            response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
-            result = response.json()
-            print(result)
-            score = result['score']
-            msg ("账号【{0}】执行任务【{1}】成功，获取【{2}】能量".format (account, taskName,score))
+        r = re.compile (r'root_xpsid=(.*?)&appid', re.M | re.S | re.I)
+        xpsid = r.findall (result)
+        xpsid = xpsid[0]
+        print(xpsid)
+        return xpsid
     except Exception as e:
         print(e)
+        msg("获取xpsid失败，可能是表达式错误")
 
-#做任务
-def do_task2(cookies,taskName,taskId,taskToken,sid,account):
+
+#兑换福利金
+def exchange(Didi_jifen_token,xpsid,account,exchange_jkd_numb):
+    flag2 = 0
+    flag3 = 0
+    url2 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-874lYEiaW6E3VTgICTc9U%2FXEkxU6r1QcAIfA%2FhQDkxU5U574bTzeUAtbVME5UTgaGPb2X9XbVxdJkHs0AHDb%2FVm0hO51WOKcDx7AWAvg%2F1FIWTbGDY0fh9vbh69E'
+    url3 = r'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-m4G1HNtCTeCohKleO1Nzf3igzlsPlyLbPLKTAvv9zlsO%2FuY3vOsYdJiBoFCO%2FKh9pS%2Bkg3mBoVmyqoEGPHJxA3C2pVDwhoTHRHfud3tevejx%2FNUFzHjTB%2Bvcv%2Fgv'
+    heards = {
+        "Host": "res.xiaojukeji.com",
+        "Accept":"application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "Origin": "https://page.udache.com",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection":"keep-alive",
+        "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+        "ticket":f"{Didi_jifen_token}",
+        "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+        "Referer": "https://page.udache.com/",
+        # "Content-Length": "1013"
+    }
+    data2 = r'{"xbiz":"240300","prod_key":"","xpsid":"6da937105bd14a54a450a08bcdbe7430","dchn":"DpzAd35","xoid":"31685f47-0baa-4c2e-8636-ebff93f65c4a","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6da937105bd14a54a450a08bcdbe7430","xpsid_from":"409c8422dcdb4449a3598102f1008ca3","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"teo9SzpY2n5ivDQiGC0WeayO8BC5UI9gF3vBKuu5bEAkzDmOAkEMQNG7_Nhq2bW5yunkc4cZaJakkEBELe6OaPKntzGVIC-6KMI0woSZCFNVFWYmzOtILRdrPY0szEJYK70WrzkJsxL8_CL8ESD8E6lb8TKGllabZ-FIDGElNh635_2wEvoSTnul7rZXZwLLtWvvzbUhXL7l9cPfAQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":2}'
+    data3 = r'{"xbiz":"240300","prod_key":"ut-walk-bonus","xpsid":"8135e26398034cb1aeede503aef54f26","dchn":"aXxR1oB","xoid":"ba403e62-5f97-4b65-a213-b389f7ed0792","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"8135e26398034cb1aeede503aef54f26","xpsid_from":"43f880c6cfae43d1a77a6ad37bfbea94","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"w-8z4gvdnylZ3fDWaIPcqhm3n2fux0T3k8oIR9valmskzDmOAkEMQNG7_Nhq2eVanU4-d5iBZkkKCUTU4u6IJn96G1MJfNFFEaYRJsxEmKqqMJ2wVkaqnq32NFyYmbCah3b3PIRZCH5-Ef4IEP6J1C23PIbmWmpz4UiYCSux8bg974eV0Jdw2i9zbft1JjAvXXuvTSvC5XteP_wdAAD__w==","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":3}'
+    # print(data)
+    printT("抢兑换开始时间为：{}".format (qgtime))
+    printT (f"正在等待兑换时间，请勿终止退出...")
     try:
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/do_task'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Content-Type":"application/json",
-            "Authorization":cookies,
-            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
-            "Origin":"https://xinruismzd-isv.isvjcloud.com",
-            # "Content-Length":"124",
-        }
-        data = r'{"taskToken":"' +f"{taskToken}" +r'","task_id":' + f"{taskId}" + r',"task_type":9,"task_name":"' + f"{taskName}" + r'"}'
-        time.sleep(1)
-        response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
-        result = response.json()
-        # print(result)
-        score = result['score']
-        msg ("账号【{0}】执行任务【{1}】成功，获取【{2}】能量".format (account, taskName,score))
+        while True:
+            nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
+            if nowtime > qgtime:
+                if exchange_jkd_numb == '2':
+                    response = requests.post (url=url2, headers=heards,verify=False,data=data2)
+                    # print(response.text)
+                    result = response.json()
+                    print(result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,total_exchange,FLJ))
+                        flag2 = 1
+                        break
+                    elif "代币兑换错误" in errmsg:
+                        print("【账号{0}】今日兑换【50】福利金可能已达上限".format(account))
+                        if flag2 == 1:
+                            break
+                elif exchange_jkd_numb == '3':
+                    response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format (account, total_exchange, FLJ))
+                        flag3 = 1
+                        break
+                    elif "代币兑换错误" in errmsg:
+                        print ("【账号{0}】今日兑换【100】福利金可能已达上限".format(account))
+                        if flag3 == 1:
+                            break
+                elif exchange_jkd_numb == '4':
+                    response = requests.post (url=url2, headers=heards, verify=False, data=data2)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换5000健康豆，获得福利金50".format (account))
+                        flag2 = 1
+                    elif "代币兑换错误" in errmsg:
+                        print ("【账号{0}】今日兑换【50福利金】可能已达上限".format(account))
+                    response = requests.post (url=url3, headers=heards, verify=False, data=data3)
+                    result = response.json ()
+                    print (result)
+                    errmsg = result['errmsg']
+                    if errmsg == 'success':
+                        msg ("【账号{0}】已兑换10000健康豆，获得福利金100".format (account))
+                        flag3 = 1
+                    elif "代币兑换错误" in errmsg:
+                        print ("【账号{0}】今日兑换【100福利金】可能已达上限".format(account))
+
+            if nowtime > qgendtime:
+                if flag2 == 0 and flag3 == 0:
+                    msg ("【账号{0}】脚本执行完毕，兑换失败".format (account))
+                    break
+                elif flag2 == 1 and flag3 == 1:
+                    msg("【账号{0}】脚本执行完毕，共获得福利金150".format(account))
+                    break
+                elif flag2 == 0 and flag3 == 1:
+                    msg ("【账号{0}】脚本执行完毕，共获得福利金100".format(account))
+                    break
+                elif flag2 == 1 and flag3 == 0:
+                    msg ("【账号{0}】脚本执行完毕，共获得福利金50".format(account))
+                    break
     except Exception as e:
-        print(e)
+        print (e)
 
-
-#充能
-def charge(charge_targe_id,cookies,sid,account):
-    try:
-        url = 'https://xinruismzd-isv.isvjcloud.com/api/add_growth_value'
-        headers = {
-            'Connection': 'keep-alive',
-            'Accept': 'application/json, text/plain, */*',
-            "Content-Type":"application/json",
-            "Authorization":cookies,
-            'Referer': f'https://xinruismzd-isv.isvjcloud.com/healthy-plant2021/?channel=ddjkicon&sid={sid}&un_area=19_1655_4866_0',
-            'Host': 'xinruismzd-isv.isvjcloud.com',
-            # 'User-Agent': 'jdapp;iPhone;10.3.0;;;M/5.0;appBuild/167903;jdSupportDarkMode/0;ef/1;ep/%7B%22ciphertype%22%3A5%2C%22cipher%22%3A%7B%22ud%22%3A%22Ytq3YtKyDzO5CJuyZtu4CWSyZtC0Ytc1CJLsDwC5YwO0YtS5CNrsCK%3D%3D%22%2C%22sv%22%3A%22CJUkCK%3D%3D%22%2C%22iad%22%3A%22%22%7D%2C%22ts%22%3A1641370097%2C%22hdid%22%3A%22JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw%3D%22%2C%22version%22%3A%221.0.3%22%2C%22appname%22%3A%22com.360buy.jdmobile%22%2C%22ridx%22%3A-1%7D;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;',
-            'User-Agent': userAgent (),
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # "Cookie":"__jd_ref_cls=Mnpm_ComponentApplied; mba_muid=16410448680341440020208.1480.1641370098735; mba_sid=1480.10; __jda=60969652.16410448680341440020208.1641044868.1641357628.1641370076.6; __jdb=60969652.3.16410448680341440020208|6.1641370076; __jdc=60969652; __jdv=60969652%7Ckong%7Ct_1000170135%7Ctuiguang%7Cnotset%7C1641349527806; pre_seq=8; pre_session=b87b02719192f981b2f34b7510b6c9ba4b2908b0|3687; jd-healthy-plantation=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC94aW5ydWlzbXpkLWlzdi5pc3ZqY2xvdWQuY29tXC9hcGlcL2F1dGgiLCJpYXQiOjE2NDEzNTU0NzksImV4cCI6MTY0MTM5ODY3OSwibmJmIjoxNjQxMzU1NDc5LCJqdGkiOiJTcGdZbU1HeU50c084c0Z2Iiwic3ViIjoiNWF1aVRrdlZRVl9icDQ3T0EtVmRQMVFOR3FQcEhMXzUtLU5XdGs5TUhPYyIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.cfuKGTSrCfBX2qxrTdcW2ME3ASBbTo-DCFRwHWoPiDg"
-            "Origin":"https://xinruismzd-isv.isvjcloud.com",
-            # "Content-Length":"124",
-        }
-        data = r'{"plant_id":' + f"{charge_targe_id}" + r'}'
-        for i in range(10):
-            response = requests.post(url=url, verify=False, headers=headers,data=data.encode())  #data中有汉字，需要encode为utf-8
-            result = response.json()
-            # print(result)
-            user_coins = result['user_coins']   #剩余能量
-            coins = result['plant_info']['coins']   #消耗能量
-            msg ("账号【{0}】充能成功，消耗【{1}】能量，剩余能量【{2}】".format (account, coins,user_coins))
-            time.sleep(2)
-
-    except Exception as e:
-        # print(e)
-        message = result['message']
-        if "充值次数达到上限" in message:
-            msg("账号【{0}】充能次数已达上限10次".format(account))
-
-
-def start():
-        global cookie,cookies,charge_targe_id
-        print (f"\n【准备开始...】\n")
-        nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
-        if cookie != '':
-            account = setName (cookie)
-            access_token = get_ck(cookie,sid_ck,account)
-            cookie = get_Authorization (access_token, account)
-            get_planted_info (cookie,sid)
-            if nowtime > flag_time1 and nowtime < flag_time2:
-                taskName,taskId,taskToken = get_sleep (cookie,sid)
-                do_task(cookie,taskName,taskId,taskToken,sid,account)
-                charge(charge_targe_id,cookie,sid,sid,account)
-            else:
-                taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
-                for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
-                    do_task(cookie,i,j,k,sid,account)
-                taskName, taskId, taskToken_list = get_task2 (cookie, account)
-                for i in taskToken_list:
-                    do_task2 (cookie, taskName, taskId, i, sid,account)
-                charge(charge_targe_id,cookie,account)
-        elif cookies != '':
-            for cookie, charge_targe_id in zip (cookies, charge_targe_ids):
-                account = setName (cookie)
-                access_token = get_ck (cookie, sid_ck, account)
-                cookie = get_Authorization (access_token, account)
-                get_planted_info (cookie, sid,account)
-            for cookie,charge_targe_id in zip(cookies,charge_targe_ids):
-                try:
-                    account = setName (cookie)
-                    access_token = get_ck (cookie, sid_ck,account)
-                    cookie = get_Authorization (access_token, account)
-                    get_planted_info (cookie,sid,account)
-                    if nowtime > flag_time1 and nowtime < flag_time2:
-                        taskName, taskId, taskToken = get_sleep (cookie,sid)
-                        do_task (cookie, taskName, taskId, taskToken, sid,account)
-                    else:
-                        taskName_list, taskId_list, taskToken_list = get_task (cookie, sid,account)
-                        for i, j, k in zip (taskName_list, taskId_list, taskToken_list):
-                            do_task (cookie, i, j, k, sid,account)
-                        taskName, taskId, taskToken_list = get_task2 (cookie, account)
-                        for i in taskToken_list:
-                            do_task2 (cookie, taskName, taskId, i, sid,account)
-                    charge (charge_targe_id, cookie,sid, account)
-                except Exception as e:
-                    pass
-        else:
-            printT("请检查变量plant_cookie是否已填写")
 
 if __name__ == '__main__':
-    printT("京东健康社区-种植园")
-    start ()
-    if '成熟' in msg_info:
-        send ("京东健康社区-种植园", msg_info)
-    if '成功' in msg_info:
-        send ("京东健康社区-种植园", msg_info)
+    print("============脚本只支持青龙新版=============\n")
+    print("具体教程以文本模式打开文件，查看顶部教程\n")
+    print("============执行滴滴多走多赚兑换脚本==============")
+    # print(Didi_jifen_token)
+    if Didi_jifen_token != '':
+        xpsid = get_xpsid ()
+        exchange (Didi_jifen_token, xpsid, account, exchange_jkd_numb)
+    elif tokens == '' :
+        print("检查变量Didi_jifen_token是否已填写")
+    elif len(tokens) > 1 :
+        account = 1
+        ttt = []
+        for i in tokens:             #同时遍历两个list，需要用ZIP打包
+            xpsid = get_xpsid ()
+            thread = threading.Thread(target=exchange, args=(i, xpsid, account, exchange_jkd_numb))
+            ttt.append (thread)
+            thread.start ()
+            account += 1
+        for thread in ttt:
+            thread.join ()
+    if "已兑换" in msg_info:
+        send("滴滴多走多赚兑换", msg_info)
+    elif "过期" in msg_info:
+        send("滴滴多走多赚兑换", msg_info)
