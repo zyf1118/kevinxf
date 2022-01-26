@@ -307,7 +307,7 @@ def get_Authorization(access_token,account):
         msg("账号【{0}】获取Authorization失败，cookie过期".format(account))
 
 #获取已种植的信息
-def get_planted_info(cookies,sid):
+def get_planted_info(cookies,sid,account):
     name_list = []
     planted_id_list = []
     url = 'https://xinruismzd-isv.isvjcloud.com/api/get_home_info'
@@ -331,7 +331,7 @@ def get_planted_info(cookies,sid):
         try:
             name = result['plant'][f'{i+1}']['data']['name']
             planted_id = result['plant'][f'{i+1}']['data']['id']
-            print(name,"充能ID为:",planted_id)
+            print(f"账号{account}所种植的",f"【{name}】","充能ID为:",planted_id)
             name_list.append(name)
             planted_id_list.append(planted_id)
         except Exception as e:
@@ -564,12 +564,17 @@ def start():
                     do_task2 (cookie, taskName, taskId, i, sid,account)
                 charge(charge_targe_id,cookie,account)
         elif cookies != '':
+            for cookie, charge_targe_id in zip (cookies, charge_targe_ids):
+                account = setName (cookie)
+                access_token = get_ck (cookie, sid_ck, account)
+                cookie = get_Authorization (access_token, account)
+                get_planted_info (cookie, sid,account)
             for cookie,charge_targe_id in zip(cookies,charge_targe_ids):
                 try:
                     account = setName (cookie)
                     access_token = get_ck (cookie, sid_ck,account)
                     cookie = get_Authorization (access_token, account)
-                    get_planted_info (cookie,sid)
+                    get_planted_info (cookie,sid,account)
                     if nowtime > flag_time1 and nowtime < flag_time2:
                         taskName, taskId, taskToken = get_sleep (cookie,sid)
                         do_task (cookie, taskName, taskId, taskToken, sid,account)
@@ -590,4 +595,6 @@ if __name__ == '__main__':
     printT("京东健康社区-种植园")
     start ()
     if '成熟' in msg_info:
+        send ("京东健康社区-种植园", msg_info)
+    if '成功' in msg_info:
         send ("京东健康社区-种植园", msg_info)
