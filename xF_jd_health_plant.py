@@ -555,7 +555,7 @@ def start():
             if nowtime > flag_time1 and nowtime < flag_time2:
                 taskName,taskId,taskToken = get_sleep (cookie,sid)
                 do_task(cookie,taskName,taskId,taskToken,sid,account)
-                charge(charge_targe_id,cookie,sid,sid,account)
+                charge(charge_targe_id,cookie,sid,account)
             else:
                 taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
                 for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
@@ -563,7 +563,7 @@ def start():
                 taskName, taskId, taskToken_list = get_task2(cookie,sid,account)
                 for i in taskToken_list:
                     do_task2 (cookie, taskName, taskId, i, sid,account)
-                charge(charge_targe_id,cookie,sid, account)
+                charge(charge_targe_id,cookie,sid,account)
         elif cookies != '':
             for cookie, charge_targe_id in zip (cookies, charge_targe_ids):
                 account = setName (cookie)
