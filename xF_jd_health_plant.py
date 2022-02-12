@@ -142,8 +142,9 @@ if "plant_cookie" in os.environ:
             cookies.append(cookies1[int(i)-1])
         printT ("已获取并使用Env环境plant_cookies")
 else:
-    printT ("变量plant_cookie未填写")
-    exit (0)
+    if plant_cookie == ''
+        printT ("变量plant_cookie未填写")
+        exit (0)
 
 if "charge_targe_id" in os.environ:
     if len (os.environ["charge_targe_id"]) > 8:
