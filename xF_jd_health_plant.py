@@ -559,7 +559,7 @@ def start():
                 taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
                 for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
                     do_task(cookie,i,j,k,sid,account)
-                taskName, taskId, taskToken_list = get_task2 (cookie,sid,account)
+                taskName, taskId, taskToken_list = get_task2(cookie,sid,account)
                 for i in taskToken_list:
                     do_task2 (cookie, taskName, taskId, i, sid,account)
                 charge(charge_targe_id,cookie,sid, account)
