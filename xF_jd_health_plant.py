@@ -361,6 +361,7 @@ def get_sleep(cookies,sid):
         try:
             taskName = taskToken_list[i]['taskName']
             taskId = taskToken_list[i]['taskId']
+            taskToken = ''
             if "早睡" in taskName:
                 taskToken = taskToken_list[i]['threeMealInfoVos'][0]['taskToken']
             return taskName,taskId,taskToken
@@ -554,7 +555,8 @@ def start():
             get_planted_info (cookie, sid,account)
             if nowtime > flag_time1 and nowtime < flag_time2:
                 taskName,taskId,taskToken = get_sleep (cookie,sid)
-                do_task(cookie,taskName,taskId,taskToken,sid,account)
+                if taskToken != '':
+                    do_task(cookie,taskName,taskId,taskToken,sid,account)
                 charge(charge_targe_id,cookie,sid,account)
             else:
                 taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
@@ -578,7 +580,9 @@ def start():
                     get_planted_info (cookie,sid,account)
                     if nowtime > flag_time1 and nowtime < flag_time2:
                         taskName, taskId, taskToken = get_sleep (cookie,sid)
-                        do_task (cookie, taskName, taskId, taskToken, sid,account)
+                        if taskToken != '':
+                            do_task(cookie, taskName, taskId, taskToken, sid,account)
+                        charge(charge_targe_id,cookie,sid,account)
                     else:
                         taskName_list, taskId_list, taskToken_list = get_task (cookie, sid,account)
                         for i, j, k in zip (taskName_list, taskId_list, taskToken_list):
@@ -586,7 +590,7 @@ def start():
                         taskName, taskId, taskToken_list = get_task2 (cookie,sid, account)
                         for i in taskToken_list:
                             do_task2 (cookie, taskName, taskId, i, sid,account)
-                    charge (charge_targe_id, cookie,sid, account)
+                    charge(charge_targe_id,cookie,sid,account)
                 except Exception as e:
                     pass
         else:
