@@ -13,12 +13,11 @@ new Env('京东健康社区-种植园自动任务');
 
 活动入口：20:/#1DouT0KAaKuqv%
 
+教程：该活动与京东的ck通用，但是变量我还是独立出来。
 
-教程：该活动与京东的ck通用，所以只需要填写第几个号运行改脚本就行了。
+青龙变量填写export plant_cookie="xxxx"
 
-青龙变量填写export plant_cookie="1"，代表京东CK的第一个号执行该脚本
-
-多账号用&隔开，例如export plant_cookie="1&2"，代表京东CK的第一、二个号执行该脚本。这样做，JD的ck过期就不用维护两次了，所以做出了更新。
+多账号用&隔开，例如export plant_cookie="xxxx&xxxx"
 
 
 青龙变量export charge_targe_id = 'xxxx'，表示需要充能的id，单账号可以先填写export charge_targe_id = '11111'，运行一次脚本
@@ -560,7 +559,7 @@ def start():
                 taskName_list,taskId_list,taskToken_list = get_task (cookie,sid,account)
                 for i,j,k in zip(taskName_list,taskId_list,taskToken_list):
                     do_task(cookie,i,j,k,sid,account)
-                taskName, taskId, taskToken_list = get_task2 (cookie, account)
+                taskName, taskId, taskToken_list = get_task2 (cookie,sid,account)
                 for i in taskToken_list:
                     do_task2 (cookie, taskName, taskId, i, sid,account)
                 charge(charge_targe_id,cookie,account)
@@ -583,7 +582,7 @@ def start():
                         taskName_list, taskId_list, taskToken_list = get_task (cookie, sid,account)
                         for i, j, k in zip (taskName_list, taskId_list, taskToken_list):
                             do_task (cookie, i, j, k, sid,account)
-                        taskName, taskId, taskToken_list = get_task2 (cookie, account)
+                        taskName, taskId, taskToken_list = get_task2 (cookie,sid, account)
                         for i in taskToken_list:
                             do_task2 (cookie, taskName, taskId, i, sid,account)
                     charge (charge_targe_id, cookie,sid, account)
