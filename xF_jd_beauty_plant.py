@@ -140,8 +140,9 @@ if "plant_cookie" in os.environ:
             cookies.append(cookies1[int(i)-1])
         printT ("已获取并使用Env环境plant_cookies")
 else:
-    printT ("变量plant_cookie未填写")
-    exit (0)
+    if cookie == '':
+        printT ("变量plant_cookie未填写")
+        exit (0)
 
 if "choose_plant_id" in os.environ:
     choose_plant_id = os.environ["choose_plant_id"]
