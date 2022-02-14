@@ -550,7 +550,7 @@ def start():
         nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
         if cookie != '':
             account = setName (cookie)
-            print ("★★★★★正在账号{}的任务★★★★★".format (account))
+            msg ("★★★★★正在账号{}的任务★★★★★".format (account))
             access_token = get_ck(cookie,sid_ck,account)
             cookie = get_Authorization (access_token, account)
             get_planted_info (cookie, sid,account)
@@ -575,7 +575,7 @@ def start():
             for cookie,charge_targe_id in zip(cookies,charge_targe_ids):
                 try:
                     account = setName (cookie)
-                    print ("★★★★★正在账号{}的任务★★★★★".format (account))
+                    msg ("★★★★★正在账号{}的任务★★★★★".format (account))
                     access_token = get_ck (cookie, sid_ck,account)
                     cookie = get_Authorization (access_token, account)
                     get_planted_info (cookie,sid,account)
