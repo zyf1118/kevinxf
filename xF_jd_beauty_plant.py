@@ -318,7 +318,7 @@ def get_Authorization(access_token, account):
         # print(data)
         response = requests.post (url=url, verify=False, headers=headers, data=data)
         result = response.json ()
-        print (result)
+        # print (result)
         access_token = result['access_token']
         access_token = r"Bearer " + access_token
         # print(access_token)
@@ -361,9 +361,10 @@ def get_planted_info(cookie, sid, account):
             planted_id_list.append (planted_id)
             position_list.append (position)
             shop_id_list.append (shop_id)
-            print (f"账号{account}种植的种子为", name, "planted_id:", planted_id, ",shop_id:", shop_id)
+            print (f"【账号{account}】种植的种子为", name, "planted_id:", planted_id, ",shop_id:", shop_id)
         except Exception as e:
             pass
+    print('\n\n')
     return name_list, position_list, shop_id_list, planted_id_list
 
 
@@ -392,10 +393,10 @@ def get_water(cookie, position, sid, account):
                 j += 1
                 total = j * 10
         if response.status_code == 204:
-            msg ("账号【{0}】成功领取每日水滴{1}".format (account, total))
+            msg ("成功领取每日水滴{0}".format (total))
 
     except Exception as e:
-        msg ("账号【{0}】领取每日水滴失败，可能是cookie过期".format (account))
+        msg ("领取每日水滴失败，可能是cookie过期")
 
 
 # 领取每日肥料
@@ -422,10 +423,10 @@ def get_fertilizer(cookie, shop_id, account):
                 j += 1
                 total = j * 10
         if response.status_code == 204:
-            msg ("账号【{0}】成功领取每日肥料{1}".format (account, total))
+            msg ("成功领取每日肥料{1}".format (total))
 
     except Exception as e:
-        msg ("账号【{0}】领取每日肥料失败，可能是cookie过期".format (account))
+        msg ("领取每日肥料失败，可能是cookie过期")
 
 
 # 获取任务信息
@@ -487,7 +488,7 @@ def get_task(cookie, account):
         print (e)
         message = result['message']
         if "非法店铺" in message:
-            msg ("【账号{0}】种子过期，请重新种植".format (account))
+            msg ("种子过期，请重新种植")
 
 
 # 获取任务信息
@@ -560,7 +561,7 @@ def get_fertilizer_task(cookie, shop_id, account):
         print (e)
         message = result['message']
         if "非法店铺" in message:
-            msg ("【账号{0}】种子过期，请重新种植".format (account))
+            msg ("种子过期，请重新种植")
 
 
 # 做任务1
@@ -583,8 +584,8 @@ def do_task1(cookie, taskName, taskId, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行浏览任务【{1}】等待10秒".format (account, taskName))
-        msg ("账号【{0}】执行浏览任务【{1}】成功，获取【{2}】水滴".format (account, taskName, score))
+        print ("执行浏览任务【{0}】等待10秒".format (taskName))
+        msg ("执行浏览任务【{0}】成功，获取【{1}】水滴".format (taskName, score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -611,8 +612,8 @@ def do_task2(cookie, taskName, taskId, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行浏览任务【{1}】等待10秒".format (account, taskName))
-        msg ("账号【{0}】执行浏览任务【{1}】成功，获取【{2}】水滴".format (account, taskName, score))
+        print ("执行浏览任务【{0}】等待10秒".format (taskName))
+        msg ("执行浏览任务【{0}】成功，获取【{1}】水滴".format (taskName, score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -639,8 +640,8 @@ def do_task3(cookie, taskName, taskId, sid, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行浏览加购【{1}】等待10秒".format (account, taskName))
-        msg ("账号【{0}】执行浏览加购【{1}】成功，获取【{2}】水滴".format (account, taskName, score))
+        print ("执行浏览加购【{0}】等待10秒".format (taskName))
+        msg ("执行浏览加购【{0}】成功，获取【{1}】水滴".format (taskName, score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -668,8 +669,8 @@ def do_fertilizer_task(cookie, shop_id, account):
             result = response.json ()
             print (result)
             score = result['inc']
-            print ("账号【{0}】执行【浏览关注】等待10秒".format (account))
-            msg ("账号【{0}】执行【浏览关注】任务成功，获取【{1}】肥料".format (account, score))
+            print ("执行【浏览关注】等待10秒")
+            msg ("执行【浏览关注】任务成功，获取【{0}】肥料".format (score))
             time.sleep (10)
     except Exception as e:
         print (e)
@@ -696,8 +697,8 @@ def do_fertilizer_task2(cookie, name, meetingplace_id, shop_id, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行浏览关注{1}等待10秒".format (account, name))
-        msg ("账号【{0}】执行浏览关注{1}任务成功，获取【{2}】肥料".format (account, name, score))
+        print ("执行浏览关注{0}等待10秒".format (name))
+        msg ("执行浏览关注{0}任务成功，获取【{1}】肥料".format (name, score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -725,8 +726,8 @@ def do_fertilizer_task3(cookie, name, product_id, shop_id, account):
             result = response.json ()
             print (result)
             score = result['inc']
-            print ("账号【{0}】执行浏览并加购{1}等待10秒".format (account, name))
-            msg ("账号【{0}】执行浏览并加购{1}任务成功，获取【{2}】肥料".format (account, name, score))
+            print ("执行浏览并加购{0}等待10秒".format (name))
+            msg ("执行浏览并加购{0}任务成功，获取【{1}】肥料".format (name, score))
             time.sleep (10)
     except Exception as e:
         print (e)
@@ -753,8 +754,8 @@ def do_fertilizer_task4(cookie, shop_id, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行【观看其他小样】等待10秒".format (account))
-        msg ("账号【{0}】执行【观看其他小样】任务成功，获取【{1}】肥料".format (account, score))
+        print ("执行【观看其他小样】等待10秒")
+        msg ("执行【观看其他小样】任务成功，获取【{0}】肥料".format (score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -781,8 +782,8 @@ def do_fertilizer_task5(cookie, shop_id, account):
         result = response.json ()
         print (result)
         score = result['inc']
-        print ("账号【{0}】执行【浏览化妆馆】等待10秒".format (account))
-        msg ("账号【{0}】执行【浏览化妆馆】任务成功，获取【{1}】肥料".format (account, score))
+        print ("执行【浏览化妆馆】等待10秒")
+        msg ("执行【浏览化妆馆】任务成功，获取【{0}】肥料".format (score))
         time.sleep (10)
     except Exception as e:
         print (e)
@@ -810,18 +811,17 @@ def do_fertilizer_task6(cookie, shop_id, account):
             result = response.json ()
             # print(result)
             score = result['inc']
-            print ("账号【{0}】【shop_id:{1}】正在【兑换肥料】等待10秒".format (account, shop_id))
-            msg ("账号【{0}】【shop_id:{2}】执行【兑换肥料】任务成功，获取【{1}】肥料".format (account, score, shop_id))
+            print ("【shop_id:{0}】正在【兑换肥料】等待10秒".format (shop_id))
+            msg ("【shop_id:{1}】执行【兑换肥料】任务成功，获取【{0}】肥料".format (score, shop_id))
             time.sleep (10)
     except Exception as e:
         print (e)
-        msg ("账号【{0}】【shop_id:{1}】肥料兑换已达上限".format (account, shop_id))
+        msg ("【shop_id:{0}】肥料兑换已达上限".format (shop_id))
         time.sleep (1)
 
 
 # 浇水
 def watering(cookie, plant_id, sid, account):
-    try:
         url = 'https://xinruimz-isv.isvjcloud.com/papi/watering'
         headers = {
             'Connection': 'keep-alive',
@@ -836,19 +836,29 @@ def watering(cookie, plant_id, sid, account):
             "Content-Type": "application/json;charset=utf-8",
         }
         data = r'{"plant_id":' + f"{plant_id}" + r'}'
+        i = 0
         while True:
-            response = requests.post (url=url, verify=False, headers=headers,
-                                      data=data.encode ())  # data中有汉字，需要encode为utf-8
-            result = response.json ()
-            # print(result)
-            level = result['level']  # 当前等级
-            complete_level = result['complete_level']  # 完成等级
-            msg ("【账号{0}】【plant_id:{3}】成功浇水10g，当前等级{1}，种子成熟等级为{2}".format (account, level, complete_level, plant_id))
-            time.sleep (5)
+            try:
+                response = requests.post (url=url, verify=False, headers=headers,
+                                          data=data.encode ())  # data中有汉字，需要encode为utf-8
+                result = response.json ()
+                # print(result)
+                level = result['level']  # 当前等级
+                complete_level = result['complete_level']  # 完成等级
+                msg ("【plant_id:{2}】成功浇水10g，当前等级{0}，种子成熟等级为{1}".format (level, complete_level, plant_id))
+                time.sleep (5)
+                i += 1
 
-    except Exception as e:
-        print(e)
-        # pass
+            except Exception as e:
+                # print(e)
+                # pass
+                message = result['message']
+                total = i * 10
+                if "水滴不足" in message:
+                    if total != 0:
+                        msg ("【plant_id:{0}】本次一共浇水{1}g".format (plant_id, total))
+                    printT ("【plant_id:{0}】水滴不足10g".format (plant_id))
+                    break
 
 
 # 施肥
@@ -867,7 +877,7 @@ def fertilization(cookie, plant_id, shop_id, account):
         "Content-Type": "application/json;charset=utf-8",
     }
     data = r'{"plant_id":' + f"{plant_id}" + r'}'
-    i = 1
+    i = 0
     while True:
         try:
             response = requests.post (url=url, verify=False, headers=headers, data=data)  # data中有汉字，需要encode为utf-8
@@ -875,7 +885,7 @@ def fertilization(cookie, plant_id, shop_id, account):
             # print(result)
             level = result['level']  # 当前等级
             complete_level = result['complete_level']  # 完成等级
-            printT ("【账号{0}】【plant_id:{3}】成功施肥10g，当前等级{1}，种子成熟等级为{2}".format (account, level, complete_level, plant_id))
+            printT ("【plant_id:{2}】成功施肥10g，当前等级{0}，种子成熟等级为{1}".format (level, complete_level, plant_id))
             time.sleep (5)
             i += 1
 
@@ -884,8 +894,9 @@ def fertilization(cookie, plant_id, shop_id, account):
             message = result['message']
             total = i * 10
             if "肥料不足" in message:
-                msg("【账号{0}】【plant_id:{1}】本次一共施肥{2}g".format (account, plant_id,total))
-                printT ("【账号{0}】【plant_id:{1}】肥料不足10g".format (account, plant_id))
+                if total != 0:
+                    msg("【plant_id:{0}】本次一共施肥{1}g".format (plant_id,total))
+                printT ("【plant_id:{0}】肥料不足10g".format (plant_id))
                 break
 
 
@@ -895,6 +906,7 @@ def start():
     nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
     if cookie != '':
         account = setName (cookie)
+        msg ("★★★★★正在账号{}的任务★★★★★".format (account))
         access_token = get_ck (cookie, sid_ck, account)
         cookie = get_Authorization (access_token, account)
         name_list, position_list, shop_id_list, planted_id_list = get_planted_info (cookie, sid, account)
@@ -930,7 +942,7 @@ def start():
                     fertilization (cookie, i, k, account)
             else:
                 fertilization (cookie, planted_id_list[flag], k, account)
-                watering (cookie, planted_id, sid, account)
+                watering (cookie, planted_id_list, sid, account)
             flag += 1
 
     elif cookies != '':
@@ -945,6 +957,7 @@ def start():
         for cookie, planted_id in zip (cookies, planted_ids):
             try:
                 account = setName (cookie)
+                msg ("★★★★★正在账号{}的任务★★★★★".format (account))
                 access_token = get_ck (cookie, sid_ck, account)
                 cookie = get_Authorization (access_token, account)
                 name_list, position_list, shop_id_list, planted_id_list = get_planted_info (cookie, sid, account)
@@ -980,9 +993,9 @@ def start():
                             fertilization (cookie, i, k, account)
                             watering (cookie, i, sid, account)
                     else:
-                        print("【账号{}现在开始施肥】".format(account))
+                        print("【现在开始施肥】")
                         fertilization (cookie, planted_id_list[flag], k, account)
-                        print ("【账号{}现在开始浇水】".format (account))
+                        print ("【现在开始浇水】")
                         watering (cookie, planted_id, sid, account)
                     flag += 1
             except Exception as e:
