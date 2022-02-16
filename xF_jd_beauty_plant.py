@@ -5,7 +5,7 @@
 感谢aburd ch大佬的指导
 项目名称:xF_jd_beauty_plant.py
 Author: 一风一扬
-功能：健康社区-种植园自动任务
+功能：化妆馆-种植园自动任务
 Date: 2022-1-4
 cron: 10 9,11,15,21 * * * xF_jd_beauty_plant.py
 new Env('化妆馆-种植园自动任务');
@@ -403,6 +403,7 @@ def get_water(cookie, position, sid, account):
 def get_fertilizer(cookie, shop_id, account):
     try:
         j = 0
+        total = 0
         url = 'https://xinruimz-isv.isvjcloud.com/papi/collect_fertilizer'
         headers = {
             'Connection': 'keep-alive',
@@ -423,7 +424,7 @@ def get_fertilizer(cookie, shop_id, account):
                 j += 1
                 total = j * 10
         if response.status_code == 204:
-            msg ("成功领取每日肥料{1}".format (total))
+            msg ("成功领取每日肥料{0}".format (total))
 
     except Exception as e:
         msg ("领取每日肥料失败，可能是cookie过期")
