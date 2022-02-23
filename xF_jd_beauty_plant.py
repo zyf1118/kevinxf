@@ -324,7 +324,7 @@ def get_Authorization(access_token, account):
         # print(access_token)
         return access_token
     except Exception as e:
-        msg ("账号【{0}】获取Authorization失败，cookie过期".format (account))
+        msg("账号【{0}】获取Authorization失败，活动火爆，请稍后再试".format(account))
 
 
 # 获取已种植的信息
