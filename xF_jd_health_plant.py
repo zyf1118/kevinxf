@@ -257,7 +257,7 @@ def get_ck(token,sid_ck,account):
             "cookie": f"{token}",
             'host': 'api.m.jd.com',
             # 'User-Agent': 'jdapp;iPhone;9.4.8;14.3;809409cbd5bb8a0fa8fff41378c1afe91b8075ad;network/wifi;ADID/201EDE7F-5111-49E8-9F0D-CCF9677CD6FE;supportApplePay/0;hasUPPay/0;hasOCPay/0;model/iPhone13,4;addressid/2455696156;supportBestPay/0;appBuild/167629;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
-            'user-Agent': "JD4iPhone/167922%20(iPhone;%20iOS;%20Scale/2.00)",
+            'user-Agent': userAgent (),
             'accept-Encoding': 'gzip, deflate, br',
             'accept-Language': 'zh-Hans-CN;q=1',
             "content-type":"application/x-www-form-urlencoded",
@@ -543,7 +543,7 @@ def charge(charge_targe_id,cookies,sid,account):
         message = result['message']
         if "充值次数达到上限" in message:
             msg("账号【{0}】充能次数已达上限10次".format(account))
-        
+
 
 
 def start():
