@@ -543,6 +543,8 @@ def charge(charge_targe_id,cookies,sid,account):
         message = result['message']
         if "充值次数达到上限" in message:
             msg("账号【{0}】充能次数已达上限10次".format(account))
+        elif "该植物不能充值" in message:
+            msg("账号【{0}】无法充能，种子已成熟或者过期".format(account))
 
 
 def start():
