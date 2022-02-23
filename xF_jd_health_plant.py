@@ -13,11 +13,11 @@ new Env('京东健康社区-种植园自动任务');
 
 活动入口：20:/#1DouT0KAaKuqv%
 
-教程：该活动与京东的ck通用，所以只需要填写第几个号运行改脚本就行了。
+教程：该活动与京东的ck通用，但是变量我还是独立出来。
 
-青龙变量填写export plant_cookie="1"，代表京东CK的第一个号执行该脚本
+青龙变量填写export plant_cookie="xxxx"
 
-多账号用&隔开，例如export plant_cookie="1&2"，代表京东CK的第一、二个号执行该脚本。这样做，JD的ck过期就不用维护两次了，所以做出了更新。
+多账号用&隔开，例如export plant_cookie="xxxx&xxxx"
 
 
 青龙变量export charge_targe_id = 'xxxx'，表示需要充能的id，单账号可以先填写export charge_targe_id = '11111'，运行一次脚本
@@ -305,7 +305,7 @@ def get_Authorization(access_token,account):
         # print(access_token)
         return access_token
     except Exception as e:
-        msg("账号【{0}】获取Authorization失败，cookie过期".format(account))
+        msg("账号【{0}】获取Authorization失败，活动火爆，请稍后再试".format(account))
 
 #获取已种植的信息
 def get_planted_info(cookies,sid,account):
@@ -543,7 +543,6 @@ def charge(charge_targe_id,cookies,sid,account):
         message = result['message']
         if "充值次数达到上限" in message:
             msg("账号【{0}】充能次数已达上限10次".format(account))
-
 
 
 def start():
