@@ -30,7 +30,7 @@ cron时间填写：22 10,15 * * *
 
 
 
-DiDi_fulijin_token = ''
+DiDi_fulijin_token = 'w-8z4gvdnylZ3fDWaIPcqhm3n2fux0T3k8oIR9valmskzDmOAkEMQNG7_Nhq2eVanU4-d5iBZkkKCUTU4u6IJn96G1MJfNFFEaYRJsxEmKqqMJ2wVkaqnq32NFyYmbCah3b3PIRZCH5-Ef4IEP6J1C23PIbmWmpz4UiYCSux8bg974eV0Jdw2i9zbft1JjAvXXuvTSvC5XteP_wdAAD__w%3D%3D'
 account = 1
 
 '''
@@ -159,7 +159,7 @@ def getEnvs(label):
 
 if "DiDi_fulijin_token" in os.environ:
     print(len (os.environ["DiDi_fulijin_token"]))
-    if len (os.environ["DiDi_fulijin_token"]) > 300:
+    if len (os.environ["DiDi_fulijin_token"]) > 363:
         DiDi_fulijin_tokens = os.environ["DiDi_fulijin_token"]
         # temporary = DiDi_fulijin_token.split ('&')
         # DiDi_fulijin_token = temporary[0]
@@ -366,7 +366,7 @@ def guafen(DiDi_fulijin_token,xpsid,account,activity_id_tomorrow,task_id_tomorro
         print(result)
         errmsg = result['errmsg']
         if errmsg == 'success':
-            msg("【账号{}】参加明日打卡瓜分活动成功".format(account))
+            msg("【账号{}】参加今日打卡瓜分活动成功".format(account))
         elif "活动已经被领取" in errmsg:
             msg("【账号{}】已参加打卡瓜分活动，请明天记得签到瓜分".format(account))
         else:
@@ -415,18 +415,21 @@ def guafen_id(DiDi_fulijin_token,xpsid,account):
         }
         response = requests.post(url=url,data=data,headers=headers,verify=False)
         result = response.json()
-        # print(result)
+      #  print(result)
         divide_data = result['data']['divide_data']['divide']
         activity_id_today = divide_data[today]['activity_id']
         task_id_today = divide_data[today]['task_id']
-        activity_id_tomorrow = divide_data[tomorrow]['activity_id']
-        task_id_tomorrow = divide_data[tomorrow]['task_id']
-        count = divide_data[tomorrow]['button']['count']
-        return activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count
+        count_today = divide_data[today]['button']['count']
+        # activity_id_tomorrow = divide_data[tomorrow]['activity_id']
+        # task_id_tomorrow = divide_data[tomorrow]['task_id']
+        # count = divide_data[tomorrow]['button']['count']
+        # return activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count
+        return activity_id_today,task_id_today,count_today
     except Exception as e:
         print(e)
         msg ('【账号{0}】无法参加瓜分活动，请自行打开App查看是否有瓜分活动'.format (account))
         return 0,0,0,0,0
+
 
 
 if __name__ == '__main__':
@@ -436,22 +439,24 @@ if __name__ == '__main__':
     print("============执行滴滴福利金签到脚本==============")
     if DiDi_fulijin_token != '':
         xpsid = get_xpsid()
-        activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count = guafen_id (DiDi_fulijin_token, xpsid, account)
+        # activity_id_today,task_id_today,activity_id_tomorrow,task_id_tomorrow,count = guafen_id (DiDi_fulijin_token, xpsid, account)
+        activity_id_today, task_id_today,count_today = guafen_id (DiDi_fulijin_token, xpsid, account)
         do_sign1(DiDi_fulijin_token,xpsid,account)
         if activity_id_today != 0:
             guafen_Sign (DiDi_fulijin_token, xpsid, account, activity_id_today, task_id_today)
-            guafen (DiDi_fulijin_token, xpsid, account,activity_id_tomorrow,task_id_tomorrow,count)
+            # guafen (DiDi_fulijin_token, xpsid, account,activity_id_tomorrow,task_id_tomorrow,count)
         # do_sign2(DiDi_token,DiDi_fulijin_token,xpsid,account)
         get_fulijin(DiDi_fulijin_token,account,wsgsig)
 
     elif DiDi_fulijin_tokens != '':
         for j in DiDi_fulijin_tokens:             #同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
-            activity_id_today, task_id_today, activity_id_tomorrow, task_id_tomorrow, count = guafen_id (j, xpsid, account)
+            # activity_id_today, task_id_today, activity_id_tomorrow, task_id_tomorrow, count = guafen_id (j, xpsid, account)
+            activity_id_today, task_id_today, count_today = guafen_id (j, xpsid, account)
             do_sign1 (j,xpsid,account)
             if activity_id_today != 0:
                 guafen_Sign (j, xpsid, account, activity_id_today, task_id_today)
-                guafen (j, xpsid, account, activity_id_tomorrow, task_id_tomorrow, count)
+                # guafen (j, xpsid, account, activity_id_tomorrow, task_id_tomorrow, count)
            # do_sign2 (i, j,xpsid,account)
             get_fulijin (j,account,wsgsig)
             account += 1
