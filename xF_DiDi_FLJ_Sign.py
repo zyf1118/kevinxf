@@ -30,7 +30,7 @@ cron时间填写：22 10,15 * * *
 
 
 
-DiDi_fulijin_token = 'w-8z4gvdnylZ3fDWaIPcqhm3n2fux0T3k8oIR9valmskzDmOAkEMQNG7_Nhq2eVanU4-d5iBZkkKCUTU4u6IJn96G1MJfNFFEaYRJsxEmKqqMJ2wVkaqnq32NFyYmbCah3b3PIRZCH5-Ef4IEP6J1C23PIbmWmpz4UiYCSux8bg974eV0Jdw2i9zbft1JjAvXXuvTSvC5XteP_wdAAD__w%3D%3D'
+DiDi_fulijin_token = ''
 account = 1
 
 '''
