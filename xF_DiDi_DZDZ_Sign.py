@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴app多走多赚签到
 Date: 2021-11-23
-cron: 9 1,15 * * * xF_DiDi_DZDZ_Sign.py
+cron: 9 1,22 * * * xF_DiDi_DZDZ_Sign.py
 new Env('滴滴app多走多赚签到');
 
 
@@ -21,20 +21,19 @@ new Env('滴滴app多走多赚签到');
 多个账号时，Didi_jifen_token，用&隔开，例如Didi_jifen_token="xxxxx&xxxx"
 
 手机抓包后，手动点击多看多赚，签到一次后，查看URL，https://res.xiaojukeji.com/sigma/api/step/sign/v2?wsgsig=
-再查看表头，tiket就是需要抓的变量了
+再查看表头，ticket就是需要抓的变量了
 
 在青龙变量中添加变量Didi_jifen_token="xxxx",xxx就是上面抓的ticker复制下来就OK了
 
 
-cron时间填写：9 1,15 * * *
+cron时间填写：9 1,22 * * *
 
 
 '''
 
 
 Didi_jifen_token = ''
-
-
+exchange_numb = 1000
 
 '''
 
@@ -50,6 +49,7 @@ try:
     import requests
     import json,sys,os,re
     import time,datetime
+    from urllib.parse import quote, unquote
 except Exception as e:
     print(e)
 
@@ -119,7 +119,7 @@ def getEnvs(label):
 
 if "Didi_jifen_token" in os.environ:
     print(len (os.environ["Didi_jifen_token"]))
-    if len (os.environ["Didi_jifen_token"]) > 319:
+    if len (os.environ["Didi_jifen_token"]) > 419:
         tokens = os.environ["Didi_jifen_token"]
         # tokens = tokens.split ('&')
         # cookies = temporary[0]
@@ -129,7 +129,11 @@ if "Didi_jifen_token" in os.environ:
 else:
     print("检查变量Didi_jifen_token是否已填写")
 
-
+if "exchange_numb" in os.environ:
+    tokens = os.environ["exchange_numb"]
+    printT ("已获取并使用Env环境exchange_numb")
+else:
+    print("变量exchange_numb未填写，默认兑换1000健康豆")
 
 ## 获取通知服务
 class msg(object):
@@ -213,15 +217,14 @@ def get_xpsid():
         response = requests.head (url=url, headers=heards, verify=False)    #获取响应请求头
         result = response.headers['Location']                                  #获取响应请求头
         # print(result)
-        r = re.compile (r'root_xpsid=(.*?)&appid', re.M | re.S | re.I)
+        r = re.compile (r'root_xpsid=(.*?)&channel_id')
         xpsid = r.findall (result)
         xpsid = xpsid[0]
         print(xpsid)
         return xpsid
     except Exception as e:
-#         print(e)
-#         msg("获取xpsid失败，可能是表达式错误")
-          pass
+        print(e)
+        msg("获取xpsid失败，可能是表达式错误")
 
 #获取dchn
 def get_dchn():
@@ -243,9 +246,8 @@ def get_dchn():
                 print(dchn)
         return dchn
     except Exception as e:
-#         print(e)
-#         msg("获取dchn失败，可能是表达式错误")
-          pass
+        print(e)
+        msg("获取dchn失败，可能是表达式错误")
 
 #签到
 def sign(Didi_jifen_token,xpsid,account):
@@ -306,7 +308,39 @@ def get_Bonus(Didi_jifen_token,xpsid,account):
 
     except Exception as e:
         print (e)
-        msg ("【账号{0}】执行签到失败,可能是ticket过期".format (account))
+        msg ("【账号{0}】领取健康豆失败,可能是ticket过期".format (account))
+
+#兑换福利金
+def exchange(Didi_jifen_token,xpsid,account,exchange_numb):
+    try:
+        if exchange_numb != 0:
+            url = f'https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=dd03-ct%2F4IjT46lMZCt2NNqSuenkN%2BeTy0m9eLkxoBGlI%2BeTzCiU679dvenw17VMzCDTgJdZnfXY17eZPbW1BLlSzeXH88F9TftTf%2BAEvBXZK7e5TAfZN%2BqExBCq78lIY'
+            heards = {
+                "Host": "res.xiaojukeji.com",
+                "Accept":"application/json, text/plain, */*",
+                "Content-Type": "application/json",
+                "Origin": "https://page.udache.com",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection":"keep-alive",
+                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+                "ticket":f"{Didi_jifen_token}",
+                "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+                "Referer": "https://page.udache.com/",
+                "Content-Length": "1013"
+            }
+            data = r'{"xbiz":"240300","prod_key":"","xpsid":"36f75fd5df6841c2abc13be6ec0a218e","dchn":"DpzAd35","xoid":"f24bac22-d420-493f-ad13-d2749d24c1e2","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"36f75fd5df6841c2abc13be6ec0a218e","xpsid_from":"89367ca938ca4febad1bb272af4984ce","xpsid_share":"","version":1,"source_from":"app","city_id":21,"env":{"ticket":"dvJhibvsyKKWyG_lwfJoVucFLai8HOkVogb-A8aYfpIkzDmKA0EMQNG7_Fg0Ui1SldLJ5w6z9CxJGWwcNb67aZw_3sFSkrrppgjLSBNWIU1VVViVtOizeG3mo8wqrEaat3ALHyGsTvL2jvBBgvBJlmEt2pzavHtU4Zucwk4e3C7369dO6kP4Oas6x5mH8EtitQ8dw0Md4e9V_p_8GQAA__8=","cityId":"21","longitude":113.81221218532986,"latitude":23.016388346354166,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"type":4,"extra_number":1000}'
+            print(data)
+            response = requests.post (url=url, headers=heards,verify=False,data=data)
+            res = response.text
+            print(res)
+            result = response.json()
+            print (result)
+            errmsg = result['errmsg']
+            if errmsg == 'success':
+                msg("【账号{0}】已兑换{1}健康豆，获得福利金{2}".format(account,exchange_numb,int(exchange_numb)/100))
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】兑换福利金失败,可能是ticket过期".format (account))
 
 
 if __name__ == '__main__':
@@ -315,11 +349,11 @@ if __name__ == '__main__':
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print("============执行滴滴多走多赚签到脚本==============")
     print(Didi_jifen_token)
-    get_dchn ()
     if Didi_jifen_token != '':
         xpsid = get_xpsid ()
         sign (Didi_jifen_token,xpsid,account)
         get_Bonus(Didi_jifen_token,xpsid,account)
+        exchange (Didi_jifen_token, xpsid, account, exchange_numb)
 
     elif tokens == '' :
         print("检查变量Didi_jifen_token是否已填写")
@@ -329,7 +363,9 @@ if __name__ == '__main__':
             xpsid = get_xpsid ()
             sign (i,xpsid,account)
             get_Bonus (i, xpsid, account)
+            exchange (i, xpsid, account, exchange_numb)
             account += 1
+
 
     if "签到" in msg_info:
         send("滴滴多走多赚签到", msg_info)
