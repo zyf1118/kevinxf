@@ -241,7 +241,7 @@ if cookies != '':
 #获取个人信息
 def get_info(DD_token,DD_cookies):
     try:
-        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&latitude=23.017158&longitude=113.811603'
+        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token='
         info_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -261,12 +261,12 @@ def get_info(DD_token,DD_cookies):
         return name,id
     except Exception as e:
         print(e)
-        msg ("{0}获取个人信息失败,可能是cookies过期".format(DD_token))
+        msg ("{0}获取个人信息失败,可能是app_client_id过期".format(DD_token))
 
 #获取今日任务列表信息
 def tasklist_info(name,uid,DD_token,DD_cookies):
     try:
-        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&cityCode=1117'
+        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&cityCode=1117'
         view_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -279,12 +279,13 @@ def tasklist_info(name,uid,DD_token,DD_cookies):
         }
         response = requests.get (url=tasklist_url, headers=view_headers, verify=False)
         list = response.json()
+        # print(list)
         view_id = list['data']['userTasks'][1]['userTaskLogId']
         lucky_draw_id = list['data']['userTasks'][8]['userTaskLogId']
         return view_id,lucky_draw_id
     except Exception as e:
         print(e)
-        msg ("{【0】}获取任务列表失败,可能是cookies过期".format(name))
+        msg ("【{0}】获取任务列表失败,可能是cookies过期".format(name))
 
 def do_feed(name,uid,DD_token,DD_cookies):
     try:
@@ -347,13 +348,14 @@ def do_feed(name,uid,DD_token,DD_cookies):
 #每日签到任务
 def do_sign(name,uid,DD_token,DD_cookies):
     try:
-        do_sign1_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=DAILY_SIGN'
+        do_sign1_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=DAILY_SIGN'
         do_sign1_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
             "Cookie": DD_cookies,
         }
         response = requests.get (url=do_sign1_url, headers=do_sign1_headers, verify=False)
         list = response.json()
+        print(list)
         success = list['success']     #任务签到
         code = list['code']
         if code == 601:
@@ -367,12 +369,12 @@ def do_sign(name,uid,DD_token,DD_cookies):
             msg("【{0}】每日签到任务失败".format(name))
     except Exception as e:
         print(e)
-        msg("【{0}】每日签到任务失败,可能是cookies过期".format(name))
+        # msg("【{0}】每日签到任务失败,可能是cookies过期".format(name))
 
 #连续签到任务
 def do_sign2(name,uid,DD_token,DD_cookies):
     try:
-        do_sign2_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=CONTINUOUS_SIGN'
+        do_sign2_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=CONTINUOUS_SIGN'
         do_sign1_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
             "Cookie": DD_cookies,
@@ -393,7 +395,7 @@ def do_sign2(name,uid,DD_token,DD_cookies):
 
     except Exception as e:
         print(e)
-        msg("【{0}】连续签到任务失败,可能是cookies过期".format(name))
+        # msg("【{0}】连续签到任务失败,可能是cookies过期".format(name))
 
 def lucky_draw(name,DD_token,DD_cookies):
 
@@ -408,6 +410,7 @@ def lucky_draw(name,DD_token,DD_cookies):
             reward = 0
             response = requests.get (url=lucky_draw_url, headers=do_sign1_headers, verify=False)
             list = response.json ()
+            print(list)
             success = list['success']     #天天翻牌，可翻10次
             print(success)
             code = list['code']
@@ -431,7 +434,8 @@ def lucky_draw(name,DD_token,DD_cookies):
 
         except Exception as e:
             print (e)
-            msg("【{0}】天天翻牌任务失败,可能是cookies过期".format(name))
+            msg("【{0}】天天翻牌任务失败,自行查看是否有翻牌任务".format(name))
+            return 0
 
 #领取天天翻牌奖励
 def lucky_draw_reward(name,uid,taskid,DD_token,DD_cookies):
@@ -459,7 +463,7 @@ def lucky_draw_reward(name,uid,taskid,DD_token,DD_cookies):
             msg ("【{0}】领取天天翻牌奖励{1}g鱼饵".format (name,amount))
     except Exception as e:
         print(e)
-        msg("【{0}】领取天天翻牌奖励失败,可能是cookies过期".format(name))
+        msg("【{0}】领取天天翻牌奖励失败,自行查看是否有翻牌任务".format(name))
 #浏览30秒任务
 def view_mission(name,uid,DD_token,DD_cookies):
     try:
@@ -552,7 +556,7 @@ if __name__ == '__main__':
         do_sign2 (name,uid,DD_token,DD_cookies)
         fudai_reward (name,uid,DD_token,DD_cookies)
         lucky_draw(name,DD_token,DD_cookies)
-        view_mission (name,DD_token,DD_cookies)
+        view_mission (name,uid,DD_token,DD_cookies)
         view_id, lucky_draw_id = tasklist_info (name,uid,DD_token,DD_cookies)
         lucky_draw_reward (name,uid,lucky_draw_id,DD_token,DD_cookies)
         do_reward (name,uid,view_id,DD_token,DD_cookies)
