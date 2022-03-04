@@ -4,19 +4,19 @@
 
 感谢Curtin提供的其他脚本供我参考
 感谢aburd ch大佬的指导抓包
-项目名称:xF_DDmc_Sign.py
+项目名称:xF_DDmc_Sign
 Author: 一风一燕
 功能：叮咚买菜积分签到功能
 Date: 2021-09-16
-cron: 22 7,10 * * * xF_DDmc_Sign.py
-new Env('叮咚买菜积分签到');
+cron: 22 7,10 * * * xF_DDmc_Sign
+new Env('叮咚买菜积分活动');
 
 ****************叮咚买菜是买菜APP，30分钟内到家，挺快挺专业的。如果没有用过叮咚买菜APP的人，可以TG私聊我，我就叫一风一燕，我发个邀请码给你注册，这样双方都有优惠券，也算是支持一下小风，谢谢各位大佬*******************
 
 
 【教程】：需要自行用手机抓取cookies和token。
 在青龙变量中添加变量DD_token，DD_cookies。
-多个账号时，DD_token，DD_cookies用&隔开，例如DD_token='xxxxx&xxxx'
+多个账号时，DD_token，DD_cookies用&隔开，例如DD_token=xxxxx&xxxx
 
 手机抓包后，喂食一次，查看URL
 搜索station_id=，&前面，=后面的东西就是你需要的token。
@@ -101,7 +101,7 @@ def getEnvs(label):
 #             tokens = ''
 #     #     print(tokens)
 #     #     tokens = cookies[3]
-
+#
 #     printT ("已获取并使用ck环境 token")
 # #
 # with open(path, "r+", encoding="utf-8") as f:
@@ -235,7 +235,7 @@ if cookies != '':
 #获取个人信息
 def get_info(DD_token,DD_cookies):
     try:
-        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.1.0&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&latitude=23.017158&longitude=113.811603'
+        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token='
         info_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
