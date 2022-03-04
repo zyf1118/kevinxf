@@ -259,7 +259,7 @@ def get_xpsid():
         response = requests.head (url=url, headers=heards, verify=False)  # 获取响应请求头
         res = response.headers['Location']  # 获取响应请求头
         # print(res)
-        r = re.compile (r'root_xpsid=(.*?)&appid', re.M | re.S | re.I)
+        r = re.compile (r'root_xpsid=(.*?)&channel_id')
         xpsid = r.findall (res)
         xpsid = xpsid[0]
         print (xpsid)
