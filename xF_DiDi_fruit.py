@@ -8,7 +8,7 @@
 Author: 一风一燕
 功能：滴滴app水果自动任务
 Date: 2021-11-23
-cron: 43 0-3,8,12,15,18,22 * * * xF_DiDi_fruit.py
+cron: 43 0-3,8,9,12,15,18,22 * * * xF_DiDi_fruit.py
 new Env('滴滴app水果自动任务');
 
 
@@ -1417,7 +1417,7 @@ if __name__ == '__main__':
 
     if "饭点领水滴" in msg_info:
         send ("滴滴水果活动", msg_info)
-    elif "已成熟" in msg_info:
+    if "已成熟" in msg_info:
         send ("滴滴水果活动", msg_info)
     elif "过期" in msg_info:
         send ("滴滴水果活动", msg_info)
