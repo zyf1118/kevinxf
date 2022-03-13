@@ -97,7 +97,7 @@ wsgsig=['dd03-vx9tq2onDp0IZqcYVoABxTjsa%2BXNwlstUQ6fOSmVa%2BX%2BZhfRmNkDw6zkAz0%
         'dd03-RnANOxOD1Z3H9sJdnUHQlIrfJ2u%2Ben09kqMvqH%2FaJ2uN9jj1WEUokZZA4P3N9CubiAIsnPrD4OgMGgmNmd5plZPCN2NIF0zGlUBwqLxCNPNHaitCnE6xlZqa2ZA'
         ]
 
-
+uid = ''.join(random.sample('01234567890123456789', 15))
 
 
 def printT(s):
@@ -224,7 +224,8 @@ class msg (object):
 msg ().main ()
 nowtime = int (round (time.time () * 1000))
 
-uid = ''
+
+
 
 if tokens != '':
     # if "Didi_jifen_token" in tokens:
@@ -243,10 +244,10 @@ if tokens != '':
 def get_xpsid():
     try:
         url = f'https://v.didi.cn/p/DpzAd35?appid=10000&lang=zh-CN&clientType=1&trip_cityid=21&datatype=101&imei=99d8f16bacaef4eef6c151bcdfa095f0&channel=102&appversion=6.2.4&trip_country=CN&TripCountry=CN&lng=113.812538&maptype=soso&os=iOS&utc_offset=480&access_key_id=1&deviceid=99d8f16bacaef4eef6c151bcdfa095f0&phone=UCvMSok42+5+tfafkxMn+A==&model=iPhone11&lat=23.016271&origin_id=1&client_type=1&terminal_id=1&sig=8503d986c0349e40ea10ff360f75d208c78c989a'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
         }
-        response = requests.head (url=url, headers=heards, verify=False)  # 获取响应请求头
+        response = requests.head (url=url, headers=headers, verify=False)  # 获取响应请求头
         res = response.headers['Location']  # 获取响应请求头
         # print(res)
         r = re.compile (r'root_xpsid=(.*?)&channel_id')
@@ -263,7 +264,7 @@ def get_xpsid():
 def get_pet_id(Didi_jifen_token, xpsid,wsgsig):
     try:
         url = f'https://game.xiaojukeji.com/api/game/plant/enter?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -272,8 +273,8 @@ def get_pet_id(Didi_jifen_token, xpsid,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = '{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","assist_type":0,"encode_uid":"","is_old_player":true,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = '{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","assist_type":0,"encode_uid":"","is_old_player":true,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print(result)
         pet_id = result['data']['lam_uid']
@@ -289,8 +290,8 @@ def get_missons(Didi_jifen_token, xpsid,wsgsig):
     missons_list = []
     try:
         wsgsig = wsgsig[random.randint (0,25)]
-        url = f'https://game.xiaojukeji.com/api/game/mission/get?xbiz=240301&prod_key=didi-orchard&xpsid={xpsid}&dchn=O9aM923&xoid=aA%2Fiet7vTTmdKCRAgoHwyg&uid=281474990465673&xenv=passenger&xspm_from=&xpsid_root={xpsid}&xpsid_from=&xpsid_share=&game_id=23&loop=0&platform=1&token={Didi_jifen_token}&wsgsig={wsgsig}'
-        heards = {
+        url = f'https://game.xiaojukeji.com/api/game/mission/get?xbiz=240301&prod_key=didi-orchard&xpsid={xpsid}&dchn=O9aM923&xoid=aA%2Fiet7vTTmdKCRAgoHwyg&uid=' + f'{uid}' + f'&xenv=passenger&xspm_from=&xpsid_root={xpsid}&xpsid_from=&xpsid_share=&game_id=23&loop=0&platform=1&token={Didi_jifen_token}&wsgsig={wsgsig}'
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -299,7 +300,7 @@ def get_missons(Didi_jifen_token, xpsid,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Accept": "application/json, text/plain, */*",
         }
-        response = requests.get (url=url, headers=heards, verify=False)
+        response = requests.get (url=url, headers=headers, verify=False)
         result = response.json ()
         # print(result)
         missons = result['data']['missions']
@@ -319,7 +320,7 @@ def do_sign(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/plant/sign?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -328,9 +329,9 @@ def do_sign(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -353,7 +354,7 @@ def get_treasure(Didi_jifen_token, xpsid, account,wsgsig):
         for i in range (100):
             id = wsgsig[random.randint (0,25)]
             url = f'https://game.xiaojukeji.com/api/game/plant/recCommonBox?wsgsig={id}'
-            heards = {
+            headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
                 "Host": "game.xiaojukeji.com",
@@ -362,9 +363,9 @@ def get_treasure(Didi_jifen_token, xpsid, account,wsgsig):
                 "D-Header-T": f"{Didi_jifen_token}",
                 "Content-Type": "application/json",
             }
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
             # print(data)
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            response = requests.post (url=url, headers=headers, verify=False, data=data)
             result = response.json ()
             # print (result)
             errmsg = result['errmsg']
@@ -387,7 +388,7 @@ def get_misson1(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -396,9 +397,9 @@ def get_misson1(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":255,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":255,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -421,7 +422,7 @@ def get_misson2(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -430,9 +431,9 @@ def get_misson2(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":32,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":32,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -455,7 +456,7 @@ def get_misson3(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -464,9 +465,9 @@ def get_misson3(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":256,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":256,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -489,7 +490,7 @@ def get_misson4(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -498,9 +499,9 @@ def get_misson4(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":258,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":258,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -523,7 +524,7 @@ def get_misson5(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -532,9 +533,9 @@ def get_misson5(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":257,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":257,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -557,7 +558,7 @@ def get_misson6(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -566,9 +567,9 @@ def get_misson6(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":31,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":31,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -591,7 +592,7 @@ def get_misson7(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -600,9 +601,9 @@ def get_misson7(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":29,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":29,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -625,7 +626,7 @@ def get_misson8(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -634,9 +635,9 @@ def get_misson8(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":250,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":250,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -660,7 +661,7 @@ def get_misson9(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -669,9 +670,9 @@ def get_misson9(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":100,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":100,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -695,7 +696,7 @@ def get_misson10(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -704,9 +705,9 @@ def get_misson10(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":101,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":101,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -730,7 +731,7 @@ def get_misson11(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -739,9 +740,9 @@ def get_misson11(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":15,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":15,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -764,7 +765,7 @@ def get_misson12(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/plant/recExtWater?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -773,9 +774,9 @@ def get_misson12(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -796,7 +797,7 @@ def get_misson13(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/plant/recBucketWater?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -805,9 +806,9 @@ def get_misson13(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -828,7 +829,7 @@ def get_misson14(Didi_jifen_token, xpsid, account,wsgsig):
     try:
         wsgsig = wsgsig[random.randint (0,25)]
         url = f'https://game.xiaojukeji.com/api/game/plant/receivePer?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -837,9 +838,9 @@ def get_misson14(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
 
 
@@ -854,7 +855,7 @@ def get_misson15(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
         url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -871,9 +872,9 @@ def get_misson15(Didi_jifen_token, xpsid, account,wsgsig):
             fdsd_id = 253
         else:
             return 0
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":' + f"{fdsd_id}" + r',"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":' + f"{fdsd_id}" + r',"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
         # print(data)
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -888,6 +889,106 @@ def get_misson15(Didi_jifen_token, xpsid, account,wsgsig):
         print (e)
         msg ("【账号{0}】领取饭点水滴失败,可能是token过期".format (account))
 
+# 领取任务（浏览滴水贷首页6秒）
+def get_misson16(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://act.xiaojukeji.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://act.xiaojukeji.com/",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":42,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        # print(data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            title = result['data']['title']
+            name = result['data']['reward'][0]['name']
+            count = result['data']['reward'][0]['count']
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
+
+        else:
+            msg ("【账号{}】【浏览滴水贷首页6秒】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】【浏览滴水贷首页6秒】任务失败,可能是token过期".format (account))
+
+# 领取任务（浏览果园商城15秒）
+def get_misson17(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://act.xiaojukeji.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://act.xiaojukeji.com/",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":46,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        # print(data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            title = result['data']['title']
+            name = result['data']['reward'][0]['name']
+            count = result['data']['reward'][0]['count']
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
+
+        else:
+            msg ("【账号{}】【浏览果园商城15秒】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】【浏览果园商城15秒】任务失败,可能是token过期".format (account))
+
+# 领取任务（浏览充值中心）
+def get_misson18(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://act.xiaojukeji.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://act.xiaojukeji.com/",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":41,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        # print(data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            title = result['data']['title']
+            name = result['data']['reward'][0]['name']
+            count = result['data']['reward'][0]['count']
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
+
+        else:
+            msg ("【账号{}】【浏览充值中心】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】【浏览充值中心】任务失败,可能是token过期".format (account))
+
+
 
 # 固定入口进入游戏
 def do_misson1(Didi_jifen_token, xpsid, account,wsgsig):
@@ -895,7 +996,7 @@ def do_misson1(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -904,8 +1005,8 @@ def do_misson1(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":255,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":255,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print (result)
         errmsg = result['errmsg']
@@ -925,7 +1026,7 @@ def do_misson2(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -934,8 +1035,8 @@ def do_misson2(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":32,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":32,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print (result)
         errmsg = result['errmsg']
@@ -955,7 +1056,7 @@ def do_misson3(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -964,8 +1065,8 @@ def do_misson3(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":256,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":256,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print (result)
         errmsg = result['errmsg']
@@ -985,7 +1086,7 @@ def do_misson4(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -994,8 +1095,8 @@ def do_misson4(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":258,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":258,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print (result)
         errmsg = result['errmsg']
@@ -1015,7 +1116,7 @@ def do_misson5(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -1024,8 +1125,8 @@ def do_misson5(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":257,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":257,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -1045,7 +1146,7 @@ def do_misson6(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -1054,8 +1155,8 @@ def do_misson6(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":31,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":31,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         # print (result)
         errmsg = result['errmsg']
@@ -1075,7 +1176,7 @@ def do_misson7(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
         nowtime = int (round (time.time () * 1000))
         url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -1084,8 +1185,8 @@ def do_misson7(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":29,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":29,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
@@ -1108,7 +1209,7 @@ def do_misson8(Didi_jifen_token, xpsid, account,wsgsig):
             id = wsgsig[random.randint (0,25)]
             nowtime = int (round (time.time () * 1000))
             url = f'https://game.xiaojukeji.com/api/game/plant/killWorm?wsgsig={id}'
-            heards = {
+            headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
                 "Host": "game.xiaojukeji.com",
@@ -1117,8 +1218,8 @@ def do_misson8(Didi_jifen_token, xpsid, account,wsgsig):
                 "D-Header-T": f"{Didi_jifen_token}",
                 "Content-Type": "application/json",
             }
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","friend_id":null,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","friend_id":null,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            response = requests.post (url=url, headers=headers, verify=False, data=data)
             result = response.json ()
             print (result)
             errmsg = result['errmsg']
@@ -1142,7 +1243,7 @@ def do_misson9(Didi_jifen_token, xpsid, account,wsgsig):
         wsgsig = wsgsig[random.randint (0,25)]
 
         url = f'https://game.xiaojukeji.com/api/game/plant/shareEarlyBird?wsgsig={wsgsig}'
-        heards = {
+        headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://fine.didialift.com/",
             "Host": "game.xiaojukeji.com",
@@ -1151,16 +1252,16 @@ def do_misson9(Didi_jifen_token, xpsid, account,wsgsig):
             "D-Header-T": f"{Didi_jifen_token}",
             "Content-Type": "application/json",
         }
-        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-        response = requests.post (url=url, headers=heards, verify=False, data=data)
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
         result = response.json ()
         print (result)
         errmsg = result['errmsg']
         time.sleep (0.2)
         if errmsg == 'success':
             url = f'https://game.xiaojukeji.com/api/game/plant/recEarlyBird?wsgsig={wsgsig}'
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"water_status":0,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"water_status":0,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            response = requests.post (url=url, headers=headers, verify=False, data=data)
             result = response.json ()
             print (result)
             errmsg = result['errmsg']
@@ -1189,7 +1290,7 @@ def do_misson10(Didi_jifen_token, xpsid, account,wsgsig):
             id = wsgsig[random.randint (0,25)]
             nowtime = int (round (time.time () * 1000))
             url = f'https://game.xiaojukeji.com/api/game/plant/fertilizer?wsgsig={id}'
-            heards = {
+            headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
                 "Host": "game.xiaojukeji.com",
@@ -1198,8 +1299,8 @@ def do_misson10(Didi_jifen_token, xpsid, account,wsgsig):
                 "D-Header-T": f"{Didi_jifen_token}",
                 "Content-Type": "application/json",
             }
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","count":1,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","count":1,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            response = requests.post (url=url, headers=headers, verify=False, data=data)
             result = response.json ()
             print (result)
             errmsg = result['errmsg']
@@ -1224,6 +1325,107 @@ def do_misson10(Didi_jifen_token, xpsid, account,wsgsig):
         print (e)
         msg ("【账号{0}】【使用肥料】任务失败,可能是token过期".format (account))
 
+# 浏览滴水贷首页6秒
+def do_misson11(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        id = wsgsig[random.randint (0,25)]
+        nowtime = int (round (time.time () * 1000))
+        url = f'https://game.xiaojukeji.com/api/game/mission/accept?wsgsig={id}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://act.xiaojukeji.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://act.xiaojukeji.com/",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json;charset=utf-8",
+            "Accept":"application/json, text/plain, */*",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":42,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            errno = result['errno']
+            if errno == 0:
+                time.sleep(8)
+                msg ("【账号{}】【浏览滴水贷首页6秒】任务已完成".format (account))
+        elif "服务内部错误" in errmsg:
+            msg ("【账号{}】【浏览滴水贷首页6秒】任务执行失败".format (account))
+        else:
+            msg ("【账号{}】【浏览滴水贷首页6秒】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{}】【浏览滴水贷首页6秒】任务早已完成，跳过执行环节".format (account))
+
+# 浏览果园商城15秒
+def do_misson12(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        id = wsgsig[random.randint (0,25)]
+        nowtime = int (round (time.time () * 1000))
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={id}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://page.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json;charset=utf-8",
+        }
+        data = r'{"xbiz":"","prod_key":"","xpsid":"","dchn":"","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"didi-orchard.none.none.none","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"' + f'{xpsid}' + r'","xpsid_share":"","source_id":"z10000","partition_id":"1002","token":"' + f'{Didi_jifen_token}' + r'","mission_id":46,"game_id":23,"platform":1}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            errno = result['errno']
+            if errno == 0:
+                time.sleep(18)
+                msg ("【账号{}】【浏览果园商城15秒】任务已完成".format (account))
+        elif "服务内部错误" in errmsg:
+            msg ("【账号{}】【浏览果园商城15秒】任务执行失败".format (account))
+        else:
+            msg ("【账号{}】【浏览果园商城15秒】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{}】【浏览果园商城15秒】任务早已完成，跳过执行环节".format (account))
+
+# 浏览充值中心
+def do_misson13(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        id = wsgsig[random.randint (0,25)]
+        nowtime = int (round (time.time () * 1000))
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={id}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://page.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json;charset=utf-8",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":41,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            errno = result['errno']
+            if errno == 0:
+                msg ("【账号{}】【浏览充值中心】任务已完成".format (account))
+        elif "服务内部错误" in errmsg:
+            msg ("【账号{}】【浏览充值中心】任务执行失败".format (account))
+        else:
+            msg ("【账号{}】【浏览充值中心】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{}】【浏览充值中心】任务早已完成，跳过执行环节".format (account))
 
 # 浇水
 def watering(Didi_jifen_token, xpsid, account,wsgsig):
@@ -1233,7 +1435,7 @@ def watering(Didi_jifen_token, xpsid, account,wsgsig):
         while True:
             id = wsgsig[random.randint (0,25)]
             url = f'https://game.xiaojukeji.com/api/game/plant/watering?wsgsig={id}'
-            heards = {
+            headers = {
                 "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
                 "Referer": "https://fine.didialift.com/",
                 "Host": "game.xiaojukeji.com",
@@ -1242,9 +1444,9 @@ def watering(Didi_jifen_token, xpsid, account,wsgsig):
                 "D-Header-T": f"{Didi_jifen_token}",
                 "Content-Type": "application/json",
             }
-            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+            data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","is_fast":false,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
             # print(data)
-            response = requests.post (url=url, headers=heards, verify=False, data=data)
+            response = requests.post (url=url, headers=headers, verify=False, data=data)
             result = response.json ()
             print (result)
             errmsg = result['errmsg']
@@ -1313,6 +1515,13 @@ if __name__ == '__main__':
                 time.sleep (0.2)
                 do_misson8 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
+                do_misson11 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+                do_misson12 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+                do_misson13 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+
                 get_misson1 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
                 get_misson2 (Didi_jifen_token, xpsid, account,wsgsig)
@@ -1329,6 +1538,14 @@ if __name__ == '__main__':
                 time.sleep (0.2)
                 get_misson11 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
+                get_misson16 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+                get_misson17 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+                get_misson18 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+
+
         for k in missons_list:
             if "每日浇水" in k:
                 get_misson8 (Didi_jifen_token, xpsid, account,wsgsig)
@@ -1381,6 +1598,13 @@ if __name__ == '__main__':
                     time.sleep (0.2)
                     do_misson8 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
+                    do_misson11 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+                    do_misson12 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+                    do_misson13 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+
                     get_misson1 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
                     get_misson2 (i, xpsid, account,wsgsig)
@@ -1397,6 +1621,13 @@ if __name__ == '__main__':
                     time.sleep (0.2)
                     get_misson11 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
+                    get_misson16 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+                    get_misson17 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+                    get_misson18 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+
             for k in missons_list:
                 if "每日浇水" in k:
                     get_misson8 (i, xpsid, account,wsgsig)
