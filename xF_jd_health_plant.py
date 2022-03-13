@@ -566,7 +566,7 @@ def start():
                 taskName, taskId, taskToken_list = get_task2(cookie,sid,account)
                 for i in taskToken_list:
                     do_task2 (cookie, taskName, taskId, i, sid,account)
-                charge(charge_targe_id,cookie,sid, account)
+                charge(charge_targe_id,cookie,sid,account)
         elif cookies != '':
             for cookie, charge_targe_id in zip (cookies, charge_targe_ids):
                 account = setName (cookie)
