@@ -269,7 +269,6 @@ def do_sign2(SF_cookie,account):
 
 #获取任务列表
 def task_list(SF_cookie,account):
-    msg ("★★★★★正在执行【账号{}】的任务★★★★★".format (account))
     try:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskStrategyService~queryPointTaskAndSignFromES'
         data = '{"channelType":"1"}'
@@ -318,7 +317,7 @@ def do_mission(SF_cookie,title,taskCode,account):
     print(result)
     success = result['success']
     if success == True:
-        msg("【账号{0}】正在执行【{1}】任务，等待20秒".format(account,title))
+        printT("【账号{0}】正在执行【{1}】任务，等待20秒".format(account,title))
         time.sleep(20)
 
 
@@ -425,6 +424,7 @@ if __name__ == '__main__':
         for SF_cookie in cookies:
             while True:
                 if a <= account:
+                    msg ("★★★★★正在执行【账号{}】的任务★★★★★".format (a))
                     do_sign(SF_cookie,a)
                     do_sign2(SF_cookie,a)
                     do_lottery (SF_cookie,a)
