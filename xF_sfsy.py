@@ -290,7 +290,7 @@ def task_list(SF_cookie,account):
             strategyId = list[i]['strategyId']
             taskCode = list[i]['taskCode']
             title = list[i]['description']
-            if "邀请" in title or "累计" in title:
+            if "邀请" in title:
                 pass
             else:
                 do_mission (SF_cookie,title, taskCode,account)
