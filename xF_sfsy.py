@@ -232,7 +232,7 @@ def do_sign(SF_cookie,account):
             msg("【账号{0}】今日已签到，无需重复签到".format(account))
         else:
             countDay = result['obj']['countDay']
-            commodityName = result['obj']['integralTaskSignPackageVOList']['commodityName']
+            commodityName = result['obj']['integralTaskSignPackageVOList'][0]['commodityName']
             msg("【账号{0}】今日签到成功，连续签到{1}天，获得【{2}】".format(account,countDay,commodityName))
 
     except Exception as e:
