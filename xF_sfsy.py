@@ -422,7 +422,6 @@ if __name__ == '__main__':
     a = 1
     if cookies != '':
         for SF_cookie in cookies:
-            while True:
                 if a <= account:
                     msg ("★★★★★正在执行【账号{}】的任务★★★★★".format (a))
                     do_sign(SF_cookie,a)
