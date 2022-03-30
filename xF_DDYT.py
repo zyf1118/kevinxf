@@ -241,7 +241,7 @@ if cookies != '':
 #获取个人信息
 def get_info(DD_token,DD_cookies):
     try:
-        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token='
+        info_url = f'https://maicai.api.ddxq.mobi/user/info?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token='
         info_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -266,7 +266,7 @@ def get_info(DD_token,DD_cookies):
 #获取今日任务列表信息
 def tasklist_info(name,uid,DD_token,DD_cookies):
     try:
-        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&cityCode=1117'
+        tasklist_url = f'https://farm.api.ddxq.mobi/api/v2/task/list?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&cityCode=1117'
         view_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -289,7 +289,7 @@ def tasklist_info(name,uid,DD_token,DD_cookies):
 
 def do_feed(name,uid,DD_token,DD_cookies):
     try:
-        url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
+        url = "https://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.7.3&app_client_id=2&native_version=&app_version=9.29.0&gameId=1&guideCode=FISHPOND_NEW"
         headers = {
             "User-Agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
             "Referer": "https://game.m.ddxq.mobi/index.html",
@@ -297,8 +297,8 @@ def do_feed(name,uid,DD_token,DD_cookies):
         }
         r = requests.get (url, headers=headers, verify=False).text
         seedid = re.findall (r'"seedId":"(.*?)"', r)[0]
-        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
-        #feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token={device_token}&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
+        feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
+        #feed_url = f'https://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=9.42.1&OSVersion=15&CityId=1117&uid={uid}&latitude=23.017158&longitude=113.811603&lat=23.017158&lng=113.811603&device_token={device_token}&gameId=1&propsId={seedid}&seedId={seedid}&cityCode=1117&feedPro=0&triggerMultiFeed=1'
         feed_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15D148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -348,7 +348,7 @@ def do_feed(name,uid,DD_token,DD_cookies):
 #每日签到任务
 def do_sign(name,uid,DD_token,DD_cookies):
     try:
-        do_sign1_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=DAILY_SIGN'
+        do_sign1_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=DAILY_SIGN'
         do_sign1_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
             "Cookie": DD_cookies,
@@ -374,7 +374,7 @@ def do_sign(name,uid,DD_token,DD_cookies):
 #连续签到任务
 def do_sign2(name,uid,DD_token,DD_cookies):
     try:
-        do_sign2_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=CONTINUOUS_SIGN'
+        do_sign2_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.7.3&app_client_id=1&station_id={DD_token}&stationId={DD_token}&native_version=&app_version=0&OSVersion=&CityId=1117&latitude=23.018&longitude=113.758948&lat=23.018&lng=113.758948&device_token=&gameId=1&taskCode=CONTINUOUS_SIGN'
         do_sign1_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.33.0 station_id/{DD_token}",
             "Cookie": DD_cookies,
@@ -440,7 +440,7 @@ def lucky_draw(name,DD_token,DD_cookies):
 #领取天天翻牌奖励
 def lucky_draw_reward(name,uid,taskid,DD_token,DD_cookies):
     try:
-        lucky_draw_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
+        lucky_draw_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.7.3&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
         reward_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -495,7 +495,7 @@ def view_mission(name,uid,DD_token,DD_cookies):
 #领取浏览任务奖励
 def do_reward(name,uid,taskid,DD_token,DD_cookies):
     try:
-        view_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
+        view_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.7.3&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&userTaskLogId={taskid}'
         reward_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
@@ -521,7 +521,7 @@ def do_reward(name,uid,taskid,DD_token,DD_cookies):
 
 def fudai_reward(name,uid,DD_token,DD_cookies):
     try:
-        fudai_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=4&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=LOTTERY'
+        fudai_reward_url = f'https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.7.3&app_client_id=1&station_id={DD_token}&native_version=&app_version=9.35.1&uid={uid}&latitude=23.017158&longitude=113.811603&gameId=1&taskCode=LOTTERY'
         reward_headers = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.35.1 station_id/{DD_token}",
             "Accept-Encoding": "gzip, deflate, br",
