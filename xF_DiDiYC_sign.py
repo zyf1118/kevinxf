@@ -321,7 +321,7 @@ if __name__ == '__main__':
             # get_Bonus (i, xpsid, account)
             account += 1
 
-    if "签到" in msg_info:
+    if "成功" in msg_info:
         send("滴滴有车签到瓜分", msg_info)
     elif "过期" in msg_info:
         send("滴滴有车签到瓜分", msg_info)
