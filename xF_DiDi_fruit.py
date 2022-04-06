@@ -988,7 +988,38 @@ def get_misson18(Didi_jifen_token, xpsid, account,wsgsig):
         print (e)
         msg ("【账号{0}】【浏览充值中心】任务失败,可能是token过期".format (account))
 
+# 领取任务（访问消消赚）
+def get_misson19(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        wsgsig = wsgsig[random.randint (0,25)]
+        url = f'https://game.xiaojukeji.com/api/game/mission/award?wsgsig={wsgsig}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://act.xiaojukeji.com/",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://act.xiaojukeji.com/",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":261,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        # print(data)
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            title = result['data']['title']
+            name = result['data']['reward'][0]['name']
+            count = result['data']['reward'][0]['count']
+            msg ("【账号{3}】完成{0}任务，获取{1}{2}g水滴".format (title, name, count, account))
 
+        else:
+            msg ("【账号{}】【访问消消赚】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】【访问消消赚】领取奖励失败,可能是token过期".format (account))
 
 # 固定入口进入游戏
 def do_misson1(Didi_jifen_token, xpsid, account,wsgsig):
@@ -1427,6 +1458,39 @@ def do_misson13(Didi_jifen_token, xpsid, account,wsgsig):
         print (e)
         msg ("【账号{}】【浏览充值中心】任务早已完成，跳过执行环节".format (account))
 
+# 访问消消赚
+def do_misson14(Didi_jifen_token, xpsid, account,wsgsig):
+    try:
+        id = wsgsig[random.randint (0,25)]
+        nowtime = int (round (time.time () * 1000))
+        url = f'https://game.xiaojukeji.com/api/game/mission/update?wsgsig={id}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com",
+            "Host": "game.xiaojukeji.com",
+            "Origin": "https://page.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "D-Header-T": f"{Didi_jifen_token}",
+            "Content-Type": "application/json;charset=utf-8",
+        }
+        data = r'{"xbiz":"240301","prod_key":"didi-orchard","xpsid":"' + f'{xpsid}' + r'","dchn":"O9aM923","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f'{uid}' + r'","xenv":"passenger","xspm_from":"","xpsid_root":"' + f'{xpsid}' + r'","xpsid_from":"","xpsid_share":"","mission_id":261,"game_id":23,"platform":1,"token":"' + f'{Didi_jifen_token}' + r'"}'
+        response = requests.post (url=url, headers=headers, verify=False, data=data)
+        result = response.json ()
+        print (result)
+        errmsg = result['errmsg']
+        if errmsg == 'success':
+            errno = result['errno']
+            if errno == 0:
+                msg ("【账号{}】【访问消消赚】任务已完成".format (account))
+        elif "服务内部错误" in errmsg:
+            msg ("【账号{}】【访问消消赚】任务执行失败".format (account))
+        else:
+            msg ("【账号{}】【访问消消赚】任务早已完成，跳过执行环节".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{}】【访问消消赚】任务失败，可能是token过期".format (account))
+
 # 浇水
 def watering(Didi_jifen_token, xpsid, account,wsgsig):
     try:
@@ -1494,7 +1558,7 @@ if __name__ == '__main__':
         if nowtime > get_time1 and nowtime < get_time2:
             do_misson9(Didi_jifen_token, xpsid, account,wsgsig)
         for k in missons_list:
-            if "积分商城" in k:
+            if "浏览" in k:
                 do_sign (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
                 do_misson10 (Didi_jifen_token, xpsid, account,wsgsig)
@@ -1521,6 +1585,8 @@ if __name__ == '__main__':
                 time.sleep (0.2)
                 do_misson13 (Didi_jifen_token, xpsid, account, wsgsig)
                 time.sleep (0.2)
+                do_misson14 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
 
                 get_misson1 (Didi_jifen_token, xpsid, account,wsgsig)
                 time.sleep (0.2)
@@ -1543,6 +1609,8 @@ if __name__ == '__main__':
                 get_misson17 (Didi_jifen_token, xpsid, account, wsgsig)
                 time.sleep (0.2)
                 get_misson18 (Didi_jifen_token, xpsid, account, wsgsig)
+                time.sleep (0.2)
+                get_misson19 (Didi_jifen_token, xpsid, account, wsgsig)
                 time.sleep (0.2)
 
 
@@ -1577,7 +1645,7 @@ if __name__ == '__main__':
             if nowtime > get_time1 and nowtime < get_time2:
                 do_misson9 (i, xpsid, account, wsgsig)
             for k in missons_list:
-                if "积分商城" in k:
+                if "浏览" in k:
                     do_sign (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
                     do_misson10 (i, xpsid, account,wsgsig)
@@ -1604,6 +1672,8 @@ if __name__ == '__main__':
                     time.sleep (0.2)
                     do_misson13 (i, xpsid, account, wsgsig)
                     time.sleep (0.2)
+                    do_misson14 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
 
                     get_misson1 (i, xpsid, account,wsgsig)
                     time.sleep (0.2)
@@ -1626,6 +1696,8 @@ if __name__ == '__main__':
                     get_misson17 (i, xpsid, account, wsgsig)
                     time.sleep (0.2)
                     get_misson18 (i, xpsid, account, wsgsig)
+                    time.sleep (0.2)
+                    get_misson19 (i, xpsid, account, wsgsig)
                     time.sleep (0.2)
 
             for k in missons_list:
