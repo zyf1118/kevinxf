@@ -265,13 +265,74 @@ def get_dchn():
 #         msg("获取dchn失败，可能是表达式错误")
           pass
 
-#签到
-def sign(Didi_jifen_token,xpsid,imei,account):
+
+
+#领取瓜分奖励
+def reward(Didi_jifen_token,xpsid,imei,id,account):
     global wsgsig
-    wsgsig = wsgsig[random.randint (0, 25)]
+    wsgsig1 = wsgsig[random.randint (0, 25)]
     uid = ''.join (random.sample ('01234657890123456789', 15))  # 281474990465673
     try:
-        url = f'https://ut.xiaojukeji.com/ut/kappa/api/owner/sign?wsgsig={wsgsig}'
+        url = f'https://ut.xiaojukeji.com/ut/kappa/api/owner/obtain?wsgsig={wsgsig1}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            "Host": "ut.xiaojukeji.com",
+            "Origin": "https://page.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "Content-Type":"application/json",
+            "Accept":"application/json, text/plain, */*",
+        }
+        data = r'{"xbiz":"","prod_key":"","xpsid":"","dchn":"","xoid":"2dcb602b-c319-44d1-93d3-811faeca4b82","uid":"' + f"{uid}" + '","xenv":"passenger","xspm_from":"ut-carowner-service.index.c757.1","xpsid_root":"' +f"{xpsid}" +'","xpsid_from":"' +f"{xpsid}" +'","xpsid_share":"","platform_type":1,"token":"' + f"{Didi_jifen_token}" + r'","env":{"newTicket":"' + f"{Didi_jifen_token}" + r'","isOpenWeb":true,"ticket":"' + f"{Didi_jifen_token}" + r'","cityId":"21","longitude":"113.812232","latitude":"23.016550","xAxes":"0","yAxes":"0","newAppid":"10000","isHitButton":true,"ddfp":"' + f"{imei}" + r'","deviceId":"' + f"{imei}" + r'","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"aid":"' + f"{id}" + '","source":1}'
+        # print(data)
+        response = requests.post (url=url, headers=headers,verify=False,data=data)
+        result = response.json()
+        # print (result)
+        errmsg = result['errmsg']
+        if errmsg == "success":
+            msg("【账号{0}】领取奖励成功".format (account))
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】获取活动id失败，可能是token过期".format (account))
+
+#获取活动id
+def get_id(Didi_jifen_token,xpsid,imei,account):
+    global wsgsig
+    wsgsig1 = wsgsig[random.randint (0, 25)]
+    uid = ''.join (random.sample ('01234657890123456789', 15))  # 281474990465673
+    try:
+        url = f'https://ut.xiaojukeji.com/ut/kappa/api/owner/getActivityInfo?wsgsig={wsgsig1}'
+        headers = {
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
+            "Referer": "https://page.udache.com/",
+            "Host": "ut.xiaojukeji.com",
+            "Origin": "https://page.udache.com",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "Content-Type":"application/json",
+            "Accept":"application/json, text/plain, */*",
+        }
+        data = r'{"xbiz":"","prod_key":"","xpsid":"","dchn":"","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f"{uid}" + '","xenv":"passenger","xspm_from":"ut-carowner-service.index.c757.1","xpsid_root":"' +f"{xpsid}" +'","xpsid_from":"' +f"{xpsid}" +'","xpsid_share":"","platform_type":1,"token":"' + f"{Didi_jifen_token}" + r'","env":{"newTicket":"' + f"{Didi_jifen_token}" + r'","isOpenWeb":true,"ticket":"' + f"{Didi_jifen_token}" + r'","cityId":"21","longitude":"113.812516","latitude":"23.016350","xAxes":"0","yAxes":"0","newAppid":"10000","isHitButton":true,"ddfp":"' + f"{imei}" + r'","deviceId":"' + f"{imei}" + r'","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"source":1}'
+        # print(data)
+        response = requests.post (url=url, headers=headers,verify=False,data=data)
+        result = response.json()
+        # print (result)
+        id = result['data']['id']
+        return id
+
+    except Exception as e:
+        print (e)
+        msg ("【账号{0}】获取活动id失败，可能是token过期".format (account))
+
+
+#签到
+def sign(Didi_jifen_token,xpsid,imei,id,account):
+    global wsgsig
+    wsgsig1 = wsgsig[random.randint (0, 25)]
+    uid = ''.join (random.sample ('01234657890123456789', 15))  # 281474990465673
+    print(id)
+    try:
+        url = f'https://ut.xiaojukeji.com/ut/kappa/api/owner/sign?wsgsig={wsgsig1}'
         heards = {
             "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0",
             "Referer": "https://page.udache.com/",
@@ -281,8 +342,7 @@ def sign(Didi_jifen_token,xpsid,imei,account):
             "ticket":f"{Didi_jifen_token}",
             "Content-Type":"application/json",
         }
-        # data = r'{"xbiz":"240300","prod_key":"ut-walk-bonus","xpsid":"6e56697ea0504ce98cea82329cfa6a6f","dchn":"aXxR1oB","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"281474990465673","xenv":"passenger","xspm_from":"","xpsid_root":"6e56697ea0504ce98cea82329cfa6a6f","xpsid_from":"","xpsid_share":"","version":1,"source_from":"app","city_id":"21","env":{"ticket":"Ag8aVeRbZ1yee4AsBI69GkodAzZQRoQqykuols0cKZEkzDluAzEMQNG7_JoYkKJESWzT5w5ZJkujADFcDXx3Y-z-4R0sJfFNN0VYRpqwCmmqqsJy0nqbJbxajDJdWJW0qK16jNaF1UheXhHeSBDeyTKs9jqn1mjRXfgkp7CTB5e_6__HTupN-Dor7xH6qL5JzNvQMaJrIPw8y9-T3wMAAP__","cityId":"21","longitude":113.81253119574653,"latitude":23.01632541232639,"newAppid":10000,"isHitButton":true,"ddfp":"99d8f16bacaef4eef6c151bcdfa095f0","deviceId":"99d8f16bacaef4eef6c151bcdfa095f0","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"ticketAppid":"30004"}'
-        data = r'{"xbiz":"","prod_key":"","xpsid":"","dchn":"","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f"{uid}" + '","xenv":"passenger","xspm_from":"ut-carowner-service.index.c757.1","xpsid_root":"' +f"{xpsid}" +'","xpsid_from":"' +f"{xpsid}" +'","xpsid_share":"","platform_type":1,"token":"' + f"{Didi_jifen_token}" + r'","env":{"newTicket":"' + f"{Didi_jifen_token}" + r'","isOpenWeb":true,"ticket":"' + f"{Didi_jifen_token}" + r'","cityId":"21","longitude":"113.812232","latitude":"23.016550","xAxes":"0","yAxes":"0","newAppid":"10000","isHitButton":true,"ddfp":"' + f"{imei}" + r'","deviceId":"' + f"{imei}" + r'","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"aid":"288"}'
+        data = r'{"xbiz":"","prod_key":"","xpsid":"","dchn":"","xoid":"aA/iet7vTTmdKCRAgoHwyg","uid":"' + f"{uid}" + '","xenv":"passenger","xspm_from":"ut-carowner-service.index.c757.1","xpsid_root":"' +f"{xpsid}" +'","xpsid_from":"' +f"{xpsid}" +'","xpsid_share":"","platform_type":1,"token":"' + f"{Didi_jifen_token}" + r'","env":{"newTicket":"' + f"{Didi_jifen_token}" + r'","isOpenWeb":true,"ticket":"' + f"{Didi_jifen_token}" + r'","cityId":"21","longitude":"113.812232","latitude":"23.016550","xAxes":"0","yAxes":"0","newAppid":"10000","isHitButton":true,"ddfp":"' + f"{imei}" + r'","deviceId":"' + f"{imei}" + r'","appVersion":"6.2.4","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 OffMode/0","fromChannel":"1"},"aid":"' + f"{id}" + '"}'
         # print(data)
         response = requests.post (url=url, headers=heards,verify=False,data=data)
         result = response.json()
@@ -296,7 +356,7 @@ def sign(Didi_jifen_token,xpsid,imei,account):
 
     except Exception as e:
         print (e)
-        msg ("【账号{0}】参加瓜分失败,可能是ticket过期".format (account))
+        msg ("【账号{0}】参加瓜分失败,可能是token过期".format (account))
 
 
 
@@ -308,8 +368,11 @@ if __name__ == '__main__':
     # get_dchn ()
     if Didi_jifen_token != '':
         xpsid,imei = get_xpsid ()
-        sign (Didi_jifen_token,xpsid,imei,account)
-        # get_Bonus(Didi_jifen_token,xpsid,account)
+        id = get_id (Didi_jifen_token, xpsid, imei, account)
+        reward (Didi_jifen_token, xpsid, imei, id, account)
+        time.sleep (2)
+        id = get_id (Didi_jifen_token, xpsid, imei, account)
+        sign (Didi_jifen_token,xpsid,imei,id,account)
 
     elif tokens == '' :
         print("检查变量Didi_jifen_token是否已填写")
@@ -317,8 +380,11 @@ if __name__ == '__main__':
         account = 1
         for i in tokens:             #同时遍历两个list，需要用ZIP打包
             xpsid,imei = get_xpsid ()
-            sign (i,xpsid,imei,account)
-            # get_Bonus (i, xpsid, account)
+            id = get_id (i, xpsid, imei, account)
+            reward (i, xpsid, imei, id, account)
+            time.sleep(2)
+            id = get_id (i, xpsid, imei, account)
+            sign (i,xpsid,imei,id,account)
             account += 1
 
     if "成功" in msg_info:
