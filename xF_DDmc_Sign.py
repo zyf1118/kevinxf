@@ -134,7 +134,7 @@ else:
 
 if "DD_cookies" in os.environ:
     print(len (os.environ["DD_cookies"]))
-    if len (os.environ["DD_cookies"]) > 43:
+    if len (os.environ["DD_cookies"]) > 40:
         cookies = os.environ["DD_cookies"]
         # temporary = cookies.split ('&')
         # cookies = temporary[0]
