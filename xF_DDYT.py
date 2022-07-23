@@ -278,10 +278,15 @@ def tasklist_info(name,uid,DD_token,DD_cookies):
             "Origin": "https://cms.api.ddxq.mobi",
         }
         response = requests.get (url=tasklist_url, headers=view_headers, verify=False)
-        list = response.json()
+        result = response.json()
         # print(list)
-        view_id = list['data']['userTasks'][1]['userTaskLogId']
-        lucky_draw_id = list['data']['userTasks'][8]['userTaskLogId']
+        list = result['data']['userTasks']
+        for i in range(len(list)):
+            taskName = list[i]['taskName']
+            if "翻牌" in taskName:
+                lucky_draw_id = list[i]['userTaskLogId']
+            if "浏览商品" in taskName:
+                view_id = list[i]['userTaskLogId']
         return view_id,lucky_draw_id
     except Exception as e:
         print(e)
