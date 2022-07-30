@@ -150,12 +150,10 @@ if "FLJ_exchange_data" in os.environ:
     if "@" in os.environ["FLJ_exchange_data"]:
         FLJ_exchange_datas = os.environ["FLJ_exchange_data"]
         FLJ_exchange_datas = FLJ_exchange_datas.split("@")
-        print(FLJ_exchange_datas)
         printT ("已获取并使用Env环境FLJ_exchange_datas")
     elif "\n" in os.environ["FLJ_exchange_data"]:
         FLJ_exchange_datas = os.environ["FLJ_exchange_data"]
         FLJ_exchange_datas = FLJ_exchange_datas.split("\n")
-        print(FLJ_exchange_datas)
         printT ("已获取并使用Env环境FLJ_exchange_datas")
     else:
         FLJ_exchange_data = os.environ["FLJ_exchange_data"]
@@ -324,6 +322,7 @@ if __name__ == '__main__':
         ttt = []
         for i,j in zip(tokens,FLJ_exchange_datas):             #同时遍历两个list，需要用ZIP打包
             xpsid = get_xpsid ()
+            get_info (i, xpsid, account)
             thread = threading.Thread(target=exchange, args=(i, xpsid, account, j))
             ttt.append (thread)
             thread.start ()
