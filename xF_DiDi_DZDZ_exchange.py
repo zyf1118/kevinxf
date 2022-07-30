@@ -30,7 +30,9 @@ new Env('滴滴app多走多赚兑换福利金');
 
 在青龙变量中添加变量Didi_jifen_token="xxxx",xxx就是上面抓的ticker复制下来就OK了
 
+
 接下来说一下怎么抓FLJ_exchange_data
+如果多个账号，用@或者回车隔开，export FLJ_exchange_data'xxx@xxx'
 进入多走多赚，然后点击左上角兑换，兑换一次1福利金，查看https://res.xiaojukeji.com/sigma/api/coin/exchange?wsgsig=
 body或者文本，整个复制即可。
 如果想兑换50福利金，就将最后的extra_number":4，数字4改为2。
