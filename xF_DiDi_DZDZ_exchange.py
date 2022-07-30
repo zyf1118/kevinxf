@@ -83,8 +83,8 @@ starttime='00:00:03.00000000'
 #结束时间
 endtime='00:00:30.00000000'
 
-qgtime = '{} {}'.format (tomorrow, starttime)
-qgendtime = '{} {}'.format (tomorrow, endtime)
+qgtime = '{} {}'.format (today, starttime)
+qgendtime = '{} {}'.format (today, endtime)
 
 
 
@@ -286,11 +286,11 @@ def exchange(Didi_jifen_token,xpsid,account,data):
     try:
         while True:
             nowtime = datetime.datetime.now ().strftime ('%Y-%m-%d %H:%M:%S.%f8')
-            if nowtime < qgtime:
+            if nowtime > qgtime:
                     response = requests.post (url=url, headers=heards,verify=False,data=data)
-                    # print(response.text)
+                    print(response.text)
                     result = response.json()
-                    print(result)
+                    # print(result)
                     errmsg = result['errmsg']
                     if errmsg == 'success':
                         msg("【账号{0}】福利金兑换成功".format(account))
