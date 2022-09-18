@@ -37,6 +37,7 @@ try:
     import requests
     import json, sys, os, re
     import time, datetime, random
+    import hashlib
 except Exception as e:
     print (e)
 
@@ -198,10 +199,25 @@ class msg (object):
 
 msg ().main ()
 
+def md5_encode(encode_data):
+
+    # print(encode_data)
+
+    md5=hashlib.md5()   # 应用MD5算法
+
+    data = encode_data
+
+    md5.update(data.encode('utf-8'))
+
+    # print(md5.hexdigest().upper())
+
+    return md5.hexdigest()
+
+
 # 查询奖品
-def lottery_list(SF_cookie,acccount):
+def lottery_list(SF_cookie,sign_data,timestamp,acccount):
     b = 0
-    url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/lottery/awardedList'
+    url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~acCommonService~getCommonAward'
     hearders = {
         "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie": f"{SF_cookie}",
@@ -210,21 +226,25 @@ def lottery_list(SF_cookie,acccount):
         "accept": "application/json, text/plain, */*",
         "Host": "mcs-mimp-web.sf-express.com",
         "content-type": "application/json;charset=utf-8",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data,
     }
     data = '{"productType":"","pageSize":20,"pageNo":1}'
     response = requests.post (url=url, headers=hearders, verify=False, data=data)
     result = response.json ()
     success = result['success']
     if success == True:
-        list = result['obj']
+        list = result['obj']['list']
         for i in range (len (list)):
-            listTip = list[i]['listTip']
+            listTip = list[i]['name']
             if listTip in lottery_black_list:
-                b = 1
+                continue
             else:
                 msg ("【账号{0}】抽奖奖品为：【{1}】".format (acccount, listTip))
-        if b == 1:
-            msg("【账号{0}】无黑名单意外的奖品，不通知".format(acccount))
+                b = 1
+        if b == 0:
+            print("【账号{0}】没有抽中黑名单以外的奖品".format (acccount))
+
 
 if __name__ == '__main__':
     global msg_info
@@ -232,16 +252,19 @@ if __name__ == '__main__':
     print ("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print ("============顺丰速运APP抽奖奖品通知脚本==============")
     a = 1
+    timestamp = int (round (time.time () * 1000))
+    encode_str = f'token=wwesldfs29aniversaryvdld29&timestamp={timestamp}&sysCode=MCS-MIMP-CORE'
+    sign_data = md5_encode (encode_str)
     if cookies != '':
         for SF_cookie in cookies:
             while True:
                 if a <= account:
-                    lottery_list (SF_cookie,a)
+                    lottery_list (SF_cookie,sign_data,timestamp,a)
                     a += 1
                 else:
                     break
     elif SF_cookie != '':
-        lottery_list (SF_cookie,a)
+        lottery_list (SF_cookie,sign_data,timestamp,a)
 
     if '奖品为' in msg_info:
         send ("顺丰速运抽奖奖品", msg_info)
