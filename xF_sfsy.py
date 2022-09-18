@@ -12,6 +12,11 @@ cron: 6 13 * * * xF_sfsy.py
 new Env('顺丰速递app自动任务');
 
 
+updata:2022-07-24
+修复签到
+updata:2022-09-18
+修复签到和所有任务
+
 
 【教程】：需要自行用手机抓取cookies
 
@@ -19,7 +24,7 @@ new Env('顺丰速递app自动任务');
 查看hearders里面的cookie，只需要sessionId=xxxxxx即可。
 青龙变量export SF_cookie='sessionId=xxxxxx'
 
-变量do_Treasure='false'，不参与夺宝活动，不设置默认参与。
+变量do_Treasure='false'，不参与夺宝活动，不设置默认不参与。
 变量black_list = 'xxx&xxx&xxx'，过滤夺宝活动，部分不参与。可以参考我的，然后自己修改。
 export black_list='13元顺丰优惠券&18元顺丰优惠券&8折同城券&顺丰定制三轮车车模&顺丰定制电动车模型'
 
@@ -30,7 +35,7 @@ cron时间填写：6 13 * * * xF_sfsy.py
 
 
 SF_cookie = ''
-do_Treasure = 'true'
+do_Treasure = 'false'
 black_list = ''
 account = 1
 cookies = ''
@@ -47,6 +52,7 @@ try:
     import requests
     import json,sys,os,re
     import time,datetime,random
+    import hashlib
 except Exception as e:
     print(e)
 
@@ -208,21 +214,38 @@ class msg(object):
 msg().main()
 nowtime = int(round(time.time() * 1000))
 
+def md5_encode(encode_data):
+
+    # print(encode_data)
+
+    md5=hashlib.md5()   # 应用MD5算法
+
+    data = encode_data
+
+    md5.update(data.encode('utf-8'))
+
+    # print(md5.hexdigest().upper())
+
+    return md5.hexdigest()
 
 
 #执行积分签到
-def do_sign(SF_cookie,account):
+def do_sign(SF_cookie,sign_data,timestamp,account):
     try:
-        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/integralTaskSignService/automaticSignFetchPackage'
+        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/integralTaskSignPlusService/automaticSignFetchPackage'
         data = '{"comeFrom":"vioin","channelFrom":"SFAPP"}'
         hearders = {
-            "user-agent": f"SFMainland_Store_Pro/9.37.1 (iPhone; iOS 15.0; Scale/2.00)",
-            "cookie":f"{SF_cookie}",
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+            "cookie":SF_cookie,
             "Accept-Encoding": "gzip, deflate, br",
             "accept-language": "zh-CN,zh-Hans;q=0.9",
             "accept": "application/json, text/plain, */*",
             "Host": "mcs-mimp-web.sf-express.com",
-            "content-type": "application/json",
+            "content-type": "application/json;charset=utf-8",
+            "timestamp":f"{timestamp}",
+            "signature":sign_data,
+            "syscode":"MCS-MIMP-CORE",
+            "origin":"https://mcs-mimp-web.sf-express.com",
         }
         response = requests.post(url=url,headers=hearders,data=data,verify=False)
         result = response.json()
@@ -241,18 +264,20 @@ def do_sign(SF_cookie,account):
 
 
 # 执行超值福利签到
-def do_sign2(SF_cookie,account):
+def do_sign2(SF_cookie,sign_data,timestamp,account):
     try:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberActLengthy~redPacketActivityService~superWelfare~receiveRedPacket'
         data = '{"channel":"SignIn"}'
         hearders = {
-            "user-agent": f"SFMainland_Store_Pro/9.37.1 (iPhone; iOS 15.0; Scale/2.00)",
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
             "cookie": f"{SF_cookie}",
             "Accept-Encoding": "gzip, deflate, br",
             "accept-language": "zh-CN",
             "accept": "*/*",
             "Host": "mcs-mimp-web.sf-express.com",
             "content-type": "application/json",
+            # "timestamp": f"{timestamp}",
+            # "signature": sign_data
         }
         response = requests.post (url=url, headers=hearders, data=data, verify=False)
         # print(response.text)
@@ -268,18 +293,21 @@ def do_sign2(SF_cookie,account):
 
 
 #获取任务列表
-def task_list(SF_cookie,account):
+def task_list(SF_cookie,sign_data,timestamp,account):
     try:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskStrategyService~queryPointTaskAndSignFromES'
         data = '{"channelType":"1"}'
         hearders = {
-            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+            "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
             "Cookie": f"{SF_cookie}",
             "Accept-Encoding": "gzip, deflate, br",
             "accept-language": "zh-cn",
             "accept": "application/json, text/plain, */*",
             "Host": "mcs-mimp-web.sf-express.com",
             "content-type": "application/json;charset=utf-8",
+            "timestamp": f"{timestamp}",
+            "signature": sign_data,
+            "syscode": "MCS-MIMP-CORE",
         }
         response = requests.post (url=url, headers=hearders,data=data,verify=False)
         result = response.json()
@@ -293,8 +321,8 @@ def task_list(SF_cookie,account):
             if "邀请" in title:
                 pass
             else:
-                do_mission (SF_cookie,title, taskCode,account)
-                reward_mission (SF_cookie,title,strategyId, taskId, taskCode, account)
+                do_mission (SF_cookie,title, taskCode,sign_data,timestamp,account)
+                reward_mission (SF_cookie,title,strategyId, taskId, taskCode, sign_data,timestamp,account)
 
     except Exception as e:
         print(e)
@@ -302,17 +330,20 @@ def task_list(SF_cookie,account):
 
 
 #做任务
-def do_mission(SF_cookie,title,taskCode,account):
-    url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/task/finishTask?id={taskCode}'
+def do_mission(SF_cookie,title,taskCode,sign_data,timestamp,account):
+    url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonRoutePost/memberEs/taskRecord/finishTask'
     hearders = {
-        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie":f"{SF_cookie}",
         "Accept-Encoding": "gzip, deflate, br",
         "accept-language": "zh-CN,zh-Hans;q=0.9",
         "accept": "*/*",
         "Host": "mcs-mimp-web.sf-express.com",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data
     }
-    response = requests.get (url=url, headers=hearders, verify=False)
+    data = '{"taskCode":"' + f'{taskCode}' + '"}'
+    response = requests.get (url=url, headers=hearders, verify=False,data=data)
     result = response.json()
     print(result)
     success = result['success']
@@ -322,38 +353,42 @@ def do_mission(SF_cookie,title,taskCode,account):
 
 
 #抽奖任务
-def do_lottery(SF_cookie,account):
-    url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/lottery/receiveCoupon'
+def do_lottery(SF_cookie,sign_data,timestamp,account):
+    url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~multiIntegralLotteryService~lottery'
     hearders = {
-        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie":f"{SF_cookie}",
         "Accept-Encoding": "gzip, deflate, br",
         "accept-language": "zh-CN,zh-Hans;q=0.9",
         "accept": "application/json, text/plain, */*",
         "Host": "mcs-mimp-web.sf-express.com",
         "content-type":"application/json;charset=utf-8",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data
     }
-    data = '{"channel":"SFAPP"}'
+    data = '{"lotteryType":"NINE_POINT","continuityLotteryFlag":0}'
     response = requests.post (url=url, headers=hearders, verify=False,data=data)
     result = response.json()
     print(result)
     success = result['success']
     if success == True:
-        giftName = result['obj'][0]['giftName']
+        giftName = result['obj'][0]['commodityName']
         msg("【账号{0}】参与抽奖，获得【{1}】奖励".format(account,giftName))
 
 #领取奖励
-def reward_mission(SF_cookie,title,strategyId,taskId,taskCode,account):
+def reward_mission(SF_cookie,title,strategyId,taskId,taskCode,sign_data,timestamp,account):
     url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskStrategyService~fetchIntegral'
     data = '{"strategyId":' + f"{strategyId}" + ',"taskId":"' + f"{taskId}" + '","taskCode":"' + f"{taskCode}" + '"}'
     hearders = {
-        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie":f"{SF_cookie}",
         "Accept-Encoding": "gzip, deflate, br",
         "accept-language": "zh-cn",
         "accept": "application/json, text/plain, */*",
         "Host": "mcs-mimp-web.sf-express.com",
         "content-type": "application/json;charset=utf-8",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data
     }
     response = requests.post (url=url, headers=hearders, data=data, verify=False)
     result = response.json()
@@ -369,16 +404,18 @@ def reward_mission(SF_cookie,title,strategyId,taskId,taskCode,account):
 
 
 #夺宝活动
-def Treasure_list(SF_cookie,account):
+def Treasure_list(SF_cookie,sign_data,timestamp,account):
     url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTreasureService~queryHomePageInfo'
     hearders = {
-        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie":f"{SF_cookie}",
         "Accept-Encoding": "gzip, deflate, br",
         "accept-language": "zh-CN,zh-Hans;q=0.9",
         "accept": "application/json, text/plain, */*",
         "Host": "mcs-mimp-web.sf-express.com",
         "content-type":"application/json;charset=utf-8",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data
     }
     data = '{}'
     response = requests.post (url=url, headers=hearders, verify=False,data=data)
@@ -391,19 +428,21 @@ def Treasure_list(SF_cookie,account):
         if pkgName in black_list:
             pass
         else:
-            Treasure(SF_cookie,flowId,pkgName,account)
+            Treasure(SF_cookie,flowId,pkgName,sign_data,timestamp,account)
 
 #参与夺宝
-def Treasure(SF_cookie,flowId,pkgName,account):
+def Treasure(SF_cookie,flowId,pkgName,sign_data,timestamp,account):
     url = f'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTreasureService~partakeTreasure'
     hearders = {
-        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
+        "user-agent": f"Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 mediaCode=SFEXPRESSAPP-iOS-ML",
         "Cookie":f"{SF_cookie}",
         "Accept-Encoding": "gzip, deflate, br",
         "accept-language": "zh-CN,zh-Hans;q=0.9",
         "accept": "application/json, text/plain, */*",
         "Host": "mcs-mimp-web.sf-express.com",
         "content-type":"application/json;charset=utf-8",
+        "timestamp": f"{timestamp}",
+        "signature": sign_data
     }
     data = '{"flowId":' + f"{flowId}" + r',"partakeNums":1,"points":9}'
     response = requests.post (url=url, headers=hearders, verify=False,data=data)
@@ -420,26 +459,29 @@ if __name__ == '__main__':
     print("具体教程以文本模式打开文件，查看顶部教程\n\n")
     print("============执行顺丰速运APP签到脚本==============")
     a = 1
+    timestamp = int (round (time.time () * 1000))
+    encode_str = f'token=wwesldfs29aniversaryvdld29&timestamp={timestamp}&sysCode=MCS-MIMP-CORE'
+    sign_data = md5_encode (encode_str)
     if cookies != '':
         for SF_cookie in cookies:
                 if a <= account:
                     msg ("★★★★★正在执行【账号{}】的任务★★★★★".format (a))
-                    do_sign(SF_cookie,a)
-                    do_sign2(SF_cookie,a)
-                    do_lottery (SF_cookie,a)
-                    task_list(SF_cookie,a)
+                    do_sign(SF_cookie,sign_data,timestamp,a)
+                    do_sign2(SF_cookie,sign_data,timestamp,a)
+                    do_lottery (SF_cookie,sign_data,timestamp,a)
+                    task_list(SF_cookie,sign_data,timestamp,a)
                     if do_Treasure == 'true':
-                        Treasure_list (SF_cookie,a)
+                        Treasure_list (SF_cookie,sign_data,timestamp,a)
                     a += 1
                 else:
                     break
     elif SF_cookie != '':
-        do_sign (SF_cookie, a)
-        do_sign2 (SF_cookie, a)
-        do_lottery (SF_cookie, a)
-        task_list (SF_cookie, a)
+        do_sign (SF_cookie, sign_data,timestamp,a)
+        do_sign2 (SF_cookie, sign_data,timestamp,a)
+        do_lottery (SF_cookie, sign_data,timestamp,a)
+        task_list (SF_cookie, sign_data,timestamp,a)
         if do_Treasure == 'true':
-            Treasure_list (SF_cookie, a)
+            Treasure_list (SF_cookie, sign_data,timestamp,a)
     if '成功' in msg_info:
         send ("顺丰速运", msg_info)
     if '过期' in msg_info:
